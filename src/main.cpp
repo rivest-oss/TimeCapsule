@@ -25,10 +25,22 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include "noise.hpp"
 
 namespace Raylib {
 	#include <raylib.h>
 };
+
+#undef M_PI
+#undef M_PI2
+#undef M_PIf
+#undef M_PI2f
+
+#define M_PI  3.14159265358979323846264338327950288419716939937510
+#define M_PI2 6.28318530717958647692528676655900576839433879875020
+
+#define M_PIf  3.14159265358979323846264338327950288419716939937510f
+#define M_PI2f 6.28318530717958647692528676655900576839433879875020f
 
 std::unordered_map<std::string, Raylib::Image> loaded_images;
 std::unordered_map<std::string, Raylib::Texture2D> loaded_textures;
@@ -63,6 +75,30 @@ Raylib::Texture2D load_texture_from_image(Raylib::Image img) {
 		return Raylib::Texture2D { 0, -1, -1, -1, 0 };
 
 	Raylib::Texture2D tex = Raylib::LoadTextureFromImage(img);
+	if(Raylib::IsTextureValid(tex) == false)
+		return Raylib::Texture2D { 0, -1, -1, -1, 0 };
+	
+	std::string id = "";
+
+	for(unsigned int shift = 16; shift > 0; shift -= 4)
+		id += 'A' + ((tex.width >> shift) & 0xf);
+
+	id += ",";
+
+	for(unsigned int shift = 16; shift > 0; shift -= 4)
+		id += 'A' + ((tex.height >> shift) & 0xf);
+
+	id += ",";
+
+	for(unsigned int shift = 56; shift > 0; shift -= 4)
+		id += 'A' + ((tex.id >> shift) & 0xf);
+
+	loaded_textures.insert_or_assign(id, tex);
+	return tex;
+};
+
+Raylib::Texture2D load_texture(const char *filename) {
+	Raylib::Texture2D tex = Raylib::LoadTexture(filename);
 	if(Raylib::IsTextureValid(tex) == false)
 		return Raylib::Texture2D { 0, -1, -1, -1, 0 };
 	
@@ -394,18 +430,66 @@ void debug_draw_camera_info(int base_x, int base_y) {
 	);
 };
 
+Raylib::RayCollision cast_ray(Raylib::Ray ray, const float max_dist) {
+	Raylib::RayCollision ray_collision {
+		false,
+		0.f,
+		Raylib::Vector3 { 0.f, 0.f, 0.f, },
+		Raylib::Vector3 { 0.f, 0.f, 0.f, },
+	};
+
+	Raylib::Vector3 pos {
+		ray.position.x,
+		ray.position.y,
+		ray.position.z,
+	};
+
+	float dist = 0.f;
+
+	while(dist < max_dist) {
+		float interact_y = 2.0 + perlin_noise::noise(
+			pos.x / 10.0,
+			1.0,
+			pos.z / 10.0
+		);
+
+		if(pos.y <= interact_y) {
+			Raylib::Vector3 diff {
+				pos.x - ray.position.x,
+				pos.y - ray.position.y,
+				pos.z - ray.position.z,
+			};
+
+			ray_collision.hit = true;
+			ray_collision.distance = dist;
+			ray_collision.point = pos;
+			
+			break;
+		}
+
+		const float safe_dist = 0.1f;
+
+		pos.x += std::cos(ray.direction.x) * safe_dist;
+		pos.y += std::sin(ray.direction.y) * safe_dist;
+		pos.z += std::sin(ray.direction.z) * safe_dist;
+
+		dist += safe_dist;
+	};
+
+	return ray_collision;
+};
+
 void draw(double dt) {
 	Raylib::BeginDrawing();
 	Raylib::ClearBackground(Raylib::BLACK);
 	
-	// [TODO]
 	(void)dt;
 
 	int screen_width = Raylib::GetScreenWidth();
 	int screen_height = Raylib::GetScreenHeight();
 
-	for(int y = 0; y < screen_height; y += 16) {
-		for(int x = 0; x < screen_width; x += 16) {
+	for(int y = 0; y < screen_height; y += 4) {
+		for(int x = 0; x < screen_width; x += 4) {
 			Raylib::Ray ray = Raylib::GetScreenToWorldRayEx(
 				Raylib::Vector2 {
 					x + 8.f,
@@ -416,24 +500,29 @@ void draw(double dt) {
 				screen_height
 			);
 
-			Raylib::Color color = Raylib::WHITE;
-			float w = ray.direction.x;
-			float h = ray.direction.x;
+			const float max_dist = 10.f;
 
-			if(w < 0.f && h >= 0.f) { color = Raylib::RED, w *= -1.f; }
-			else if(w >= 0.f && h < 0.f) { color = Raylib::GREEN, h *= -1.f; }
-			else if(w < 0.f && h < 0.f) { color = Raylib::BLUE, w *= -1.f, h *= -1.f; }
+			Raylib::RayCollision ray_collision = cast_ray(ray, max_dist);
+			Raylib::Color color;
 
-			w = std::max(1.f, w * 15.f);
-			h = std::max(1.f, h * 15.f);
-			
-			Raylib::DrawRectangle(
-				x,
-				y,
-				(int)w,
-				(int)h,
-				color
-			);
+			if(ray_collision.hit) {
+				if(ray_collision.distance < 0.0001f) {
+					color = Raylib::WHITE;
+				} else {
+					//float factor = ray_collision.distance / max_dist;
+					float factor = ray_collision.point.y - 2.0;
+
+					if(factor > 0.92f) factor = 0.92f;
+					if(factor < 0.01f) factor = 0.01f;
+					factor *= -1.f;
+
+					color = Raylib::ColorBrightness(Raylib::WHITE, factor);
+				}
+			} else {
+				color = Raylib::BLACK;
+			}
+
+			Raylib::DrawRectangle(x, y, 4, 4, color);
 		};
 	};
 
