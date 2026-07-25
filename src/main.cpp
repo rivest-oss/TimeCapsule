@@ -426,7 +426,7 @@ void draw(double dt) {
 
 			w = std::max(1.f, w * 15.f);
 			h = std::max(1.f, h * 15.f);
-
+			
 			Raylib::DrawRectangle(
 				x,
 				y,
