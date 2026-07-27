@@ -43,6 +43,36 @@ const char *FONT_FILENAMES[] = {
 	nullptr,
 };
 
+enum : int {
+	GAME_STATE_INVALID = 0,
+	GAME_STATE_EXIT,
+	GAME_STATE_RUN,
+	GAME_STATE_PAUSED,
+};
+
+int game_state = GAME_STATE_INVALID;
+
+void transition_game_state_to(int new_state) {
+	if(new_state == GAME_STATE_EXIT) {
+		game_state = GAME_STATE_EXIT;
+		deinit();
+		std::exit(0);
+	}
+	
+	if(game_state == new_state)
+		return;
+	
+	if(new_state == GAME_STATE_RUN) {
+		Raylib::DisableCursor();
+	}
+	
+	if(new_state == GAME_STATE_PAUSED) {
+		Raylib::EnableCursor();
+	}
+	
+	game_state = new_state;
+};
+
 [[noreturn]] void init(int argc, const char **argv) {
 	Ox::Error err;
 	
@@ -50,10 +80,11 @@ const char *FONT_FILENAMES[] = {
 	(void)conf;
 	
 	Raylib::SetTargetFPS(60);
-	Raylib::SetExitKey(Raylib::KEY_NULL);
 
 	Raylib::InitWindow(640, 360, "TimeCapsule");
 	while(Raylib::IsWindowReady() == false) {};
+	
+	Raylib::SetExitKey(Raylib::KEY_NULL);
 	
 	Raylib::InitAudioDevice();
 	while(Raylib::IsAudioDeviceReady() == false) {};
@@ -78,14 +109,24 @@ const char *FONT_FILENAMES[] = {
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
 	
-	Raylib::DisableCursor();
+	transition_game_state_to(GAME_STATE_PAUSED);
 	
-	while(Raylib::WindowShouldClose() == false) {
+	while(true) {
+		if(Raylib::WindowShouldClose())
+			transition_game_state_to(GAME_STATE_EXIT);
+		
+		if(Raylib::IsKeyPressed(Raylib::KEY_ESCAPE)) {
+			if(game_state == GAME_STATE_RUN)
+				transition_game_state_to(GAME_STATE_PAUSED);
+			
+			else if(game_state == GAME_STATE_PAUSED)
+				transition_game_state_to(GAME_STATE_RUN);
+		}
+		
 		update_and_draw();
 	};
-
-	deinit();
-	std::exit(0);
+	
+	transition_game_state_to(GAME_STATE_EXIT);
 };
 
 void deinit(void) {
@@ -205,8 +246,8 @@ void debug_draw_camera_info(int base_x, int base_y) {
 	Raylib::DrawRectangle(
 		base_x,
 		base_y,
-		300-10,
-		200-10,
+		300 - 10,
+		200 - 10,
 		Raylib::ColorAlpha(Raylib::DARKGRAY, 0.5f)
 	);
 
@@ -287,6 +328,15 @@ void draw(double dt) {
 	
 	if(true) {
 		debug_draw_camera_info(screen_width - 300, 10);
+		
+		if(game_state == GAME_STATE_PAUSED) {
+			for(int y = -1; y < 2; y++)
+				for(int x = -1; x < 2; x++)
+					if(x != 0 && y != 0)
+					Raylib::DrawText("Game paused", x + 16, y + 16, 32, Raylib::BLACK);
+			
+			Raylib::DrawText("Game paused", 16, 16, 32, Raylib::WHITE);
+		}
 	}
 	
 	Raylib::EndDrawing();
@@ -303,4 +353,3 @@ int main(int argc, const char **argv) {
 	init(argc, argv);
 	return 0;
 };
-
