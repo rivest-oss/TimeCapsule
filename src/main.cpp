@@ -218,7 +218,9 @@ void update_and_draw(void);
 void deinit(void);
 
 Raylib::Camera3D player_camera;
+
 Raylib::Font debug_font;
+Raylib::Image debug_img;
 
 [[noreturn]] void init(int argc, const char **argv) {
 	Ox::Error err;
@@ -238,12 +240,14 @@ Raylib::Font debug_font;
 	player_camera.position = Raylib::Vector3 { 0.f, 0.f, 4.f };
 	player_camera.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
 	player_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
-	player_camera.fovy = 60.f;
+	player_camera.fovy = 45.f;
 	player_camera.projection = Raylib::CAMERA_PERSPECTIVE;
 
 	debug_font = Raylib::LoadFont("/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf");
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
+
+	debug_img = load_image("./image.png");
 
 	Raylib::DisableCursor();
 	
@@ -447,11 +451,7 @@ Raylib::RayCollision cast_ray(Raylib::Ray ray, const float max_dist) {
 	float dist = 0.f;
 
 	while(dist < max_dist) {
-		float interact_y = 2.0 + perlin_noise::noise(
-			pos.x / 10.0,
-			1.0,
-			pos.z / 10.0
-		);
+		float interact_y = 0.0;
 
 		if(pos.y <= interact_y) {
 			Raylib::Vector3 diff {
@@ -467,11 +467,12 @@ Raylib::RayCollision cast_ray(Raylib::Ray ray, const float max_dist) {
 			break;
 		}
 
-		const float safe_dist = 0.1f;
+		float safe_dist = std::abs(pos.y);
+		safe_dist = std::max(safe_dist, 0.01f);
 
 		pos.x += std::cos(ray.direction.x) * safe_dist;
 		pos.y += std::sin(ray.direction.y) * safe_dist;
-		pos.z += std::sin(ray.direction.z) * safe_dist;
+		pos.z += std::cos(ray.direction.z) * safe_dist;
 
 		dist += safe_dist;
 	};
@@ -488,17 +489,29 @@ void draw(double dt) {
 	int screen_width = Raylib::GetScreenWidth();
 	int screen_height = Raylib::GetScreenHeight();
 
-	for(int y = 0; y < screen_height; y += 4) {
-		for(int x = 0; x < screen_width; x += 4) {
+	for(int y = 0; y < screen_height; y++) {
+		for(int x = 0; x < screen_width; x++) {
 			Raylib::Ray ray = Raylib::GetScreenToWorldRayEx(
 				Raylib::Vector2 {
-					x + 8.f,
-					y + 8.f,
+					(float)x,
+					(float)y,
 				},
 				player_camera,
 				screen_width,
 				screen_height
 			);
+
+			{
+				float len = 1.f / std::sqrt(
+					ray.direction.x * ray.direction.x
+					+ ray.direction.y * ray.direction.y
+					+ ray.direction.z * ray.direction.z
+				);
+
+				ray.direction.x /= len;
+				ray.direction.y /= len;
+				ray.direction.z /= len;
+			}
 
 			const float max_dist = 10.f;
 
@@ -509,8 +522,8 @@ void draw(double dt) {
 				if(ray_collision.distance < 0.0001f) {
 					color = Raylib::WHITE;
 				} else {
-					//float factor = ray_collision.distance / max_dist;
-					float factor = ray_collision.point.y - 2.0;
+					float factor = ray_collision.distance / max_dist;
+					//float factor = ray_collision.point.y - 2.0;
 
 					if(factor > 0.92f) factor = 0.92f;
 					if(factor < 0.01f) factor = 0.01f;
@@ -522,7 +535,21 @@ void draw(double dt) {
 				color = Raylib::BLACK;
 			}
 
-			Raylib::DrawRectangle(x, y, 4, 4, color);
+			int img_x = ray_collision.point.x * 100.f;
+			while(img_x < 0) img_x += debug_img.width;
+			while(img_x >= debug_img.width) img_x -= debug_img.width;
+
+			int img_y = ray_collision.point.z * 100.f;
+			while(img_y < 0) img_y += debug_img.height;
+			while(img_y >= debug_img.height) img_y -= debug_img.height;
+
+			Raylib::Color pixel_color = Raylib::GetImageColor(
+				debug_img,
+				img_x,
+				img_y
+			);
+
+			Raylib::DrawPixel(x, y, pixel_color);
 		};
 	};
 
