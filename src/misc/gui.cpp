@@ -17,6 +17,7 @@
 **/
 
 #include "gui.hpp"
+#include "asset.hpp"
 #include <cstdio>
 
 namespace timecapsule {
@@ -28,7 +29,7 @@ namespace timecapsule {
 			default_font = Raylib::GetFontDefault();
 			default_colors.clear();
 			
-			default_colors.insert_or_asign("text color", Raylib::BLACK);
+			default_colors.insert_or_asign("text", Raylib::BLACK);
 			
 			return 0;
 		};
@@ -38,6 +39,19 @@ namespace timecapsule {
 				Raylib::UnloadFont(default_font);
 			
 			default_colors.clear();
+		};
+		
+		Raylib::Font get_default_font(void) {
+			return	Raylib::IsFontValid(default_font)
+						? default_font
+						: Raylib::GetFontDefault();
+		};
+		
+		Raylib::Color get_default_color(std::string id) {
+			if(default_colors.find(id) != default_colors.cend())
+				return default_colors.at(id);
+			
+			return Raylib::MAGENTA;
 		};
 		
 		void set_default_font(Raylib::Font font) {
@@ -56,6 +70,57 @@ namespace timecapsule {
 			}
 			
 			default_colors.insert_or_assign(id, color);
+		};
+		
+		// Node
+		
+		Node::Node(void) {
+			state = 0;
+			type = NODE_TYPE_INVALID;
+			p_text = "";
+			p_font = Raylib::GetFontDefault();
+			p_colors.clear();
+			p_image.width = p_image.height = -1;
+			p_size.x = p_size.y = 0.f;
+		};
+		
+		Node::~Node(void) {
+			p_colors.clear();
+			
+			if(Raylib::IsImageValid(p_image))
+				unload_image(p_image);
+		};
+		
+		int Node::get_type(void) {
+			return type;
+		};
+		
+		Raylib::Vector2 Node::get_size(void) {
+			return p_size;
+		};
+		
+		void Node::update(Raylib::Vector2 recommended_size) {
+			// [TODO]
+		};
+		
+		void Node::draw(Raylib::Vector2 position) {
+			// [TODO]
+		};
+		
+		void Node::set_type_text(const char *text) {
+			set_type_text(
+				text,
+				get_default_font(),
+				get_default_color("text")
+			);
+		};
+		
+		void Node::set_type_text(
+			const char *text,
+			Raylib::Font font,
+			Raylib::Color text_color
+		) {
+			// [TODO]
 		};
 	};
 };

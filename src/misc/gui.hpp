@@ -44,10 +44,15 @@ namespace timecapsule {
 				
 				std::string p_text;
 				Raylib::Font p_font;
+				Raylib::Image p_image;
+				Raylib::Vector2 p_size;
 				
 				std::unordered_map<std::string, Raylib::Color> p_colors;
 			
 			public:
+				Node(void);
+				~Node(void);
+				
 				int get_type(void);
 				Raylib::Vector2 get_size(void);
 				
