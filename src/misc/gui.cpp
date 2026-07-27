@@ -75,6 +75,20 @@ namespace timecapsule {
 		// Node
 		
 		Node::Node(void) {
+			p_image.width = p_image.height = -1;
+			reset_node();
+		};
+		
+		Node::~Node(void) {
+			reset_node();
+		};
+		
+		void Node::reset_node(void) {
+			p_colors.clear();
+			
+			if(Raylib::IsImageValid(p_image))
+				unload_image(p_image);
+			
 			state = 0;
 			type = NODE_TYPE_INVALID;
 			p_text = "";
@@ -82,13 +96,6 @@ namespace timecapsule {
 			p_colors.clear();
 			p_image.width = p_image.height = -1;
 			p_size.x = p_size.y = 0.f;
-		};
-		
-		Node::~Node(void) {
-			p_colors.clear();
-			
-			if(Raylib::IsImageValid(p_image))
-				unload_image(p_image);
 		};
 		
 		int Node::get_type(void) {
@@ -100,7 +107,22 @@ namespace timecapsule {
 		};
 		
 		void Node::update(Raylib::Vector2 recommended_size) {
-			// [TODO]
+			if(type == NODE_TYPE_INVALID) {
+				// don't do anything
+			}
+			
+			else if(type == NODE_TYPE_TEXT) {
+				p_size = Raylib::MeasureTextEx(
+					p_font,
+					p_text.c_str(),
+					16.f,
+					0.f
+				);
+			}
+			
+			else {
+				// [TODO]
+			}
 		};
 		
 		void Node::draw(Raylib::Vector2 position) {
@@ -117,10 +139,27 @@ namespace timecapsule {
 		
 		void Node::set_type_text(
 			const char *text,
-			Raylib::Font font,
+			Raylib::Font text_font,
 			Raylib::Color text_color
 		) {
-			// [TODO]
+			state = 0;
+			type = NODE_TYPE_TEXT;
+			
+			if(text != nullptr) {
+				p_text = text;
+			} else {
+				std::printf("[TimeCapsule/GUI] Node::set_type_text(): Invalid 'text'.\n");
+				p_text = "";
+			}
+			
+			if(Raylib::IsFontValid(text_font)) {
+				p_font = text_font;
+			} else {
+				std::printf("[TimeCapsule/GUI] Node::set_type_text(): Invalid 'font'.\n");
+				p_font = get_default_font();
+			}
+			
+			p_colors.insert_or_assign("text", text_color);
 		};
 	};
 };

@@ -53,6 +53,8 @@ namespace timecapsule {
 				Node(void);
 				~Node(void);
 				
+				void reset_node(void);
+				
 				int get_type(void);
 				Raylib::Vector2 get_size(void);
 				
@@ -64,7 +66,7 @@ namespace timecapsule {
 				// extended
 				void set_type_text(
 					const char *text,
-					Raylib::Font font,
+					Raylib::Font text_font,
 					Raylib::Color text_color
 				);
 		};
