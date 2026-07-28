@@ -25,6 +25,7 @@
 #include <vector>
 #include <unordered_map>
 #include "misc/asset.hpp"
+#include "misc/gui.hpp"
 #include "math.hpp"
 
 namespace Raylib {
@@ -37,6 +38,7 @@ void deinit(void);
 Raylib::Camera3D player_camera;
 
 Raylib::Font debug_font;
+timecapsule::gui::Node debug_node;
 
 const char *FONT_FILENAMES[] = {
 	"/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf",
@@ -109,7 +111,30 @@ void transition_game_state_to(int new_state) {
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
 	
+	if(timecapsule::gui::init() < 0) {
+		deinit();
+		std::exit(1);
+	}
+	
+	timecapsule::gui::set_default_font(debug_font);
+	
 	transition_game_state_to(GAME_STATE_PAUSED);
+	
+	debug_node.set_type_button_with_text(
+		timecapsule::gui::Node::button_with_text_t()
+			.set_text("Press me!")
+			.set_text_color_default(Raylib::RED)
+			.set_text_color_hover(Raylib::GREEN)
+			.set_text_color_active(Raylib::BLUE)
+			.set_text_color_disabled(Raylib::GRAY)
+			.set_background_color_default(Raylib::WHITE)
+			.set_background_color_hover(Raylib::WHITE)
+			.set_background_color_active(Raylib::WHITE)
+			.set_background_color_disabled(Raylib::WHITE)
+			.set_border_thickness(8.f)
+			.set_border_roundness(0.25f)
+			.set_text_border_margin(0.0f)
+	);
 	
 	while(true) {
 		if(Raylib::WindowShouldClose())
@@ -337,6 +362,11 @@ void draw(double dt) {
 			
 			Raylib::DrawText("Game paused", 16, 16, 32, Raylib::WHITE);
 		}
+		
+		Raylib::Vector2 position { 256.f, 256.f };
+		(void)debug_node.update(Raylib::Vector2 { 128.f, 128.f });
+		
+		debug_node.draw(position);
 	}
 	
 	Raylib::EndDrawing();
