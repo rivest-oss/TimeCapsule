@@ -120,7 +120,7 @@ void transition_game_state_to(int new_state) {
 	
 	transition_game_state_to(GAME_STATE_PAUSED);
 	
-	debug_node.set_type_button_with_text(
+	/*debug_node.set_type_button_with_text(
 		timecapsule::gui::Node::button_with_text_t()
 			.set_text("Press me!")
 			.set_text_color_default(Raylib::RED)
@@ -134,7 +134,8 @@ void transition_game_state_to(int new_state) {
 			.set_border_thickness(8.f)
 			.set_border_roundness(0.25f)
 			.set_text_border_margin(0.0f)
-	);
+	);*/
+	debug_node.set_type("text");
 	
 	while(true) {
 		if(Raylib::WindowShouldClose())

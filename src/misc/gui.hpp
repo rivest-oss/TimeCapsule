@@ -26,11 +26,35 @@ namespace Raylib {
 
 namespace timecapsule {
 	namespace gui {
-		enum : int {
+		typedef struct _system_t {
+			const char *name;
+			Raylib::Vector2 (*update)(Raylib::Vector2 recommended_size);
+			void (*draw)(Raylib::Vector2 position);
+		} _system_t;
+		
+		static constexpr int MAX_SYSTEMS = 100'000'000;
+		static _system_t _systems[MAX_SYSTEMS];
+		static const char *_systems_files[MAX_SYSTEMS];
+		static int _systems_lines[MAX_SYSTEMS];
+		static int _systems_count;
+		
+		static void _register_system(_system_t sys, const char *file, int line) {
+			_systems[_systems_count] = sys;
+			_systems_files[_systems_count] = file;
+			_systems_lines[_systems_count] = line;
+			_systems_count++;
+		};
+		
+		#define CONCAT_IMPL(x,y) x##y
+		#define MACRO_CONCAT(x,y) CONCAT_IMPL(x, y)
+		#define REGISTER_SYSTEM(sys) \
+			static int MACRO_CONCAT(_reg_, __COUNTER__) = (timecapsule::gui::_register_system(sys, __FILE__, __LINE__), 0)
+		
+		/*enum : int {
 			NODE_TYPE_INVALID = 0,
 			NODE_TYPE_TEXT,
 			NODE_TYPE_BUTTON_TEXT,
-		};
+		};*/
 		
 		int init(void);
 		void deinit(void);
@@ -41,84 +65,30 @@ namespace timecapsule {
 		class Node {
 			private:
 				unsigned int p_state = 0;
-				int p_type = NODE_TYPE_INVALID;
+				std::string p_type;
 				
-				std::string p_text;
-				Raylib::Font p_font;
-				Raylib::Image p_image;
 				Raylib::Vector2 p_size;
 				
-				std::unordered_map<std::string, Raylib::Color> p_colors;
 				std::unordered_map<std::string, float> p_floats;
+				std::unordered_map<std::string, Raylib::Color> p_colors;
+				std::unordered_map<std::string, Raylib::Image> p_images;
+				std::unordered_map<std::string, Raylib::Texture2D> p_textures;
+				std::unordered_map<std::string, Raylib::Font> p_fonts;
 				std::unordered_map<std::string, Node> p_nodes;
 			
 			public:
 				Node(void);
 				~Node(void);
 				
-				void reset_node(void);
+				void clear(void);
 				
-				int get_type(void);
 				Raylib::Vector2 get_size(void);
 				void set_color(std::string id, Raylib::Color color);
 				
 				Raylib::Vector2 update(Raylib::Vector2 recommended_size);
 				void draw(Raylib::Vector2 position);
 				
-				typedef struct text_t {
-					std::string text = "";
-					Raylib::Font font = Raylib::Font { 0 };
-					Raylib::Color color = Raylib::BLANK;
-					
-					text_t &set_text(const char *s) { text = s; return *this; };
-					text_t &set_text(std::string s) { text = s; return *this; };
-					text_t &set_font(Raylib::Font f) { font = f; return *this; };
-					text_t &set_color(Raylib::Color c) { color = c; return *this; };
-				} text_t;
-				
-				void set_type_text(text_t options);
-				
-				typedef struct button_with_text_t {
-					std::string text = "";
-					Raylib::Font text_font = Raylib::Font { 0 };
-					
-					Raylib::Color text_color_default = Raylib::BLANK;
-					Raylib::Color text_color_hover = Raylib::BLANK;
-					// no focus? - rosz
-					Raylib::Color text_color_active = Raylib::BLANK;
-					Raylib::Color text_color_disabled = Raylib::BLANK;
-					
-					Raylib::Color background_color_default = Raylib::BLANK;
-					Raylib::Color background_color_hover = Raylib::BLANK;
-					Raylib::Color background_color_active = Raylib::BLANK;
-					Raylib::Color background_color_disabled = Raylib::BLANK;
-					
-					Raylib::Color border_color = Raylib::BLANK;
-					
-					float border_roundness = 0.f;
-					float border_thickness = 0.f;
-					float button_margin = 0.0f;
-					
-					button_with_text_t &set_text(const char *s) { text = s; return *this; };
-					button_with_text_t &set_text(std::string s) { text = s; return *this; };
-					button_with_text_t &set_text_font(Raylib::Font f) { text_font = f; return *this; };
-					
-					button_with_text_t &set_text_color_default(Raylib::Color c) { text_color_default = c; return *this; };
-					button_with_text_t &set_text_color_hover(Raylib::Color c) { text_color_hover = c; return *this; };
-					button_with_text_t &set_text_color_active(Raylib::Color c) { text_color_active = c; return *this; };
-					button_with_text_t &set_text_color_disabled(Raylib::Color c) { text_color_disabled = c; return *this; };
-					
-					button_with_text_t &set_background_color_default(Raylib::Color c) { background_color_default = c; return *this; };
-					button_with_text_t &set_background_color_hover(Raylib::Color c) { background_color_hover = c; return *this; };
-					button_with_text_t &set_background_color_active(Raylib::Color c) { background_color_active = c; return *this; };
-					button_with_text_t &set_background_color_disabled(Raylib::Color c) { background_color_disabled = c; return *this; };
-					
-					button_with_text_t &set_border_roundness(float r) { border_roundness = r; return *this; };
-					button_with_text_t &set_border_thickness(float t) { border_thickness = t; return *this; };
-					button_with_text_t &set_text_border_margin(float m) { button_margin = m; return *this; };
-				} button_with_text_t;
-				
-				void set_type_button_with_text(button_with_text_t options);
+				int set_type(std::string type);
 		};
 	};
 };

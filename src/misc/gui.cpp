@@ -74,6 +74,7 @@ namespace timecapsule {
 		
 		// Node
 		
+		/*
 		Node::Node(void) {
 			p_image.width = p_image.height = -1;
 			reset_node();
@@ -402,6 +403,69 @@ namespace timecapsule {
 			p_floats.insert_or_assign("border roundness", options.border_roundness);
 			p_floats.insert_or_assign("border thickness", options.border_thickness);
 			p_floats.insert_or_assign("button margin", options.button_margin);
+		};
+		*/
+		
+		Node::Node(void) {
+			p_images.clear();
+			p_textures.clear();
+			p_fonts.clear();
+			p_nodes.clear();
+			clear();
+		};
+		
+		Node::~Node(void) {
+			clear();
+		};
+		
+		void Node::clear(void) {
+			p_state = 0;
+			p_type = "";
+			
+			p_size.x = p_size.y = 0.f;
+			
+			for(auto pair : p_images)
+				if(Raylib::IsImageValid(pair.second))
+					unload_image(pair.second);
+			for(auto pair : p_textures)
+				if(Raylib::IsTextureValid(pair.second))
+					unload_texture(pair.second);
+			for(auto pair : p_fonts)
+				if(Raylib::IsFontValid(pair.second))
+					unload_font(pair.second);
+			for(auto pair : p_nodes)
+				pair.second.clear();
+			
+			p_floats.clear();
+			p_colors.clear();
+			p_images.clear();
+			p_textures.clear();
+			p_fonts.clear();
+			p_nodes.clear();
+		};
+		
+		Raylib::Vector2 Node::get_size(void) {
+			return p_size;
+		};
+		
+		void Node::set_color(std::string id, Raylib::Color color) {
+			if(id.size() < 1)
+				return;
+			
+			p_colors.insert_or_assign(id, color);
+		};
+		
+		Raylib::Vector2 Node::update(Raylib::Vector2 recommended_size) {
+			// [TODO]
+		};
+		
+		void Node::draw(Raylib::Vector2 position) {
+			// [TODO]
+		};
+		
+		int Node::set_type(std::string type) {
+			clear();
+			// [TODO]
 		};
 	};
 };
