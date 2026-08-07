@@ -264,4 +264,20 @@ namespace timecapsule {
 		if(_loaded_models.find(id) != _loaded_models.cend())
 			_loaded_models.erase(id);
 	};
+
+	Raylib::Model update_model_diffuse_texture(Raylib::Model model, Raylib::Texture2D updated_diffuse_texture) {
+		if(Raylib::IsModelValid(model) == false)
+			return model;
+
+		std::string id = _get_id_model(model);
+		if(_loaded_models.find(id) != _loaded_models.cend())
+			_loaded_models.erase(id);
+
+		model.materials[0].maps[Raylib::MATERIAL_MAP_DIFFUSE].texture = updated_diffuse_texture;
+
+		if(Raylib::IsModelValid(model))
+			_loaded_models.insert_or_assign(_get_id_model(model), model);
+
+		return model;
+	};
 };

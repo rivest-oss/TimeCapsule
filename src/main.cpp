@@ -44,6 +44,36 @@ const char *FONT_FILENAMES[] = {
 	nullptr,
 };
 
+const int debug_models_length = 11;
+
+const char *DEBUG_MODELS_FILENAMES[debug_models_length + 1] = {
+	"./resources/heightmap-lods-experiment/downscale-image-x1.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x2.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x4.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x8.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x16.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x32.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x64.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x128.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x256.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x512.png",
+	"./resources/heightmap-lods-experiment/downscale-image-x1024.png",
+	nullptr,
+};
+
+Raylib::Model debug_models[debug_models_length];
+
+const Raylib::Vector3 debug_model_ref_size {
+	//1024.f,
+	//100.f,
+	//1024.f,
+	100.f,
+	10.f,
+	100.f,
+};
+
+unsigned int debug_model_iteration = 0;
+
 enum : int {
 	GAME_STATE_INVALID = 0,
 	GAME_STATE_EXIT,
@@ -109,6 +139,40 @@ void transition_game_state_to(int new_state) {
 	
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
+
+	for(int i = 0; DEBUG_MODELS_FILENAMES[i] != nullptr; i++) {
+		Raylib::Image img = timecapsule::load_image(DEBUG_MODELS_FILENAMES[i]);
+		if(Raylib::IsImageValid(img) == false) {
+			std::fprintf(stderr, "Couldn't load heightmap image: %s\n", DEBUG_MODELS_FILENAMES[i]);
+			deinit();
+			std::exit(1);
+		}
+
+		Raylib::Texture2D diffuse_tex = timecapsule::load_texture_from_image(img);
+		if(Raylib::IsTextureValid(diffuse_tex) == false) {
+			std::fprintf(stderr, "Couldn't load heightmap diffuse texture: %s\n", DEBUG_MODELS_FILENAMES[i]);
+			deinit();
+			std::exit(1);
+		}
+		
+		Raylib::Mesh mesh = Raylib::GenMeshHeightmap(img, debug_model_ref_size);
+		debug_models[i] = timecapsule::load_model_from_mesh(mesh);
+
+		timecapsule::unload_image(img);
+
+		if(Raylib::IsModelValid(debug_models[i]) == false) {
+			std::fprintf(stderr, "Couldn't load heightmap model: %s\n", DEBUG_MODELS_FILENAMES[i]);
+			deinit();
+			std::exit(1);
+		}
+
+		debug_models[i] = timecapsule::update_model_diffuse_texture(debug_models[i], diffuse_tex);
+		if(Raylib::IsModelValid(debug_models[i]) == false) {
+			std::fprintf(stderr, "Couldn't load heightmap diffuse textue to model: %s\n", DEBUG_MODELS_FILENAMES[i]);
+			deinit();
+			std::exit(1);
+		}
+	};
 	
 	transition_game_state_to(GAME_STATE_PAUSED);
 	
@@ -145,24 +209,31 @@ void update(double dt) {
 	const float speed_walking = 1.4f;
 	const float speed_running = 4.4f;
 	
-	if(game_state == GAME_STATE_RUNNING) {
-		Raylib::UpdateCameraPro(
-			&player_camera,
-			Raylib::Vector3 {
-				Raylib::IsKeyDown(Raylib::KEY_W) * speed_running * (float)dt
-				- Raylib::IsKeyDown(Raylib::KEY_S) * speed_running * (float)dt,
-				Raylib::IsKeyDown(Raylib::KEY_D) * speed_running * (float)dt
-				- Raylib::IsKeyDown(Raylib::KEY_A) * speed_running * (float)dt,
-				Raylib::GetMouseWheelMove() * 4.f * (float)dt,
-			},
-			Raylib::Vector3 {
-				Raylib::GetMouseDelta().x * M_PI2f * (float)dt,
-				Raylib::GetMouseDelta().y * M_PI2f * (float)dt,
-				0.f,
-			},
-			0.f
-		);
-	}
+	if(game_state != GAME_STATE_RUNNING)
+		return;
+
+	Raylib::UpdateCameraPro(
+		&player_camera,
+		Raylib::Vector3 {
+			Raylib::IsKeyDown(Raylib::KEY_W) * speed_running * (float)dt
+			- Raylib::IsKeyDown(Raylib::KEY_S) * speed_running * (float)dt,
+			Raylib::IsKeyDown(Raylib::KEY_D) * speed_running * (float)dt
+			- Raylib::IsKeyDown(Raylib::KEY_A) * speed_running * (float)dt,
+			Raylib::GetMouseWheelMove() * 4.f * (float)dt,
+		},
+		Raylib::Vector3 {
+			Raylib::GetMouseDelta().x * M_PI2f * (float)dt,
+			Raylib::GetMouseDelta().y * M_PI2f * (float)dt,
+			0.f,
+		},
+		0.f
+	);
+
+	if(Raylib::IsKeyPressed(Raylib::KEY_M))
+		debug_model_iteration++;
+
+	if(debug_model_iteration >= debug_models_length)
+		debug_model_iteration = 0;
 };
 
 void debug_draw_text(const char *text, int x, int y, int font_height, Raylib::Color text_color, Raylib::Color contourn_color = Raylib::BLANK) {
@@ -370,6 +441,17 @@ void draw(double dt) {
 		5,
 		10,
 		Raylib::GREEN
+	);
+
+	Raylib::DrawModel(
+		debug_models[debug_model_iteration],
+		Raylib::Vector3 {
+			-(debug_model_ref_size.x / 2.f),
+			-(debug_model_ref_size.y / 2.f),
+			-(debug_model_ref_size.z / 2.f),
+		},
+		1.f,
+		Raylib::WHITE
 	);
 
 	Raylib::EndMode3D();

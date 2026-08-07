@@ -33,6 +33,8 @@ namespace timecapsule {
 	Raylib::Font load_font(const char *filename, int font_size = 32, int num_of_characters_to_load = 256);
 	Raylib::Model load_model(const char *filename);
 	Raylib::Model load_model_from_mesh(Raylib::Mesh mesh);
+
+	Raylib::Model update_model_diffuse_texture(Raylib::Model model, Raylib::Texture2D updated_diffuse_texture);
 	
 	void unload_image(Raylib::Image img);
 	void unload_texture(Raylib::Texture2D tex);
