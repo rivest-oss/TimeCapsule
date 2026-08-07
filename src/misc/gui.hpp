@@ -25,6 +25,7 @@ namespace Raylib {
 };
 
 namespace timecapsule {
+	/*
 	namespace gui {
 		typedef struct _system_t {
 			const char *name;
@@ -47,14 +48,8 @@ namespace timecapsule {
 		
 		#define CONCAT_IMPL(x,y) x##y
 		#define MACRO_CONCAT(x,y) CONCAT_IMPL(x, y)
-		#define REGISTER_SYSTEM(sys) \
+		#define _TIMECAPSULE_REGISTER_SYSTEM(sys) \
 			static int MACRO_CONCAT(_reg_, __COUNTER__) = (timecapsule::gui::_register_system(sys, __FILE__, __LINE__), 0)
-		
-		/*enum : int {
-			NODE_TYPE_INVALID = 0,
-			NODE_TYPE_TEXT,
-			NODE_TYPE_BUTTON_TEXT,
-		};*/
 		
 		int init(void);
 		void deinit(void);
@@ -91,4 +86,5 @@ namespace timecapsule {
 				int set_type(std::string type);
 		};
 	};
+	*/
 };

@@ -38,7 +38,6 @@ void deinit(void);
 Raylib::Camera3D player_camera;
 
 Raylib::Font debug_font;
-timecapsule::gui::Node debug_node;
 
 const char *FONT_FILENAMES[] = {
 	"/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf",
@@ -48,7 +47,7 @@ const char *FONT_FILENAMES[] = {
 enum : int {
 	GAME_STATE_INVALID = 0,
 	GAME_STATE_EXIT,
-	GAME_STATE_RUN,
+	GAME_STATE_RUNNING,
 	GAME_STATE_PAUSED,
 };
 
@@ -64,7 +63,7 @@ void transition_game_state_to(int new_state) {
 	if(game_state == new_state)
 		return;
 	
-	if(new_state == GAME_STATE_RUN) {
+	if(new_state == GAME_STATE_RUNNING) {
 		Raylib::DisableCursor();
 	}
 	
@@ -111,42 +110,18 @@ void transition_game_state_to(int new_state) {
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
 	
-	if(timecapsule::gui::init() < 0) {
-		deinit();
-		std::exit(1);
-	}
-	
-	timecapsule::gui::set_default_font(debug_font);
-	
 	transition_game_state_to(GAME_STATE_PAUSED);
-	
-	/*debug_node.set_type_button_with_text(
-		timecapsule::gui::Node::button_with_text_t()
-			.set_text("Press me!")
-			.set_text_color_default(Raylib::RED)
-			.set_text_color_hover(Raylib::GREEN)
-			.set_text_color_active(Raylib::BLUE)
-			.set_text_color_disabled(Raylib::GRAY)
-			.set_background_color_default(Raylib::WHITE)
-			.set_background_color_hover(Raylib::WHITE)
-			.set_background_color_active(Raylib::WHITE)
-			.set_background_color_disabled(Raylib::WHITE)
-			.set_border_thickness(8.f)
-			.set_border_roundness(0.25f)
-			.set_text_border_margin(0.0f)
-	);*/
-	debug_node.set_type("text");
 	
 	while(true) {
 		if(Raylib::WindowShouldClose())
 			transition_game_state_to(GAME_STATE_EXIT);
 		
 		if(Raylib::IsKeyPressed(Raylib::KEY_ESCAPE)) {
-			if(game_state == GAME_STATE_RUN)
+			if(game_state == GAME_STATE_RUNNING)
 				transition_game_state_to(GAME_STATE_PAUSED);
 			
 			else if(game_state == GAME_STATE_PAUSED)
-				transition_game_state_to(GAME_STATE_RUN);
+				transition_game_state_to(GAME_STATE_RUNNING);
 		}
 		
 		update_and_draw();
@@ -166,23 +141,28 @@ void deinit(void) {
 
 void update(double dt) {
 	(void)dt;
+
+	const float speed_walking = 1.4f;
+	const float speed_running = 4.4f;
 	
-	Raylib::UpdateCameraPro(
-		&player_camera,
-		Raylib::Vector3 {
-			Raylib::IsKeyDown(Raylib::KEY_W) * 4.0f * (float)dt
-			- Raylib::IsKeyDown(Raylib::KEY_S) * 4.0f * (float)dt,
-			Raylib::IsKeyDown(Raylib::KEY_D) * 4.0f * (float)dt
-			- Raylib::IsKeyDown(Raylib::KEY_A) * 4.0f * (float)dt,
-			Raylib::GetMouseWheelMove() * 4.f * (float)dt,
-		},
-		Raylib::Vector3 {
-			Raylib::GetMouseDelta().x * 4.0f * (float)dt,
-			Raylib::GetMouseDelta().y * 4.0f * (float)dt,
-			0.f,
-		},
-		0.f
-	);
+	if(game_state == GAME_STATE_RUNNING) {
+		Raylib::UpdateCameraPro(
+			&player_camera,
+			Raylib::Vector3 {
+				Raylib::IsKeyDown(Raylib::KEY_W) * speed_running * (float)dt
+				- Raylib::IsKeyDown(Raylib::KEY_S) * speed_running * (float)dt,
+				Raylib::IsKeyDown(Raylib::KEY_D) * speed_running * (float)dt
+				- Raylib::IsKeyDown(Raylib::KEY_A) * speed_running * (float)dt,
+				Raylib::GetMouseWheelMove() * 4.f * (float)dt,
+			},
+			Raylib::Vector3 {
+				Raylib::GetMouseDelta().x * M_PI2f * (float)dt,
+				Raylib::GetMouseDelta().y * M_PI2f * (float)dt,
+				0.f,
+			},
+			0.f
+		);
+	}
 };
 
 void debug_draw_text(const char *text, int x, int y, int font_height, Raylib::Color text_color, Raylib::Color contourn_color = Raylib::BLANK) {
@@ -280,6 +260,19 @@ void debug_draw_camera_info(int base_x, int base_y) {
 	int font_height = 16;
 	int x = base_x + 10, y = base_y + 10;
 
+	debug_draw_text(
+		Raylib::TextFormat(
+			"Time: %f",
+			Raylib::GetTime()
+		),
+		x,
+		y,
+		font_height,
+		Raylib::WHITE
+	);
+
+	y += font_height + 4;
+
 	debug_draw_text("Camera:", x, y, font_height + 4, Raylib::WHITE);
 	y += 8 + font_height;
 
@@ -363,12 +356,23 @@ void draw(double dt) {
 			
 			Raylib::DrawText("Game paused", 16, 16, 32, Raylib::WHITE);
 		}
-		
-		Raylib::Vector2 position { 256.f, 256.f };
-		(void)debug_node.update(Raylib::Vector2 { 128.f, 128.f });
-		
-		debug_node.draw(position);
 	}
+
+	Raylib::BeginMode3D(player_camera);
+
+	Raylib::DrawSphereWires(
+		Raylib::Vector3 {
+			0.f,
+			0.f,
+			0.f,
+		},
+		1.f,
+		5,
+		10,
+		Raylib::GREEN
+	);
+
+	Raylib::EndMode3D();
 	
 	Raylib::EndDrawing();
 	Raylib::SwapScreenBuffer();
