@@ -44,21 +44,153 @@ const char *FONT_FILENAMES[] = {
 	nullptr,
 };
 
-const int debug_models_length = 11;
+const int debug_models_length = 144;
 
-const char *DEBUG_MODELS_FILENAMES[debug_models_length + 1] = {
-	"./resources/heightmap-lods-experiment/downscale-image-x1.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x2.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x4.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x8.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x16.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x32.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x64.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x128.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x256.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x512.png",
-	"./resources/heightmap-lods-experiment/downscale-image-x1024.png",
-	nullptr,
+const char *DEBUG_MODELS_FILENAMES[debug_models_length] = {
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0000-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0001-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0002-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0003-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0004-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0005-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0006-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0007-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0008-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0009-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0010-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0011-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0012-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0013-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0014-8.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-0.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-1.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-2.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-3.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-4.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-5.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-6.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-7.png",
+	"resources/partial-heightmap-lods-experiment/downscale-image-0015-8.png",
 };
 
 Raylib::Model debug_models[debug_models_length];
@@ -67,12 +199,14 @@ const Raylib::Vector3 debug_model_ref_size {
 	//1024.f,
 	//100.f,
 	//1024.f,
-	100.f,
-	10.f,
-	100.f,
-};
+	//100.f,
+	//10.f,
+	//100.f,
 
-unsigned int debug_model_iteration = 0;
+	16.f,
+	10.f,
+	16.f,
+};
 
 enum : int {
 	GAME_STATE_INVALID = 0,
@@ -140,7 +274,7 @@ void transition_game_state_to(int new_state) {
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
 
-	for(int i = 0; DEBUG_MODELS_FILENAMES[i] != nullptr; i++) {
+	for(int i = 0; i < debug_models_length; i++) {
 		Raylib::Image img = timecapsule::load_image(DEBUG_MODELS_FILENAMES[i]);
 		if(Raylib::IsImageValid(img) == false) {
 			std::fprintf(stderr, "Couldn't load heightmap image: %s\n", DEBUG_MODELS_FILENAMES[i]);
@@ -228,12 +362,6 @@ void update(double dt) {
 		},
 		0.f
 	);
-
-	if(Raylib::IsKeyPressed(Raylib::KEY_M))
-		debug_model_iteration++;
-
-	if(debug_model_iteration >= debug_models_length)
-		debug_model_iteration = 0;
 };
 
 void debug_draw_text(const char *text, int x, int y, int font_height, Raylib::Color text_color, Raylib::Color contourn_color = Raylib::BLANK) {
@@ -344,6 +472,19 @@ void debug_draw_camera_info(int base_x, int base_y) {
 
 	y += font_height + 4;
 
+	debug_draw_text(
+		Raylib::TextFormat(
+			"FPS: %i",
+			Raylib::GetFPS()
+		),
+		x,
+		y,
+		font_height,
+		Raylib::WHITE
+	);
+
+	y += font_height + 4;
+
 	debug_draw_text("Camera:", x, y, font_height + 4, Raylib::WHITE);
 	y += 8 + font_height;
 
@@ -443,16 +584,46 @@ void draw(double dt) {
 		Raylib::GREEN
 	);
 
-	Raylib::DrawModel(
-		debug_models[debug_model_iteration],
-		Raylib::Vector3 {
-			-(debug_model_ref_size.x / 2.f),
-			-(debug_model_ref_size.y / 2.f),
-			-(debug_model_ref_size.z / 2.f),
-		},
-		1.f,
-		Raylib::WHITE
-	);
+	Raylib::Color colors[9] = {
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.f),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.2f),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.4f),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.6f),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.8f),
+		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, 0.f),
+		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, (1.f/3.f)*1.f),
+		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, (1.f/3.f)*2.f),
+		Raylib::RED,
+	};
+
+	const unsigned int lod_levels = 9;
+
+	for(int z = 0; z < 4; z++) {
+		for(int x = 0; x < 4; x++) {
+			int i = (z * 4 + x) * lod_levels;
+
+			Raylib::Vector3 pos {
+				(debug_model_ref_size.x * x),
+				-(debug_model_ref_size.y),
+				(debug_model_ref_size.z * z),
+			};
+
+			float dist = std::sqrt(
+				std::pow(player_camera.position.x - pos.x, 2.f)
+				+ std::pow(player_camera.position.y - pos.y, 2.f)
+				+ std::pow(player_camera.position.z - pos.z, 2.f)
+			);
+
+			int lod_number = int(dist / 10.f);
+
+			Raylib::DrawModel(
+				debug_models[i + lod_number],
+				pos,
+				1.f,
+				colors[lod_number]
+			);
+		};
+	};
 
 	Raylib::EndMode3D();
 	
