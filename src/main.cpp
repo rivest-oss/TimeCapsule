@@ -365,6 +365,8 @@ void deinit(void) {
 	Raylib::CloseWindow();
 };
 
+bool is_camera_third_person = false;
+
 void update(double dt) {
 	(void)dt;
 
@@ -382,22 +384,29 @@ void update(double dt) {
 	if(game_state != GAME_STATE_RUNNING)
 		return;
 
-	Raylib::UpdateCameraPro(
-		&player_camera,
-		Raylib::Vector3 {
-			Raylib::IsKeyDown(Raylib::KEY_W) * forward_movement_speed * (float)dt
-			- Raylib::IsKeyDown(Raylib::KEY_S) * forward_movement_speed * (float)dt,
-			Raylib::IsKeyDown(Raylib::KEY_D) * forward_movement_speed * (float)dt
-			- Raylib::IsKeyDown(Raylib::KEY_A) * forward_movement_speed * (float)dt,
-			Raylib::GetMouseWheelMove() * upward_movement_speed * (float)dt,
-		},
-		Raylib::Vector3 {
-			Raylib::GetMouseDelta().x * M_PI2f * (float)dt,
-			Raylib::GetMouseDelta().y * M_PI2f * (float)dt,
-			0.f,
-		},
-		0.f
-	);
+	if(Raylib::IsKeyPressed(Raylib::KEY_P))
+		is_camera_third_person = is_camera_third_person == false;
+
+	if(is_camera_third_person == false) {
+		Raylib::UpdateCameraPro(
+			&player_camera,
+			Raylib::Vector3 {
+				Raylib::IsKeyDown(Raylib::KEY_W) * forward_movement_speed * (float)dt
+				- Raylib::IsKeyDown(Raylib::KEY_S) * forward_movement_speed * (float)dt,
+				Raylib::IsKeyDown(Raylib::KEY_D) * forward_movement_speed * (float)dt
+				- Raylib::IsKeyDown(Raylib::KEY_A) * forward_movement_speed * (float)dt,
+				Raylib::GetMouseWheelMove() * upward_movement_speed * (float)dt,
+			},
+			Raylib::Vector3 {
+				Raylib::GetMouseDelta().x * M_PI2f * (float)dt,
+				Raylib::GetMouseDelta().y * M_PI2f * (float)dt,
+				0.f,
+			},
+			0.f
+		);
+	} else {
+		Raylib::UpdateCamera(&player_camera, Raylib::CAMERA_THIRD_PERSON);
+	}
 };
 
 void debug_draw_text(const char *text, int x, int y, int font_height, Raylib::Color text_color, Raylib::Color contourn_color = Raylib::BLANK) {
@@ -707,6 +716,25 @@ void draw(double dt) {
 			);
 		};
 	};
+
+	if(is_camera_third_person) {
+		Raylib::DrawCapsule(
+			Raylib::Vector3 {
+				player_camera.target.x,
+				player_camera.target.y - 1.50f,
+				player_camera.target.z,
+			},
+			Raylib::Vector3 {
+				player_camera.target.x,
+				player_camera.target.y,
+				player_camera.target.z,
+			},
+			0.50f,
+			16,
+			16,
+			Raylib::DARKBLUE
+		);
+	}
 
 	Raylib::EndMode3D();
 	
