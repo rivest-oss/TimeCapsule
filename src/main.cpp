@@ -366,6 +366,14 @@ void update(double dt) {
 
 	const float speed_walking = 1.4f;
 	const float speed_running = 4.4f;
+
+	float forward_movement_speed = speed_running;
+	float upward_movement_speed = 4.f;
+
+	if(Raylib::IsKeyDown(Raylib::KEY_LEFT_SHIFT)) {
+		forward_movement_speed *= 2.f;
+		upward_movement_speed *= 4.f;
+	}
 	
 	if(game_state != GAME_STATE_RUNNING)
 		return;
@@ -373,11 +381,11 @@ void update(double dt) {
 	Raylib::UpdateCameraPro(
 		&player_camera,
 		Raylib::Vector3 {
-			Raylib::IsKeyDown(Raylib::KEY_W) * speed_running * (float)dt
-			- Raylib::IsKeyDown(Raylib::KEY_S) * speed_running * (float)dt,
-			Raylib::IsKeyDown(Raylib::KEY_D) * speed_running * (float)dt
-			- Raylib::IsKeyDown(Raylib::KEY_A) * speed_running * (float)dt,
-			Raylib::GetMouseWheelMove() * 4.f * (float)dt,
+			Raylib::IsKeyDown(Raylib::KEY_W) * forward_movement_speed * (float)dt
+			- Raylib::IsKeyDown(Raylib::KEY_S) * forward_movement_speed * (float)dt,
+			Raylib::IsKeyDown(Raylib::KEY_D) * forward_movement_speed * (float)dt
+			- Raylib::IsKeyDown(Raylib::KEY_A) * forward_movement_speed * (float)dt,
+			Raylib::GetMouseWheelMove() * upward_movement_speed * (float)dt,
 		},
 		Raylib::Vector3 {
 			Raylib::GetMouseDelta().x * M_PI2f * (float)dt,
@@ -610,14 +618,14 @@ void draw(double dt) {
 
 	Raylib::Color colors[9] = {
 		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.f),
-		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.2f),
-		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.4f),
-		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.6f),
-		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.8f),
-		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, 0.f),
-		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, (1.f/3.f)*1.f),
-		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, (1.f/3.f)*2.f),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 1.f*(1.f/3.f)),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 2.f*(1.f/3.f)),
+		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW,3.f*(1.f/3.f)),
+		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, 1.f*(1.f/3.f)),
+		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED, 2.f*(1.f/3.f)),
+		Raylib::ColorLerp(Raylib::YELLOW, Raylib::RED,3.f*(1.f/3.f)),
 		Raylib::RED,
+		Raylib::PURPLE,
 	};
 
 	const unsigned int lod_levels = 9;
@@ -693,14 +701,6 @@ void draw(double dt) {
 				1.f,
 				colors[lod_number]
 			);
-
-			if(i == 0) {
-				std::printf("[DEBUG]    Camera position: x=%.4f, y=%4.f, z=%.4f\n", player_camera.position.x, player_camera.position.y, player_camera.position.z);
-				std::printf("[DEBUG]     Model position: x=%.4f, y=%4.f, z=%.4f\n", curr_model_pos.x, curr_model_pos.y, curr_model_pos.z);
-				std::printf("[DEBUG]  Model C. position: x=%.4f, y=%4.f, z=%.4f\n", curr_model_pos_clamped.x, curr_model_pos_clamped.y, curr_model_pos_clamped.z);
-				std::printf("[DEBUG]           Distance: %.4f\n", dist);
-				std::printf("\n");
-			}
 		};
 	};
 
