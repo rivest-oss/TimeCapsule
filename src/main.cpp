@@ -19,6 +19,7 @@
 #include "io/log.hpp"
 #include "misc/rtconfig.hpp"
 #include "Ox/include/nuclei.hpp"
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -236,6 +237,29 @@ void transition_game_state_to(int new_state) {
 	}
 	
 	game_state = new_state;
+};
+
+float clampf(float x, float min = -1.f, float max = 1.f) {
+	if(x < min) return min;
+	if(x > max) return max;
+	return x;
+};
+
+float vdistance(float a, float b) {
+	return std::sqrt(std::pow(b - a, 2.f));
+};
+float vdistance(Raylib::Vector2 a, Raylib::Vector2 b) {
+	return std::sqrt(
+		std::pow(b.x - a.x, 2.f)
+		+ std::pow(b.y - a.y, 2.f)
+	);
+};
+float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
+	return std::sqrt(
+		std::pow(b.x - a.x, 2.f)
+		+ std::pow(b.y - a.y, 2.f)
+		+ std::pow(b.z - a.z, 2.f)
+	);
 };
 
 [[noreturn]] void init(int argc, const char **argv) {
@@ -602,26 +626,81 @@ void draw(double dt) {
 		for(int x = 0; x < 4; x++) {
 			int i = (z * 4 + x) * lod_levels;
 
-			Raylib::Vector3 pos {
-				(debug_model_ref_size.x * x),
+			Raylib::Vector3 curr_model_pos {
+				debug_model_ref_size.x * x,
 				-(debug_model_ref_size.y),
-				(debug_model_ref_size.z * z),
+				debug_model_ref_size.z * z,
 			};
 
-			float dist = std::sqrt(
-				std::pow(player_camera.position.x - pos.x, 2.f)
-				+ std::pow(player_camera.position.y - pos.y, 2.f)
-				+ std::pow(player_camera.position.z - pos.z, 2.f)
+			Raylib::Vector3 curr_model_pos_clamped {
+				clampf(
+					player_camera.position.x,
+					curr_model_pos.x,
+					curr_model_pos.x + debug_model_ref_size.x
+				),
+				curr_model_pos.y,
+				clampf(
+					player_camera.position.z,
+					curr_model_pos.z,
+					curr_model_pos.z + debug_model_ref_size.z
+				),
+			};
+
+			float dist = vdistance(player_camera.position, curr_model_pos_clamped);
+
+			int lod_number = 0;
+			if(dist > 0.0 && std::isnan(dist) == false && std::isfinite(dist))
+				//lod_number = dist < 0.0001f ? 0 : int(dist / 10.f);
+				lod_number = dist < 0.0001f ? 0 : int(dist / debug_model_ref_size.x);
+			
+			if(lod_number > 7)
+				lod_number = 7;
+
+			Raylib::Color point_colors[4] = {
+				Raylib::RED,
+				Raylib::GREEN,
+				Raylib::BLUE,
+				Raylib::PURPLE,
+			};
+
+			Raylib::DrawSphere(
+				Raylib::Vector3 {
+					curr_model_pos_clamped.x,
+					curr_model_pos_clamped.y + 10.f,
+					curr_model_pos_clamped.z,
+				},
+				0.1f,
+				point_colors[((x & 0x1) << 1) | (z & 0x1)]
 			);
 
-			int lod_number = int(dist / 10.f);
+			Raylib::DrawLine3D(
+				Raylib::Vector3 {
+					curr_model_pos_clamped.x,
+					curr_model_pos_clamped.y - 10.f,
+					curr_model_pos_clamped.z,
+				},
+				Raylib::Vector3 {
+					curr_model_pos_clamped.x,
+					curr_model_pos_clamped.y + 10.f,
+					curr_model_pos_clamped.z,
+				},
+				point_colors[((x & 0x1) << 1) | (z & 0x1)]
+			);
 
 			Raylib::DrawModel(
 				debug_models[i + lod_number],
-				pos,
+				curr_model_pos,
 				1.f,
 				colors[lod_number]
 			);
+
+			if(i == 0) {
+				std::printf("[DEBUG]    Camera position: x=%.4f, y=%4.f, z=%.4f\n", player_camera.position.x, player_camera.position.y, player_camera.position.z);
+				std::printf("[DEBUG]     Model position: x=%.4f, y=%4.f, z=%.4f\n", curr_model_pos.x, curr_model_pos.y, curr_model_pos.z);
+				std::printf("[DEBUG]  Model C. position: x=%.4f, y=%4.f, z=%.4f\n", curr_model_pos_clamped.x, curr_model_pos_clamped.y, curr_model_pos_clamped.z);
+				std::printf("[DEBUG]           Distance: %.4f\n", dist);
+				std::printf("\n");
+			}
 		};
 	};
 
