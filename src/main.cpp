@@ -270,6 +270,10 @@ float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
 	
 	Raylib::SetTargetFPS(60);
 
+	Raylib::SetConfigFlags(
+		Raylib::FLAG_WINDOW_RESIZABLE
+	);
+	
 	Raylib::InitWindow(640, 360, "TimeCapsule");
 	while(Raylib::IsWindowReady() == false) {};
 	
