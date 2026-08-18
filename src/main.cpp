@@ -45,156 +45,8 @@ const char *FONT_FILENAMES[] = {
 	nullptr,
 };
 
-const int debug_models_length = 144;
-
-const char *DEBUG_MODELS_FILENAMES[debug_models_length] = {
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0000-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0001-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0002-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0003-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0004-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0005-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0006-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0007-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0008-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0009-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0010-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0011-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0012-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0013-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0014-8.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-0.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-1.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-2.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-3.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-4.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-5.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-6.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-7.png",
-	"resources/partial-heightmap-lods-experiment/downscale-image-0015-8.png",
-};
-
-Raylib::Model debug_models[debug_models_length];
+Raylib::Model model_house;
+Raylib::Model model_person;
 
 const Raylib::Vector3 debug_model_ref_size {
 	//1024.f,
@@ -207,6 +59,16 @@ const Raylib::Vector3 debug_model_ref_size {
 	16.f,
 	10.f,
 	16.f,
+};
+
+int load_models(void) {
+	model_house = timecapsule::load_model("resources/models/not-for-distribution/house/scene.gltf");
+	if(Raylib::IsModelValid(model_house) == false) return -1;
+
+	model_person = timecapsule::load_model("resources/models/not-for-distribution/person/scene.gltf");
+	if(Raylib::IsModelValid(model_house) == false) return -1;
+
+	return 0;
 };
 
 enum : int {
@@ -302,40 +164,11 @@ float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
 	if(Raylib::IsFontValid(debug_font) == false)
 		debug_font = Raylib::GetFontDefault();
 
-	for(int i = 0; i < debug_models_length; i++) {
-		Raylib::Image img = timecapsule::load_image(DEBUG_MODELS_FILENAMES[i]);
-		if(Raylib::IsImageValid(img) == false) {
-			std::fprintf(stderr, "Couldn't load heightmap image: %s\n", DEBUG_MODELS_FILENAMES[i]);
-			deinit();
-			std::exit(1);
-		}
+	if(load_models() < 0) {
+		deinit();
+		std::exit(1);
+	}
 
-		Raylib::Texture2D diffuse_tex = timecapsule::load_texture_from_image(img);
-		if(Raylib::IsTextureValid(diffuse_tex) == false) {
-			std::fprintf(stderr, "Couldn't load heightmap diffuse texture: %s\n", DEBUG_MODELS_FILENAMES[i]);
-			deinit();
-			std::exit(1);
-		}
-		
-		Raylib::Mesh mesh = Raylib::GenMeshHeightmap(img, debug_model_ref_size);
-		debug_models[i] = timecapsule::load_model_from_mesh(mesh);
-
-		timecapsule::unload_image(img);
-
-		if(Raylib::IsModelValid(debug_models[i]) == false) {
-			std::fprintf(stderr, "Couldn't load heightmap model: %s\n", DEBUG_MODELS_FILENAMES[i]);
-			deinit();
-			std::exit(1);
-		}
-
-		debug_models[i] = timecapsule::update_model_diffuse_texture(debug_models[i], diffuse_tex);
-		if(Raylib::IsModelValid(debug_models[i]) == false) {
-			std::fprintf(stderr, "Couldn't load heightmap diffuse textue to model: %s\n", DEBUG_MODELS_FILENAMES[i]);
-			deinit();
-			std::exit(1);
-		}
-	};
-	
 	transition_game_state_to(GAME_STATE_PAUSED);
 	
 	while(true) {
@@ -379,6 +212,10 @@ void update(double dt) {
 	if(Raylib::IsKeyDown(Raylib::KEY_LEFT_SHIFT)) {
 		forward_movement_speed *= 2.f;
 		upward_movement_speed *= 4.f;
+	}
+
+	if(Raylib::IsKeyDown(Raylib::KEY_LEFT_CONTROL)) {
+		forward_movement_speed *= (1.f / 2.f);
 	}
 	
 	if(game_state != GAME_STATE_RUNNING)
@@ -593,6 +430,90 @@ void debug_draw_camera_info(int base_x, int base_y) {
 	);
 };
 
+float min(float a, float b) {
+	return a < b ? a : b;
+};
+float max(float a, float b) {
+	return a > b ? a : b;
+};
+
+Raylib::Rectangle model_screen_rec, occlusor_screen_rec;
+
+// [TODO] This sucks, improve it.
+bool is_model_completely_occluded(Raylib::BoundingBox model, Raylib::BoundingBox occlusor) {
+	Raylib::Vector2 model_screen_points[8] = {
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.min.x, model.min.y, model.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.min.x, model.min.y, model.max.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.min.x, model.max.y, model.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.min.x, model.max.y, model.max.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.max.x, model.min.y, model.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.max.x, model.min.y, model.max.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.max.x, model.max.y, model.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { model.max.x, model.max.y, model.max.z }, player_camera),
+	};
+
+	Raylib::Vector2 occlusor_screen_points[8] = {
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.min.x, occlusor.min.y, occlusor.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.min.x, occlusor.min.y, occlusor.max.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.min.x, occlusor.max.y, occlusor.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.min.x, occlusor.max.y, occlusor.max.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.max.x, occlusor.min.y, occlusor.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.max.x, occlusor.min.y, occlusor.max.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.max.x, occlusor.max.y, occlusor.min.z }, player_camera),
+		Raylib::GetWorldToScreen(Raylib::Vector3 { occlusor.max.x, occlusor.max.y, occlusor.max.z }, player_camera),
+	};
+
+	model_screen_rec.x = +INFINITY;
+	model_screen_rec.y = +INFINITY;
+	model_screen_rec.width = -INFINITY;
+	model_screen_rec.height = -INFINITY;
+
+	for(int i = 0; i < 8; i++) {
+		if(model_screen_points[i].x < model_screen_rec.x)
+			model_screen_rec.x = model_screen_points[i].x;
+		if(model_screen_points[i].y < model_screen_rec.y)
+			model_screen_rec.y = model_screen_points[i].y;
+		if(model_screen_points[i].x > model_screen_rec.width)
+			model_screen_rec.width = model_screen_points[i].x;
+		if(model_screen_points[i].y > model_screen_rec.height)
+			model_screen_rec.height = model_screen_points[i].y;
+	}
+
+	model_screen_rec.width = std::abs(model_screen_rec.width - model_screen_rec.x);
+	model_screen_rec.height = std::abs(model_screen_rec.height - model_screen_rec.y);
+
+	occlusor_screen_rec.x = +INFINITY;
+	occlusor_screen_rec.y = +INFINITY;
+	occlusor_screen_rec.width = -INFINITY;
+	occlusor_screen_rec.height = -INFINITY;
+
+	for(int i = 0; i < 8; i++) {
+		if(occlusor_screen_points[i].x < occlusor_screen_rec.x)
+			occlusor_screen_rec.x = occlusor_screen_points[i].x;
+		if(occlusor_screen_points[i].y < occlusor_screen_rec.y)
+			occlusor_screen_rec.y = occlusor_screen_points[i].y;
+		if(occlusor_screen_points[i].x > occlusor_screen_rec.width)
+			occlusor_screen_rec.width = occlusor_screen_points[i].x;
+		if(occlusor_screen_points[i].y > occlusor_screen_rec.height)
+			occlusor_screen_rec.height = occlusor_screen_points[i].y;
+	}
+
+	occlusor_screen_rec.width = std::abs(occlusor_screen_rec.width - occlusor_screen_rec.x);
+	occlusor_screen_rec.height = std::abs(occlusor_screen_rec.height - occlusor_screen_rec.y);
+
+	if(Raylib::CheckCollisionRecs(model_screen_rec, occlusor_screen_rec) == false)
+		return false;
+
+	Raylib::Rectangle collision_rec = Raylib::GetCollisionRec(model_screen_rec, occlusor_screen_rec);
+
+	int area_model_screen = model_screen_rec.width * model_screen_rec.height;
+	int area_collision_screen = collision_rec.width * collision_rec.height;
+
+	return area_collision_screen >= area_model_screen;
+
+	return false;
+};
+
 void draw(double dt) {
 	Raylib::BeginDrawing();
 	Raylib::ClearBackground(Raylib::BLACK);
@@ -617,17 +538,19 @@ void draw(double dt) {
 
 	Raylib::BeginMode3D(player_camera);
 
-	Raylib::DrawSphereWires(
-		Raylib::Vector3 {
-			0.f,
-			0.f,
-			0.f,
-		},
-		1.f,
-		5,
-		10,
-		Raylib::GREEN
-	);
+	if(false) {
+		Raylib::DrawSphereWires(
+			Raylib::Vector3 {
+				0.f,
+				0.f,
+				0.f,
+			},
+			1.f,
+			5,
+			10,
+			Raylib::GREEN
+		);
+	}
 
 	Raylib::Color colors[9] = {
 		Raylib::ColorLerp(Raylib::GREEN, Raylib::YELLOW, 0.f),
@@ -641,81 +564,74 @@ void draw(double dt) {
 		Raylib::PURPLE,
 	};
 
-	const unsigned int lod_levels = 9;
+	Raylib::DrawModel(
+		model_house,
+		Raylib::Vector3 {
+			0.f,
+			0.f,
+			0.f,
+		},
+		1.f,
+		Raylib::WHITE
+	);
 
-	for(int z = 0; z < 4; z++) {
-		for(int x = 0; x < 4; x++) {
-			int i = (z * 4 + x) * lod_levels;
+	Raylib::DrawModel(
+		model_person,
+		Raylib::Vector3 {
+			-2.f,
+			0.f,
+			5.f,
+		},
+		2.2f,
+		Raylib::WHITE
+	);
 
-			Raylib::Vector3 curr_model_pos {
-				debug_model_ref_size.x * x,
-				-(debug_model_ref_size.y),
-				debug_model_ref_size.z * z,
-			};
-
-			Raylib::Vector3 curr_model_pos_clamped {
-				clampf(
-					player_camera.position.x,
-					curr_model_pos.x,
-					curr_model_pos.x + debug_model_ref_size.x
-				),
-				curr_model_pos.y,
-				clampf(
-					player_camera.position.z,
-					curr_model_pos.z,
-					curr_model_pos.z + debug_model_ref_size.z
-				),
-			};
-
-			float dist = vdistance(player_camera.position, curr_model_pos_clamped);
-
-			int lod_number = 0;
-			if(dist > 0.0 && std::isnan(dist) == false && std::isfinite(dist))
-				//lod_number = dist < 0.0001f ? 0 : int(dist / 10.f);
-				lod_number = dist < 0.0001f ? 0 : int(dist / debug_model_ref_size.x);
-			
-			if(lod_number > 7)
-				lod_number = 7;
-
-			Raylib::Color point_colors[4] = {
-				Raylib::RED,
-				Raylib::GREEN,
-				Raylib::BLUE,
-				Raylib::PURPLE,
-			};
-
-			Raylib::DrawSphere(
-				Raylib::Vector3 {
-					curr_model_pos_clamped.x,
-					curr_model_pos_clamped.y + 10.f,
-					curr_model_pos_clamped.z,
-				},
-				0.1f,
-				point_colors[((x & 0x1) << 1) | (z & 0x1)]
-			);
-
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					curr_model_pos_clamped.x,
-					curr_model_pos_clamped.y - 10.f,
-					curr_model_pos_clamped.z,
-				},
-				Raylib::Vector3 {
-					curr_model_pos_clamped.x,
-					curr_model_pos_clamped.y + 10.f,
-					curr_model_pos_clamped.z,
-				},
-				point_colors[((x & 0x1) << 1) | (z & 0x1)]
-			);
-
+	for(int x = 0; x < 8; x++) {
+		for(int z = 0; z < 8; z++) {
 			Raylib::DrawModel(
-				debug_models[i + lod_number],
-				curr_model_pos,
-				1.f,
-				colors[lod_number]
+				model_person,
+				Raylib::Vector3 {
+					-2.f + (x + 2) * 2.f,
+					0.f,
+					5.f + (z + 2) * 2.f,
+				},
+				2.2f,
+				Raylib::WHITE
 			);
 		};
 	};
+
+	Raylib::BoundingBox model_bb = Raylib::GetModelBoundingBox(model_person);
+	model_bb.min.x += 0.f;
+	model_bb.min.y += 0.f;
+	model_bb.min.z += 0.f;
+	model_bb.max.x += 0.f;
+	model_bb.max.y += 0.f;
+	model_bb.max.z += 0.f;
+
+	Raylib::BoundingBox occlusor_bb {
+		Raylib::Vector3 {
+			4.f,
+			0.f,
+			0.f,
+		},
+		Raylib::Vector3 {
+			4.f,
+			4.f,
+			4.f,
+		},
+	};
+
+	bool is_occluded = is_model_completely_occluded(model_bb, occlusor_bb);
+
+	if(false) {
+		if(is_occluded)
+			Raylib::DrawBoundingBox(model_bb, Raylib::RED);
+		else
+			Raylib::DrawBoundingBox(model_bb, Raylib::GREEN);
+
+		Raylib::DrawBoundingBox(occlusor_bb, Raylib::GRAY);
+	}
 
 	if(is_camera_third_person) {
 		Raylib::DrawCapsule(
@@ -735,8 +651,24 @@ void draw(double dt) {
 			Raylib::DARKBLUE
 		);
 	}
-
+	
 	Raylib::EndMode3D();
+
+	if(false) {
+		Raylib::DrawRectanglePro(
+			occlusor_screen_rec,
+			Raylib::Vector2 { 0.f, 0.f },
+			0.f,
+			Raylib::ColorAlpha(Raylib::PURPLE, 0.1f)
+		);
+		
+		Raylib::DrawRectanglePro(
+			model_screen_rec,
+			Raylib::Vector2 { 0.f, 0.f },
+			0.f,
+			Raylib::ColorAlpha(Raylib::YELLOW, 0.1f)
+		);
+	}
 	
 	Raylib::EndDrawing();
 	Raylib::SwapScreenBuffer();
