@@ -9,3 +9,4 @@ tmp/
 .cache/
 cache/
 compile_commands.json
+resources/*/not-for-distribution
