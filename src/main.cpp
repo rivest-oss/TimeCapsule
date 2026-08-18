@@ -329,12 +329,12 @@ void debug_draw_rotation_3d(Raylib::Vector3 angle, Raylib::Vector2 screen_pos, f
 	);
 };
 
-void debug_draw_camera_info(int base_x, int base_y) {
+void debug_draw_camera_info(int base_x, int base_y, int screen_width, int screen_height) {
 	Raylib::DrawRectangle(
 		base_x,
 		base_y,
-		300 - 10,
-		200 - 10,
+		300,
+		214,
 		Raylib::ColorAlpha(Raylib::DARKGRAY, 0.5f)
 	);
 
@@ -358,6 +358,21 @@ void debug_draw_camera_info(int base_x, int base_y) {
 		Raylib::TextFormat(
 			"FPS: %i",
 			Raylib::GetFPS()
+		),
+		x,
+		y,
+		font_height,
+		Raylib::WHITE
+	);
+
+	y += font_height + 4;
+
+	debug_draw_text(
+		Raylib::TextFormat(
+			"Screen: %c %ix%i",
+			Raylib::IsWindowFullscreen() ? 'F' : 'W',
+			screen_width,
+			screen_height
 		),
 		x,
 		y,
@@ -523,19 +538,6 @@ void draw(double dt) {
 	int screen_width = Raylib::GetScreenWidth();
 	int screen_height = Raylib::GetScreenHeight();
 	
-	if(true) {
-		debug_draw_camera_info(screen_width - 300, 10);
-		
-		if(game_state == GAME_STATE_PAUSED) {
-			for(int y = -1; y < 2; y++)
-				for(int x = -1; x < 2; x++)
-					if(x != 0 && y != 0)
-					Raylib::DrawText("Game paused", x + 16, y + 16, 32, Raylib::BLACK);
-			
-			Raylib::DrawText("Game paused", 16, 16, 32, Raylib::WHITE);
-		}
-	}
-
 	Raylib::BeginMode3D(player_camera);
 
 	if(false) {
@@ -668,6 +670,19 @@ void draw(double dt) {
 			0.f,
 			Raylib::ColorAlpha(Raylib::YELLOW, 0.1f)
 		);
+	}
+
+	if(true) {
+		debug_draw_camera_info(screen_width - 300, 10, screen_width, screen_height);
+		
+		if(game_state == GAME_STATE_PAUSED) {
+			for(int y = -1; y < 2; y++)
+				for(int x = -1; x < 2; x++)
+					if(x != 0 && y != 0)
+					Raylib::DrawText("Game paused", x + 16, y + 16, 32, Raylib::BLACK);
+			
+			Raylib::DrawText("Game paused", 16, 16, 32, Raylib::WHITE);
+		}
 	}
 	
 	Raylib::EndDrawing();
