@@ -27,7 +27,7 @@ namespace timecapsule {
 	std::unordered_map<std::string, Raylib::RenderTexture2D> _loaded_render_textures;
 	std::unordered_map<std::string, Raylib::Font> _loaded_fonts;
 	std::unordered_map<std::string, Raylib::Model> _loaded_models;
-	
+
 	int init_resources(void) {
 		deinit_resources();
 		return 0;
@@ -253,7 +253,7 @@ namespace timecapsule {
 		
 		return model;
 	};
-	
+
 	void unload_model(Raylib::Model model) {
 		if(Raylib::IsModelValid(model) == false)
 			return;

@@ -17,6 +17,7 @@
 **/
 
 #pragma once
+#include <string>
 
 namespace Raylib {
 	#include <raylib.h>

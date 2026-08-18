@@ -17,7 +17,7 @@
 **/
 
 #include "gui.hpp"
-#include "asset.hpp"
+#include "../engine/asset.hpp"
 #include <cstdio>
 
 namespace timecapsule {

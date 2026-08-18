@@ -25,9 +25,10 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "misc/asset.hpp"
 #include "misc/gui.hpp"
 #include "math.hpp"
+#include "engine/asset.hpp"
+#include "engine/scene.hpp"
 
 namespace Raylib {
 	#include <raylib.h>
@@ -37,6 +38,7 @@ void update_and_draw(void);
 void deinit(void);
 
 Raylib::Camera3D player_camera;
+Raylib::Camera3D debug_camera;
 
 Raylib::Font debug_font;
 
@@ -45,8 +47,7 @@ const char *FONT_FILENAMES[] = {
 	nullptr,
 };
 
-Raylib::Model model_house;
-Raylib::Model model_person;
+timecapsule::Scene world_scene;
 
 const Raylib::Vector3 debug_model_ref_size {
 	//1024.f,
@@ -62,11 +63,11 @@ const Raylib::Vector3 debug_model_ref_size {
 };
 
 int load_models(void) {
-	model_house = timecapsule::load_model("resources/models/not-for-distribution/house/scene.gltf");
-	if(Raylib::IsModelValid(model_house) == false) return -1;
+	Raylib::Model model_person = timecapsule::load_model("resources/models/not-for-distribution/person/scene.gltf");
+	if(Raylib::IsModelValid(model_person) == false) return -1;
 
-	model_person = timecapsule::load_model("resources/models/not-for-distribution/person/scene.gltf");
-	if(Raylib::IsModelValid(model_house) == false) return -1;
+	timecapsule::model_t &model_person_at_scene = world_scene.add_model("person", model_person);
+	model_person_at_scene.position.x = 0.f;
 
 	return 0;
 };
@@ -124,6 +125,9 @@ float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
 	);
 };
 
+Raylib::RenderTexture2D game_main_render_texture;
+Raylib::RenderTexture2D game_debug_render_texture;
+
 [[noreturn]] void init(int argc, const char **argv) {
 	Ox::Error err;
 	
@@ -148,12 +152,34 @@ float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
 		deinit();
 		std::exit(1);
 	}
+
+	game_main_render_texture = timecapsule::load_render_texture(16, 16);
+	if(Raylib::IsRenderTextureValid(game_main_render_texture) == false) {
+		std::fprintf(stderr, "Couldn't load game main render texture.\n");
+		deinit();
+		std::exit(1);
+	}
+	
+	game_debug_render_texture = timecapsule::load_render_texture(16, 16);
+	if(Raylib::IsRenderTextureValid(game_debug_render_texture) == false) {
+		std::fprintf(stderr, "Couldn't load game main debug render texture.\n");
+		deinit();
+		std::exit(1);
+	}
+
+	world_scene.deinit();
 	
 	player_camera.position = Raylib::Vector3 { 0.f, 2.f, 4.f };
 	player_camera.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
 	player_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
 	player_camera.fovy = 45.f;
 	player_camera.projection = Raylib::CAMERA_PERSPECTIVE;
+
+	debug_camera.position = Raylib::Vector3 { 0.f, 2.f, 4.f };
+	debug_camera.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
+	debug_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
+	debug_camera.fovy = 45.f;
+	debug_camera.projection = Raylib::CAMERA_PERSPECTIVE;
 	
 	for(int i = 0; FONT_FILENAMES[i] != nullptr; i++) {
 		debug_font = timecapsule::load_font(FONT_FILENAMES[i]);
@@ -192,6 +218,7 @@ float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
 void deinit(void) {
 	Raylib::EnableCursor();
 	
+	world_scene.deinit();
 	timecapsule::deinit_resources();
 	
 	Raylib::CloseAudioDevice();
@@ -199,6 +226,8 @@ void deinit(void) {
 };
 
 bool is_camera_third_person = false;
+
+float temp_t = 0.f;
 
 void update(double dt) {
 	(void)dt;
@@ -244,6 +273,14 @@ void update(double dt) {
 	} else {
 		Raylib::UpdateCamera(&player_camera, Raylib::CAMERA_THIRD_PERSON);
 	}
+
+	temp_t += dt;
+
+	timecapsule::model_t &model_person_at_scene = world_scene.get_model("person");
+	model_person_at_scene.position.x = std::sin(temp_t);
+
+	if(temp_t >= 6.0)
+		model_person_at_scene.rotation.z = std::sin(temp_t - 6.0);
 };
 
 void debug_draw_text(const char *text, int x, int y, int font_height, Raylib::Color text_color, Raylib::Color contourn_color = Raylib::BLANK) {
@@ -530,16 +567,56 @@ bool is_model_completely_occluded(Raylib::BoundingBox model, Raylib::BoundingBox
 };
 
 void draw(double dt) {
-	Raylib::BeginDrawing();
-	Raylib::ClearBackground(Raylib::BLACK);
-	
 	(void)dt;
 	
 	int screen_width = Raylib::GetScreenWidth();
 	int screen_height = Raylib::GetScreenHeight();
-	
-	Raylib::BeginMode3D(player_camera);
 
+	if(screen_width < 2 || screen_height < 2) {
+		std::printf("[DEBUG] Screen is %ix%i, rendering aborted.\n", screen_width, screen_height);
+		Raylib::BeginDrawing();
+		Raylib::ClearBackground((int(Raylib::GetTime()) & 0x1) ? Raylib::Color { 0xff, 0x00, 0x00, 0xff } : Raylib::BLACK);
+		Raylib::EndDrawing();
+		return;
+	}
+
+	int game_main_screen_width = screen_width / 2;
+	int game_main_screen_height = screen_height;
+	int game_main_debug_screen_width = screen_width / 2;
+	int game_main_debug_screen_height = screen_height;
+
+	if(
+		game_main_screen_width != game_main_render_texture.texture.width
+		|| game_main_screen_height != game_main_render_texture.texture.height
+	) {
+		timecapsule::unload_render_texture(game_main_render_texture);
+		
+		game_main_render_texture = timecapsule::load_render_texture(game_main_screen_width, game_main_screen_height);
+		if(Raylib::IsRenderTextureValid(game_main_render_texture) == false) {
+			std::fprintf(stderr, "Couldn't load game main render texture.\n");
+			deinit();
+			std::exit(1);
+		}
+	}
+
+	if(
+		game_main_debug_screen_width != game_debug_render_texture.texture.width
+		|| game_main_debug_screen_height != game_debug_render_texture.texture.height
+	) {
+		timecapsule::unload_render_texture(game_debug_render_texture);
+		
+		game_debug_render_texture = timecapsule::load_render_texture(game_main_debug_screen_width, game_main_debug_screen_height);
+		if(Raylib::IsRenderTextureValid(game_debug_render_texture) == false) {
+			std::fprintf(stderr, "Couldn't load game main render texture.\n");
+			deinit();
+			std::exit(1);
+		}
+	}
+
+	world_scene.render(player_camera, game_main_render_texture);
+	world_scene.render(debug_camera, game_debug_render_texture);
+
+	/*
 	if(false) {
 		Raylib::DrawSphereWires(
 			Raylib::Vector3 {
@@ -684,9 +761,101 @@ void draw(double dt) {
 			Raylib::DrawText("Game paused", 16, 16, 32, Raylib::WHITE);
 		}
 	}
+	*/
+
+	Raylib::ClearBackground(Raylib::BLACK);
+
+	/*
+	Raylib::DrawTexturePro(
+		game_main_render_texture.texture,
+		Raylib::Rectangle {
+			0.f,
+			0.f,
+			(float)game_main_render_texture.texture.width,
+			(float)game_main_render_texture.texture.height,
+		},
+		Raylib::Rectangle {
+			0.f,
+			0.f,
+			(float)game_main_render_texture.texture.width,
+			(float)game_main_render_texture.texture.height,
+		},
+		Raylib::Vector2 {
+			0.f,
+			0.f,
+		},
+		0.f,
+		Raylib::WHITE
+	);
 	
+	Raylib::DrawTexturePro(
+		game_debug_render_texture.texture,
+		Raylib::Rectangle {
+			0.f,
+			0.f,
+			(float)game_debug_render_texture.texture.width,
+			(float)game_debug_render_texture.texture.height,
+		},
+		Raylib::Rectangle {
+			(float)game_main_render_texture.texture.width,
+			(float)game_main_render_texture.texture.height,
+			(float)game_debug_render_texture.texture.width,
+			(float)game_debug_render_texture.texture.height,
+		},
+		Raylib::Vector2 {
+			0.f,
+			0.f,
+		},
+		0.f,
+		Raylib::WHITE
+	);
+	*/
+
+	Raylib::DrawTexturePro(
+		game_main_render_texture.texture,
+		Raylib::Rectangle {
+			0.f,
+			0.f,
+			(float)game_main_render_texture.texture.width,
+			-(float)game_main_render_texture.texture.height,
+		},
+		Raylib::Rectangle {
+			0.f,
+			0.f,
+			(float)game_main_render_texture.texture.width,
+			(float)game_main_render_texture.texture.height,
+		},
+		Raylib::Vector2 {
+			0.f,
+			0.f,
+		},
+		0.f,
+		Raylib::WHITE
+	);
+
+	Raylib::DrawTexturePro(
+		game_debug_render_texture.texture,
+		Raylib::Rectangle {
+			0.f,
+			0.f,
+			(float)game_debug_render_texture.texture.width,
+			-(float)game_debug_render_texture.texture.height,
+		},
+		Raylib::Rectangle {
+			(float)game_main_render_texture.texture.width,
+			0.f,
+			(float)game_debug_render_texture.texture.width,
+			(float)game_debug_render_texture.texture.height,
+		},
+		Raylib::Vector2 {
+			0.f,
+			0.f,
+		},
+		0.f,
+		Raylib::WHITE
+	);
+
 	Raylib::EndDrawing();
-	Raylib::SwapScreenBuffer();
 };
 
 void update_and_draw(void) {
