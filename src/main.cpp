@@ -34,6 +34,8 @@ namespace Raylib {
 	#include <raylib.h>
 };
 
+const bool RENDER_DEBUG_SCREEN = true;
+
 void update_and_draw(void);
 void deinit(void);
 
@@ -568,53 +570,67 @@ bool is_model_completely_occluded(Raylib::BoundingBox model, Raylib::BoundingBox
 
 void draw(double dt) {
 	(void)dt;
+
+	Raylib::BeginDrawing();
+	Raylib::ClearBackground(Raylib::BLACK);
 	
 	int screen_width = Raylib::GetScreenWidth();
 	int screen_height = Raylib::GetScreenHeight();
 
 	if(screen_width < 2 || screen_height < 2) {
 		std::printf("[DEBUG] Screen is %ix%i, rendering aborted.\n", screen_width, screen_height);
-		Raylib::BeginDrawing();
-		Raylib::ClearBackground((int(Raylib::GetTime()) & 0x1) ? Raylib::Color { 0xff, 0x00, 0x00, 0xff } : Raylib::BLACK);
+		
+		if(int(Raylib::GetTime()) & 0x1)
+			Raylib::ClearBackground(Raylib::Color { 0xff, 0x00, 0x00, 0xff });
+		
 		Raylib::EndDrawing();
 		return;
 	}
 
-	int game_main_screen_width = screen_width / 2;
+	int game_main_screen_width = screen_width * 0.60f;
 	int game_main_screen_height = screen_height;
-	int game_main_debug_screen_width = screen_width / 2;
+	int game_main_debug_screen_width = screen_width * 0.40f;
 	int game_main_debug_screen_height = screen_height;
 
-	if(
-		game_main_screen_width != game_main_render_texture.texture.width
-		|| game_main_screen_height != game_main_render_texture.texture.height
-	) {
-		timecapsule::unload_render_texture(game_main_render_texture);
-		
-		game_main_render_texture = timecapsule::load_render_texture(game_main_screen_width, game_main_screen_height);
-		if(Raylib::IsRenderTextureValid(game_main_render_texture) == false) {
-			std::fprintf(stderr, "Couldn't load game main render texture.\n");
-			deinit();
-			std::exit(1);
-		}
-	}
+	if(game_main_screen_width < 16) game_main_screen_width = 16;
+	if(game_main_screen_height < 16) game_main_screen_height = 16;
 
-	if(
-		game_main_debug_screen_width != game_debug_render_texture.texture.width
-		|| game_main_debug_screen_height != game_debug_render_texture.texture.height
-	) {
-		timecapsule::unload_render_texture(game_debug_render_texture);
-		
-		game_debug_render_texture = timecapsule::load_render_texture(game_main_debug_screen_width, game_main_debug_screen_height);
-		if(Raylib::IsRenderTextureValid(game_debug_render_texture) == false) {
-			std::fprintf(stderr, "Couldn't load game main render texture.\n");
-			deinit();
-			std::exit(1);
-		}
-	}
+	bool should_render_debug_screen = RENDER_DEBUG_SCREEN && game_main_debug_screen_width >= 16 && game_main_debug_screen_height >= 16;
 
-	world_scene.render(player_camera, game_main_render_texture);
-	world_scene.render(debug_camera, game_debug_render_texture);
+	if(should_render_debug_screen) {
+		if(
+			game_main_screen_width != game_main_render_texture.texture.width
+			|| game_main_screen_height != game_main_render_texture.texture.height
+		) {
+			timecapsule::unload_render_texture(game_main_render_texture);
+			
+			game_main_render_texture = timecapsule::load_render_texture(game_main_screen_width, game_main_screen_height);
+			if(Raylib::IsRenderTextureValid(game_main_render_texture) == false) {
+				std::fprintf(stderr, "Couldn't load game main render texture.\n");
+				deinit();
+				std::exit(1);
+			}
+		}
+
+		if(
+			game_main_debug_screen_width != game_debug_render_texture.texture.width
+			|| game_main_debug_screen_height != game_debug_render_texture.texture.height
+		) {
+			timecapsule::unload_render_texture(game_debug_render_texture);
+			
+			game_debug_render_texture = timecapsule::load_render_texture(game_main_debug_screen_width, game_main_debug_screen_height);
+			if(Raylib::IsRenderTextureValid(game_debug_render_texture) == false) {
+				std::fprintf(stderr, "Couldn't load game main render texture.\n");
+				deinit();
+				std::exit(1);
+			}
+		}
+
+		world_scene.render(player_camera, game_main_render_texture);
+		world_scene.render(debug_camera, game_debug_render_texture);
+	} else {
+		world_scene.render(player_camera);
+	}
 
 	/*
 	if(false) {
@@ -763,8 +779,6 @@ void draw(double dt) {
 	}
 	*/
 
-	Raylib::ClearBackground(Raylib::BLACK);
-
 	/*
 	Raylib::DrawTexturePro(
 		game_main_render_texture.texture,
@@ -811,49 +825,51 @@ void draw(double dt) {
 	);
 	*/
 
-	Raylib::DrawTexturePro(
-		game_main_render_texture.texture,
-		Raylib::Rectangle {
+	if(should_render_debug_screen) {
+		Raylib::DrawTexturePro(
+			game_main_render_texture.texture,
+			Raylib::Rectangle {
+				0.f,
+				0.f,
+				(float)game_main_render_texture.texture.width,
+				-(float)game_main_render_texture.texture.height,
+			},
+			Raylib::Rectangle {
+				0.f,
+				0.f,
+				(float)game_main_render_texture.texture.width,
+				(float)game_main_render_texture.texture.height,
+			},
+			Raylib::Vector2 {
+				0.f,
+				0.f,
+			},
 			0.f,
-			0.f,
-			(float)game_main_render_texture.texture.width,
-			-(float)game_main_render_texture.texture.height,
-		},
-		Raylib::Rectangle {
-			0.f,
-			0.f,
-			(float)game_main_render_texture.texture.width,
-			(float)game_main_render_texture.texture.height,
-		},
-		Raylib::Vector2 {
-			0.f,
-			0.f,
-		},
-		0.f,
-		Raylib::WHITE
-	);
+			Raylib::WHITE
+		);
 
-	Raylib::DrawTexturePro(
-		game_debug_render_texture.texture,
-		Raylib::Rectangle {
+		Raylib::DrawTexturePro(
+			game_debug_render_texture.texture,
+			Raylib::Rectangle {
+				0.f,
+				0.f,
+				(float)game_debug_render_texture.texture.width,
+				-(float)game_debug_render_texture.texture.height,
+			},
+			Raylib::Rectangle {
+				(float)game_main_render_texture.texture.width,
+				0.f,
+				(float)game_debug_render_texture.texture.width,
+				(float)game_debug_render_texture.texture.height,
+			},
+			Raylib::Vector2 {
+				0.f,
+				0.f,
+			},
 			0.f,
-			0.f,
-			(float)game_debug_render_texture.texture.width,
-			-(float)game_debug_render_texture.texture.height,
-		},
-		Raylib::Rectangle {
-			(float)game_main_render_texture.texture.width,
-			0.f,
-			(float)game_debug_render_texture.texture.width,
-			(float)game_debug_render_texture.texture.height,
-		},
-		Raylib::Vector2 {
-			0.f,
-			0.f,
-		},
-		0.f,
-		Raylib::WHITE
-	);
+			Raylib::WHITE
+		);
+	}
 
 	Raylib::EndDrawing();
 };

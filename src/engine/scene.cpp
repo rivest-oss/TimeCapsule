@@ -86,7 +86,7 @@ namespace timecapsule {
 	};
 
 	void Scene::render(Raylib::Camera3D camera) {
-		Raylib::ClearBackground(Raylib::YELLOW);
+		Raylib::ClearBackground(Raylib::BLACK);
 		Raylib::BeginMode3D(camera);
 
 		for(std::pair<std::string, model_t> entry : models) {
