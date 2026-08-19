@@ -24,13 +24,19 @@ namespace Raylib {
 };
 
 namespace timecapsule {
+	typedef Raylib::Color srgb_color_t;
 	typedef Raylib::Vector2 vector2_t;
 	typedef Raylib::Vector3 vector3_t;
+	typedef Raylib::Image gl_image_t;
+	typedef Raylib::Texture2D gl_texture_t;
+	typedef Raylib::RenderTexture2D gl_render_texture_t;
+	typedef Raylib::Mesh gl_mesh_t;
 	typedef Raylib::Model gl_model_t;
 	typedef Raylib::Camera3D camera_t;
-
+	typedef Raylib::Font gl_font_t;
+	
 	bool is_model_valid(gl_model_t model);
-
+	
 	enum : unsigned int {
 		KEY_W = Raylib::KEY_W,
 		KEY_A = Raylib::KEY_A,
@@ -39,21 +45,22 @@ namespace timecapsule {
 		KEY_P = Raylib::KEY_P,
 		KEY_LEFT_SHIFT = Raylib::KEY_LEFT_SHIFT,
 		KEY_LEFT_CONTROL = Raylib::KEY_LEFT_CONTROL,
+		KEY_ESCAPE = Raylib::KEY_ESCAPE,
 		KEY_PAUSE = Raylib::KEY_PAUSE,
 	};
-
+	
 	bool is_key_up(unsigned int key);
 	bool is_key_down(unsigned int key);
 	bool is_key_pressed(unsigned int key);
-
+	
 	float get_mouse_wheel_delta(void);
 	vector2_t get_mouse_delta(void);
-
+	
 	void update_camera(camera_t &camera, vector3_t movement, vector3_t rotation, float zoom);
-
+	
 	void enable_cursor(void);
 	void disable_cursor(void);
 	bool is_cursor_enabled(void);
-
+	
 	bool window_should_close(void);
 };

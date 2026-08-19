@@ -21,6 +21,25 @@
 #include "gl.hpp"
 
 namespace timecapsule {
+	model_t invalid_model {
+		timecapsule::gl_model_t {
+			Raylib::Matrix {},
+			0,
+			0,
+			nullptr,
+			nullptr,
+			nullptr,
+			Raylib::ModelSkeleton {},
+			Raylib::ModelAnimPose {},
+			nullptr,
+		},
+		timecapsule::vector3_t {},
+		timecapsule::vector3_t {},
+		timecapsule::vector3_t {},
+		timecapsule::srgb_color_t { 0x00, 0x00, 0x00, 0x00 },
+		false,
+	};
+	
 	Scene::Scene(void) {
 		models.clear();
 	};
@@ -33,15 +52,15 @@ namespace timecapsule {
 		models.clear();
 	};
 
-	model_t &Scene::add_model(std::string id, Raylib::Model model) {
+	model_t &Scene::add_model(std::string id, timecapsule::gl_model_t model) {
 		if(model_exists(id))
 			models.erase(id);
 
-		if(Raylib::IsModelValid(model) == false)
+		if(timecapsule::is_model_valid(model) == false)
 			return invalid_model;
 
-		models.insert_or_assign(id, model_t {
-			Raylib::Model {
+		models.insert_or_assign(id, timecapsule::model_t {
+			timecapsule::gl_model_t {
 				model.transform,
 				model.meshCount,
 				model.materialCount,
@@ -52,10 +71,10 @@ namespace timecapsule {
 				model.currentPose,
 				model.boneMatrices,
 			},
-			Raylib::Vector3 { 0.f, 0.f, 0.f },
-			Raylib::Vector3 { 1.f, 1.f, 1.f },
-			Raylib::Vector3 { 0.f, 0.f, 0.f },
-			Raylib::WHITE,
+			timecapsule::vector3_t { 0.f, 0.f, 0.f },
+			timecapsule::vector3_t { 1.f, 1.f, 1.f },
+			timecapsule::vector3_t { 0.f, 0.f, 0.f },
+			timecapsule::srgb_color_t { 0xff, 0xff, 0xff, 0xff },
 			true,
 		});
 
@@ -73,7 +92,7 @@ namespace timecapsule {
 		return models.find(id) != models.cend();
 	};
 
-	void Scene::render(Raylib::Camera3D camera, Raylib::RenderTexture target) {
+	void Scene::render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target) {
 		if(Raylib::IsRenderTextureValid(target) == false)
 			return;
 

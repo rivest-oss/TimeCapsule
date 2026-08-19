@@ -24,27 +24,27 @@ namespace timecapsule {
 	bool is_model_valid(gl_model_t model) {
 		return Raylib::IsModelValid(model);
 	};
-
+	
 	bool is_key_up(unsigned int key) {
 		return Raylib::IsKeyUp(key);
 	};
-
+	
 	bool is_key_down(unsigned int key) {
 		return Raylib::IsKeyDown(key);
 	};
-
+	
 	bool is_key_pressed(unsigned int key) {
 		return Raylib::IsKeyPressed(key);
 	};
-
+	
 	float get_mouse_wheel_delta(void) {
 		return Raylib::GetMouseWheelMove();
 	};
-
+	
 	vector2_t get_mouse_delta(void) {
 		return Raylib::GetMouseDelta();
 	};
-
+	
 	void update_camera(camera_t &camera, vector3_t movement, vector3_t rotation, float zoom) {
 		return Raylib::UpdateCameraPro(
 			&camera,
@@ -53,21 +53,21 @@ namespace timecapsule {
 			zoom
 		);
 	};
-
+	
 	void enable_cursor(void) {
 		Raylib::EnableCursor();
 		_cursor_enabled = true;
 	};
-
+	
 	void disable_cursor(void) {
 		Raylib::DisableCursor();
 		_cursor_enabled = false;
 	};
-
+	
 	bool is_cursor_enabled(void) {
 		return _cursor_enabled;
 	};
-
+	
 	bool window_should_close(void) {
 		return Raylib::WindowShouldClose();
 	};

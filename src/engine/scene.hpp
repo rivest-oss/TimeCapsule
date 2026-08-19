@@ -25,35 +25,16 @@
 
 namespace timecapsule {
 	typedef struct model_t {
-		Raylib::Model rmodel;
-		Raylib::Vector3 position;
-		Raylib::Vector3 scale = Raylib::Vector3 { 1.f, 1.f, 1.f };
-		Raylib::Vector3 rotation = Raylib::Vector3 { 0.f, 0.f, 0.f };
-		Raylib::Color tint = Raylib::WHITE;
+		timecapsule::gl_model_t rmodel;
+		timecapsule::vector3_t position;
+		timecapsule::vector3_t scale = timecapsule::vector3_t { 1.f, 1.f, 1.f };
+		timecapsule::vector3_t rotation = timecapsule::vector3_t { 0.f, 0.f, 0.f };
+		timecapsule::srgb_color_t tint = srgb_color_t { 0xff, 0xff, 0xff, 0xff };
 		bool visible = true;
 	} model_t;
 	
 	class Scene {
 		private:
-			model_t invalid_model {
-				Raylib::Model {
-					Raylib::Matrix {},
-					0,
-					0,
-					nullptr,
-					nullptr,
-					nullptr,
-					Raylib::ModelSkeleton {},
-					Raylib::ModelAnimPose {},
-					nullptr,
-				},
-				Raylib::Vector3 {},
-				Raylib::Vector3 {},
-				Raylib::Vector3 {},
-				Raylib::BLANK,
-				false,
-			};
-
 			std::unordered_map<std::string, model_t> models;
 		
 		public:
@@ -62,11 +43,11 @@ namespace timecapsule {
 
 			void deinit(void);
 
-			model_t &add_model(std::string id, Raylib::Model model);
+			model_t &add_model(std::string id, timecapsule::gl_model_t model);
 			model_t &get_model(std::string id);
 			bool model_exists(std::string id);
 
-			void render(Raylib::Camera3D camera, Raylib::RenderTexture target);
-			void render(Raylib::Camera3D camera);
+			void render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target);
+			void render(timecapsule::camera_t camera);
 	};
 };

@@ -24,19 +24,19 @@ namespace timecapsule {
 	int init_resources(void);
 	void deinit_resources(void);
 	
-	Raylib::Image load_image(const char *filename);
-	Raylib::Texture2D load_texture_from_image(Raylib::Image img);
-	Raylib::Texture2D load_texture(const char *filename);
-	Raylib::RenderTexture2D load_render_texture(int width, int height);
-	Raylib::Font load_font(const char *filename, int font_size = 32, int num_of_characters_to_load = 256);
-	Raylib::Model load_model(const char *filename);
-	Raylib::Model load_model_from_mesh(Raylib::Mesh mesh);
-
-	Raylib::Model update_model_diffuse_texture(Raylib::Model model, Raylib::Texture2D updated_diffuse_texture);
+	timecapsule::gl_image_t load_image(const char *filename);
+	timecapsule::gl_texture_t load_texture_from_image(timecapsule::gl_image_t img);
+	timecapsule::gl_texture_t load_texture(const char *filename);
+	timecapsule::gl_render_texture_t load_render_texture(int width, int height);
+	timecapsule::gl_font_t load_font(const char *filename, int font_size = 32, int num_of_characters_to_load = 256);
+	timecapsule::gl_model_t load_model(const char *filename);
+	timecapsule::gl_model_t load_model_from_mesh(timecapsule::gl_mesh_t mesh);
 	
-	void unload_image(Raylib::Image img);
-	void unload_texture(Raylib::Texture2D tex);
-	void unload_render_texture(Raylib::RenderTexture2D tex);
-	void unload_font(Raylib::Font font);
-	void unload_model(Raylib::Model model);
+	timecapsule::gl_model_t update_model_diffuse_texture(timecapsule::gl_model_t model, timecapsule::gl_texture_t updated_diffuse_texture);
+	
+	void unload_image(timecapsule::gl_image_t img);
+	void unload_texture(timecapsule::gl_texture_t tex);
+	void unload_render_texture(timecapsule::gl_render_texture_t tex);
+	void unload_font(timecapsule::gl_font_t font);
+	void unload_model(timecapsule::gl_model_t model);
 };

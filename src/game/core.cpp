@@ -16,7 +16,6 @@
 ** "TimeCapsule". If not, see <https://www.gnu.org/licenses/>. 
 **/
 
-#pragma once
 #include "core.hpp"
 #include "game.hpp"
 #include "../engine/gl.hpp"
@@ -63,12 +62,12 @@ namespace timecapsule {
 		};
 
 		int update(double dt) {
-			if(Raylib::WindowShouldClose()) {
+			if(timecapsule::window_should_close()) {
 				transition_game_state_to(GAME_STATE_EXIT);
 				return -1;
 			}
 			
-			if(Raylib::IsKeyPressed(Raylib::KEY_ESCAPE)) {
+			if(timecapsule::is_key_pressed(timecapsule::KEY_ESCAPE)) {
 				if(game_state == GAME_STATE_RUNNING)
 					transition_game_state_to(GAME_STATE_PAUSED);
 				

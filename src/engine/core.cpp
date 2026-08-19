@@ -75,13 +75,13 @@ namespace timecapsule {
 
 		_curr_scene.deinit();
 		
-		_player_camera.position = Raylib::Vector3 { 0.f, 2.f, 4.f };
-		_player_camera.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
+		_player_camera.position = Raylib::Vector3 { 0.f, 0.6f, 1.f };
+		_player_camera.target = Raylib::Vector3 { 0.3, 0.4, -0.7, };
 		_player_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
 		_player_camera.fovy = 45.f;
 		_player_camera.projection = Raylib::CAMERA_PERSPECTIVE;
 
-		_debug_camera.position = Raylib::Vector3 { 0.f, 2.f, 4.f };
+		_debug_camera.position = Raylib::Vector3 { 2.f, 3.f, 4.f };
 		_debug_camera.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
 		_debug_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
 		_debug_camera.fovy = 45.f;
@@ -96,7 +96,7 @@ namespace timecapsule {
 			int rc = timecapsule::game::update(Raylib::GetFrameTime());
 			if(rc < 0)
 				break;
-
+			
 			render();
 		};
 		

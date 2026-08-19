@@ -38,8 +38,8 @@ namespace Raylib {
 float clampf(float x, float min = -1.f, float max = 1.f);
 
 float vdistance(float a, float b);
-float vdistance(Raylib::Vector2 a, Raylib::Vector2 b);
-float vdistance(Raylib::Vector3 a, Raylib::Vector3 b);
+float vdistance(timecapsule::vector2_t a, timecapsule::vector2_t b);
+float vdistance(timecapsule::vector3_t a, timecapsule::vector3_t b);
 
 float min(float a, float b);
 float max(float a, float b);

@@ -76,8 +76,7 @@ namespace timecapsule {
 					0.f
 				);
 			} else {
-				//Raylib::UpdateCamera(&player_camera, Raylib::CAMERA_THIRD_PERSON);
-				// [TODO]
+				// [TODO] : add third person camera.
 			}
 
 			/*
