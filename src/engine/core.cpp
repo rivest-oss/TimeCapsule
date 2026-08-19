@@ -104,9 +104,7 @@ namespace timecapsule {
 		std::exit(0);
 	};
 	
-	void draw_camera_frustrum_in_3d(Raylib::Camera camera) {
-		//Raylib::DrawSphere(camera.position, 0.1f, Raylib::GREEN);
-		
+	void draw_camera_frustrum_in_3d(Raylib::Camera camera, Raylib::Vector3 camera_sphere_radius_ref) {
 		// center
 		Raylib::Ray ray_center = Raylib::GetScreenToWorldRayEx(
 			Raylib::Vector2 {
@@ -160,7 +158,8 @@ namespace timecapsule {
 		);
 		
 		float dist_near = float(Raylib::rlGetCullDistanceNear());
-		float dist_far = float(Raylib::rlGetCullDistanceFar());
+		//float dist_far = float(Raylib::rlGetCullDistanceFar());
+		float dist_far = dist_near + 0.1f;
 		
 		// drawing
 		
@@ -358,64 +357,18 @@ namespace timecapsule {
 			);
 		}
 		
-		/*
-		// draw near (TL->TR)
-		Raylib::DrawLine3D(
-			Raylib::Vector3 {
-				camera.position.x + ray_tl.direction.x * dist_near,
-				camera.position.y + ray_tl.direction.y * dist_near,
-				camera.position.z + ray_tl.direction.z * dist_near,
-			},
-			Raylib::Vector3 {
-				camera.position.x + ray_tl.direction.x * dist_near,
-				camera.position.y + ray_tl.direction.y * dist_near,
-				camera.position.z + ray_tl.direction.z * dist_near,
-			},
-			Raylib::RED
-		);
-		// draw near (BL->BR)
-		Raylib::DrawLine3D(
-			Raylib::Vector3 {
-				camera.position.x + ray_bl.direction.x * dist_near,
-				camera.position.y + ray_bl.direction.y * dist_near,
-				camera.position.z + ray_bl.direction.z * dist_near,
-			},
-			Raylib::Vector3 {
-				camera.position.x + ray_bl.direction.x * dist_near,
-				camera.position.y + ray_bl.direction.y * dist_near,
-				camera.position.z + ray_bl.direction.z * dist_near,
-			},
-			Raylib::RED
-		);
-		// draw near (TL->BL)
-		Raylib::DrawLine3D(
-			Raylib::Vector3 {
-				camera.position.x + ray_tl.direction.x * dist_near,
-				camera.position.y + ray_tl.direction.y * dist_near,
-				camera.position.z + ray_tl.direction.z * dist_near,
-			},
-			Raylib::Vector3 {
-				camera.position.x + ray_bl.direction.x * dist_near,
-				camera.position.y + ray_bl.direction.y * dist_near,
-				camera.position.z + ray_bl.direction.z * dist_near,
-			},
-			Raylib::RED
-		);
-		// draw near (TR->BR)
-		Raylib::DrawLine3D(
-			Raylib::Vector3 {
-				camera.position.x + ray_tr.direction.x * dist_near,
-				camera.position.y + ray_tr.direction.y * dist_near,
-				camera.position.z + ray_tr.direction.z * dist_near,
-			},
-			Raylib::Vector3 {
-				camera.position.x + ray_br.direction.x * dist_near,
-				camera.position.y + ray_br.direction.y * dist_near,
-				camera.position.z + ray_br.direction.z * dist_near,
-			},
-			Raylib::RED
-		);
-		*/
+		// draw camera position sphere
+		{
+			float camera_sphere_radius = vdistance(
+				camera.position,
+				camera_sphere_radius_ref
+			);
+			
+			if(camera_sphere_radius < 1.f) camera_sphere_radius = 1.f;
+			camera_sphere_radius *= 0.001f;
+			
+			Raylib::DrawSphere(camera.position, camera_sphere_radius, Raylib::WHITE);
+		}
 	};
 
 	void render(void) {
@@ -478,7 +431,7 @@ namespace timecapsule {
 			Raylib::BeginTextureMode(_render_texture_debug_screen);
 			Raylib::BeginMode3D(_debug_camera);
 			
-			draw_camera_frustrum_in_3d(_player_camera);
+			draw_camera_frustrum_in_3d(_player_camera, _debug_camera.position);
 
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();
