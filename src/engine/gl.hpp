@@ -39,6 +39,7 @@ namespace timecapsule {
 		KEY_P = Raylib::KEY_P,
 		KEY_LEFT_SHIFT = Raylib::KEY_LEFT_SHIFT,
 		KEY_LEFT_CONTROL = Raylib::KEY_LEFT_CONTROL,
+		KEY_PAUSE = Raylib::KEY_PAUSE,
 	};
 
 	bool is_key_up(unsigned int key);
