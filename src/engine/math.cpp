@@ -1,0 +1,49 @@
+/*
+** TimeCapsule: A videogame engine.
+** Copyright (C) 2026 Rivest Osz
+** 
+** This file is part of "TimeCapsule".
+** 
+** "TimeCapsule" is free software: you can redistribute it and/or modify it under the terms of
+** the GNU General Public License as published by the Free Software Foundation, either
+** version 3 of the License, or (at your option) any later version.
+** 
+** "TimeCapsule" is distributed in the hope that it will be useful, but WITHOUT ANY
+** WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+** A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+** 
+** You should have received a copy of the GNU General Public License along with
+** "TimeCapsule". If not, see <https://www.gnu.org/licenses/>. 
+**/
+
+#include "math.hpp"
+
+float clampf(float x, float min, float max) {
+	if(x < min) return min;
+	if(x > max) return max;
+	return x;
+};
+
+float vdistance(float a, float b) {
+	return std::sqrt(std::pow(b - a, 2.f));
+};
+float vdistance(Raylib::Vector2 a, Raylib::Vector2 b) {
+	return std::sqrt(
+		std::pow(b.x - a.x, 2.f)
+		+ std::pow(b.y - a.y, 2.f)
+	);
+};
+float vdistance(Raylib::Vector3 a, Raylib::Vector3 b) {
+	return std::sqrt(
+		std::pow(b.x - a.x, 2.f)
+		+ std::pow(b.y - a.y, 2.f)
+		+ std::pow(b.z - a.z, 2.f)
+	);
+};
+
+float min(float a, float b) {
+	return a < b ? a : b;
+};
+float max(float a, float b) {
+	return a > b ? a : b;
+};

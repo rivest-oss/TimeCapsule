@@ -16,8 +16,8 @@
 ** "TimeCapsule". If not, see <https://www.gnu.org/licenses/>. 
 **/
 
-#include "gui.hpp"
 #include "../engine/asset.hpp"
+#include "gui.hpp"
 #include <cstdio>
 
 namespace timecapsule {

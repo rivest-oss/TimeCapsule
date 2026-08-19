@@ -17,12 +17,8 @@
 **/
 
 #include "scene.hpp"
-#include "../math.hpp"
-
-namespace Raylib {
-	#include <raylib.h>
-	#include <raymath.h>
-};
+#include "math.hpp"
+#include "gl.hpp"
 
 namespace timecapsule {
 	Scene::Scene(void) {
@@ -59,7 +55,8 @@ namespace timecapsule {
 			Raylib::Vector3 { 0.f, 0.f, 0.f },
 			Raylib::Vector3 { 1.f, 1.f, 1.f },
 			Raylib::Vector3 { 0.f, 0.f, 0.f },
-			Raylib::WHITE
+			Raylib::WHITE,
+			true,
 		});
 
 		return models.at(id);
@@ -93,7 +90,7 @@ namespace timecapsule {
 			model_t model = entry.second;
 			Raylib::Model rmodel = model.rmodel;
 			
-			if(Raylib::IsModelValid(rmodel) == false)
+			if(Raylib::IsModelValid(rmodel) == false || model.visible == false)
 				continue;
 
 			rmodel.transform = Raylib::MatrixRotateXYZ(Raylib::Vector3 {

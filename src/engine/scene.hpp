@@ -20,11 +20,8 @@
 #include <string>
 #include <unordered_map>
 #include "asset.hpp"
-#include "../math.hpp"
-
-namespace Raylib {
-	#include <raylib.h>
-};
+#include "math.hpp"
+#include "gl.hpp"
 
 namespace timecapsule {
 	typedef struct model_t {
@@ -33,6 +30,7 @@ namespace timecapsule {
 		Raylib::Vector3 scale = Raylib::Vector3 { 1.f, 1.f, 1.f };
 		Raylib::Vector3 rotation = Raylib::Vector3 { 0.f, 0.f, 0.f };
 		Raylib::Color tint = Raylib::WHITE;
+		bool visible = true;
 	} model_t;
 	
 	class Scene {
@@ -52,7 +50,8 @@ namespace timecapsule {
 				Raylib::Vector3 {},
 				Raylib::Vector3 {},
 				Raylib::Vector3 {},
-				Raylib::BLANK
+				Raylib::BLANK,
+				false,
 			};
 
 			std::unordered_map<std::string, model_t> models;

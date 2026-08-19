@@ -18,10 +18,7 @@
 
 #pragma once
 #include <string>
-
-namespace Raylib {
-	#include <raylib.h>
-};
+#include "gl.hpp"
 
 namespace timecapsule {
 	int init_resources(void);

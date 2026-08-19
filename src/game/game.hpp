@@ -17,15 +17,10 @@
 **/
 
 #pragma once
-#include <cmath>
 
-#undef M_PI
-#undef M_PI2
-#undef M_PIf
-#undef M_PI2f
-
-#define M_PI  3.14159265358979323846264338327950288419716939937510
-#define M_PI2 6.28318530717958647692528676655900576839433879875020
-
-#define M_PIf  3.14159265358979323846264338327950288419716939937510f
-#define M_PI2f 6.28318530717958647692528676655900576839433879875020f
+namespace timecapsule {
+	namespace game {
+		int game_sub_init(void);
+		void game_sub_update(double dt);
+	};
+};
