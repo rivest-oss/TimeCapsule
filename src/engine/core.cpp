@@ -105,6 +105,9 @@ namespace timecapsule {
 	};
 	
 	void draw_camera_frustrum_in_3d(Raylib::Camera camera, Raylib::Vector3 camera_sphere_radius_ref) {
+		Raylib::Color bright_yellow = Raylib::YELLOW;
+		Raylib::Color dark_yellow = Raylib::Color { 0xff, 0x99, 0x00, 0xff };
+		
 		// center
 		Raylib::Ray ray_center = Raylib::GetScreenToWorldRayEx(
 			Raylib::Vector2 {
@@ -177,7 +180,7 @@ namespace timecapsule {
 					camera.position.y + ray_center.direction.y * dist_far,
 					camera.position.z + ray_center.direction.z * dist_far,
 				},
-				Raylib::GREEN
+				dark_yellow
 			);
 			// draw top left
 			Raylib::DrawLine3D(
@@ -191,7 +194,7 @@ namespace timecapsule {
 					camera.position.y + ray_tl.direction.y * dist_far,
 					camera.position.z + ray_tl.direction.z * dist_far,
 				},
-				Raylib::RED
+				dark_yellow
 			);
 			// draw top right
 			Raylib::DrawLine3D(
@@ -205,7 +208,7 @@ namespace timecapsule {
 					camera.position.y + ray_tr.direction.y * dist_far,
 					camera.position.z + ray_tr.direction.z * dist_far,
 				},
-				Raylib::RED
+				dark_yellow
 			);
 			// draw bottom left
 			Raylib::DrawLine3D(
@@ -219,7 +222,7 @@ namespace timecapsule {
 					camera.position.y + ray_bl.direction.y * dist_far,
 					camera.position.z + ray_bl.direction.z * dist_far,
 				},
-				Raylib::RED
+				dark_yellow
 			);
 			// draw bottom right
 			Raylib::DrawLine3D(
@@ -233,7 +236,7 @@ namespace timecapsule {
 					camera.position.y + ray_br.direction.y * dist_far,
 					camera.position.z + ray_br.direction.z * dist_far,
 				},
-				Raylib::RED
+				dark_yellow
 			);
 		}
 		
@@ -251,7 +254,7 @@ namespace timecapsule {
 					camera.position.y + ray_tr.direction.y * dist_near,
 					camera.position.z + ray_tr.direction.z * dist_near,
 				},
-				Raylib::PURPLE
+				bright_yellow
 			);
 			// BL->BR
 			Raylib::DrawLine3D(
@@ -265,7 +268,7 @@ namespace timecapsule {
 					camera.position.y + ray_br.direction.y * dist_near,
 					camera.position.z + ray_br.direction.z * dist_near,
 				},
-				Raylib::PURPLE
+				bright_yellow
 			);
 			// TL->BL
 			Raylib::DrawLine3D(
@@ -279,7 +282,7 @@ namespace timecapsule {
 					camera.position.y + ray_bl.direction.y * dist_near,
 					camera.position.z + ray_bl.direction.z * dist_near,
 				},
-				Raylib::PURPLE
+				bright_yellow
 			);
 			// TR->BR
 			Raylib::DrawLine3D(
@@ -293,7 +296,7 @@ namespace timecapsule {
 					camera.position.y + ray_br.direction.y * dist_near,
 					camera.position.z + ray_br.direction.z * dist_near,
 				},
-				Raylib::PURPLE
+				bright_yellow
 			);
 		}
 		
@@ -311,7 +314,7 @@ namespace timecapsule {
 					camera.position.y + ray_tr.direction.y * dist_far,
 					camera.position.z + ray_tr.direction.z * dist_far,
 				},
-				Raylib::YELLOW
+				bright_yellow
 			);
 			// BL->BR
 			Raylib::DrawLine3D(
@@ -325,7 +328,7 @@ namespace timecapsule {
 					camera.position.y + ray_br.direction.y * dist_far,
 					camera.position.z + ray_br.direction.z * dist_far,
 				},
-				Raylib::YELLOW
+				bright_yellow
 			);
 			// TL->BL
 			Raylib::DrawLine3D(
@@ -339,7 +342,7 @@ namespace timecapsule {
 					camera.position.y + ray_bl.direction.y * dist_far,
 					camera.position.z + ray_bl.direction.z * dist_far,
 				},
-				Raylib::YELLOW
+				bright_yellow
 			);
 			// TR->BR
 			Raylib::DrawLine3D(
@@ -353,7 +356,7 @@ namespace timecapsule {
 					camera.position.y + ray_br.direction.y * dist_far,
 					camera.position.z + ray_br.direction.z * dist_far,
 				},
-				Raylib::YELLOW
+				bright_yellow
 			);
 		}
 		
