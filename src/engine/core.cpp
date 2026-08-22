@@ -393,7 +393,7 @@ namespace timecapsule {
 
 		int game_main_screen_width = screen_width * 0.60f;
 		int game_main_screen_height = screen_height;
-		int game_main_debug_screen_width = screen_width * 0.40f;
+		int game_main_debug_screen_width = screen_width * 0.39f;
 		int game_main_debug_screen_height = screen_height;
 
 		if(game_main_screen_width < 16) game_main_screen_width = 16;
@@ -474,7 +474,7 @@ namespace timecapsule {
 					-(float)_render_texture_debug_screen.texture.height,
 				},
 				Raylib::Rectangle {
-					(float)_render_texture_main_game_screen.texture.width,
+					(float)screen_width - _render_texture_debug_screen.texture.width,
 					0.f,
 					(float)_render_texture_debug_screen.texture.width,
 					(float)_render_texture_debug_screen.texture.height,
@@ -485,6 +485,25 @@ namespace timecapsule {
 				},
 				0.f,
 				Raylib::WHITE
+			);
+			
+			int border_width = screen_width - (game_main_debug_screen_width + game_main_screen_width);
+			if(border_width < 0) border_width *= -1;
+			
+			Raylib::DrawRectangle(
+				_render_texture_main_game_screen.texture.width,
+				0,
+				border_width,
+				screen_height,
+				Raylib::DARKGRAY
+			);
+			
+			Raylib::DrawRectangle(
+				_render_texture_main_game_screen.texture.width + border_width / 4.f,
+				0,
+				border_width / 2.f,
+				screen_height,
+				Raylib::GRAY
 			);
 		}
 
@@ -509,8 +528,12 @@ namespace timecapsule {
 	Scene &get_current_scene(void) {
 		return _curr_scene;
 	};
-
+	
+	bool _what_thingy_should_i_update = false;
+	
 	timecapsule::camera_t &get_player_camera(void) {
-		return _player_camera;
+		//return _player_camera;
+		if(Raylib::IsKeyPressed(Raylib::KEY_P)) _what_thingy_should_i_update = _what_thingy_should_i_update == false;
+		return _what_thingy_should_i_update ? _debug_camera : _player_camera;
 	};
 };

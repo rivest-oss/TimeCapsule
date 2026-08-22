@@ -67,17 +67,17 @@ namespace timecapsule {
 				return -1;
 			}
 			
-			if(timecapsule::is_key_pressed(timecapsule::KEY_ESCAPE)) {
+			if(timecapsule::is_key_pressed(timecapsule::KEY_ESCAPE) || timecapsule::is_key_pressed(timecapsule::KEY_PAUSE)) {
 				if(game_state == GAME_STATE_RUNNING)
 					transition_game_state_to(GAME_STATE_PAUSED);
 				
 				else if(game_state == GAME_STATE_PAUSED)
 					transition_game_state_to(GAME_STATE_RUNNING);
 			}
-
+			
 			if(is_game_state_exit())
 				return -1;
-
+			
 			game_sub_update(dt);
 
 			if(is_game_state_exit())

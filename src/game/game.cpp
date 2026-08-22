@@ -39,7 +39,8 @@ namespace timecapsule {
 		void game_sub_update(double dt) {
 			if(get_game_state() != GAME_STATE_RUNNING)
 				return;
-
+			
+			const float speed_crouching = 0.8f;
 			const float speed_walking = 1.4f;
 			const float speed_running = 4.4f;
 
@@ -52,7 +53,8 @@ namespace timecapsule {
 			}
 
 			if(timecapsule::is_key_down(timecapsule::KEY_LEFT_CONTROL)) {
-				forward_movement_speed *= (1.f / 2.f);
+				forward_movement_speed = speed_crouching;
+				upward_movement_speed *= 0.1f;
 			}
 			
 			//if(timecapsule::is_key_pressed(timecapsule::KEY_P))

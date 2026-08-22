@@ -55,12 +55,16 @@ namespace timecapsule {
 	};
 	
 	void enable_cursor(void) {
-		Raylib::EnableCursor();
+		if(_cursor_enabled == false)
+			Raylib::EnableCursor();
+
 		_cursor_enabled = true;
 	};
 	
 	void disable_cursor(void) {
-		Raylib::DisableCursor();
+		if(_cursor_enabled)
+			Raylib::DisableCursor();
+		
 		_cursor_enabled = false;
 	};
 	
