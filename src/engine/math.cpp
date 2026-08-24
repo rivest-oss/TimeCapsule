@@ -47,3 +47,20 @@ float min(float a, float b) {
 float max(float a, float b) {
 	return a > b ? a : b;
 };
+
+float lerp(float a, float b, float t) {
+	return a + (b - a) * t;
+};
+timecapsule::vector2_t lerp(timecapsule::vector2_t a, timecapsule::vector2_t b, float t) {
+	return timecapsule::vector2_t {
+		lerp(a.x, b.x, t),
+		lerp(a.y, b.y, t),
+	};
+};
+timecapsule::vector3_t lerp(timecapsule::vector3_t a, timecapsule::vector3_t b, float t) {
+	return timecapsule::vector3_t {
+		lerp(a.x, b.x, t),
+		lerp(a.y, b.y, t),
+		lerp(a.z, b.z, t),
+	};
+};

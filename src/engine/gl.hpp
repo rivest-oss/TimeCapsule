@@ -32,8 +32,13 @@ namespace timecapsule {
 	typedef Raylib::RenderTexture2D gl_render_texture_t;
 	typedef Raylib::Mesh gl_mesh_t;
 	typedef Raylib::Model gl_model_t;
-	typedef Raylib::Camera3D camera_t;
+	typedef Raylib::Camera3D gl_camera_t;
 	typedef Raylib::Font gl_font_t;
+
+	typedef struct camera_t {
+		gl_camera_t current;
+		gl_camera_t goal;
+	} camera_t;
 	
 	bool is_model_valid(gl_model_t model);
 	
@@ -56,7 +61,7 @@ namespace timecapsule {
 	float get_mouse_wheel_delta(void);
 	vector2_t get_mouse_delta(void);
 	
-	void update_camera(camera_t &camera, vector3_t movement, vector3_t rotation, float zoom);
+	void update_camera(gl_camera_t &camera, vector3_t movement, vector3_t rotation, float zoom);
 	
 	void enable_cursor(void);
 	void disable_cursor(void);

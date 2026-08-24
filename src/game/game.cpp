@@ -62,9 +62,11 @@ namespace timecapsule {
 			//if(timecapsule::is_key_pressed(timecapsule::KEY_P))
 			//	is_camera_third_person = is_camera_third_person == false;
 
+			timecapsule::camera_t &player_camera = timecapsule::get_player_camera();
+
 			if(is_game_handling_inputs()) {
 				timecapsule::update_camera(
-					timecapsule::get_player_camera(),
+					player_camera.goal,
 					timecapsule::vector3_t {
 						timecapsule::is_key_down(timecapsule::KEY_W) * forward_movement_speed * (float)dt
 						- timecapsule::is_key_down(timecapsule::KEY_S) * forward_movement_speed * (float)dt,
@@ -79,6 +81,12 @@ namespace timecapsule {
 					},
 					0.f
 				);
+
+				float lerp_time = dt * 16.f;
+				lerp_time = clampf(lerp_time, 0.00000001f, 1.f);
+
+				player_camera.current.position = lerp(player_camera.current.position, player_camera.goal.position, lerp_time);
+				player_camera.current.target = player_camera.goal.target;
 			} else {
 				// [TODO] : add third person camera.
 			}

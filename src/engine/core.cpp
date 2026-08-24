@@ -75,17 +75,17 @@ namespace timecapsule {
 
 		_curr_scene.deinit();
 		
-		_player_camera.position = Raylib::Vector3 { 0.f, 0.6f, 1.f };
-		_player_camera.target = Raylib::Vector3 { 0.3, 0.4, -0.7, };
-		_player_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
-		_player_camera.fovy = 45.f;
-		_player_camera.projection = Raylib::CAMERA_PERSPECTIVE;
+		_player_camera.current.position = _player_camera.goal.position = Raylib::Vector3 { 0.f, 0.6f, 1.f };
+		_player_camera.current.target = _player_camera.goal.target = Raylib::Vector3 { 0.3, 0.4, -0.7, };
+		_player_camera.current.up = _player_camera.goal.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
+		_player_camera.current.fovy = _player_camera.goal.fovy = 45.f;
+		_player_camera.current.projection = _player_camera.goal.projection = Raylib::CAMERA_PERSPECTIVE;
 
-		_debug_camera.position = Raylib::Vector3 { 2.f, 3.f, 4.f };
-		_debug_camera.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
-		_debug_camera.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
-		_debug_camera.fovy = 45.f;
-		_debug_camera.projection = Raylib::CAMERA_PERSPECTIVE;
+		_debug_camera.current.position = _debug_camera.goal.position = Raylib::Vector3 { 2.f, 3.f, 4.f };
+		_debug_camera.current.target = _debug_camera.goal.target = Raylib::Vector3 { 0.f, 0.f, 0.f };
+		_debug_camera.current.up = _debug_camera.goal.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
+		_debug_camera.current.fovy = _debug_camera.goal.fovy = 45.f;
+		_debug_camera.current.projection = _debug_camera.goal.projection = Raylib::CAMERA_PERSPECTIVE;
 		
 		if(timecapsule::game::init() < 0) {
 			deinit();
@@ -113,7 +113,7 @@ namespace timecapsule {
 		std::exit(0);
 	};
 	
-	void draw_camera_frustrum_in_3d(Raylib::Camera camera, Raylib::Vector3 camera_sphere_radius_ref) {
+	void draw_camera_frustrum_in_3d(camera_t camera, Raylib::Vector3 camera_sphere_radius_ref) {
 		Raylib::Color bright_yellow = Raylib::YELLOW;
 		Raylib::Color dark_yellow = Raylib::Color { 0xff, 0x99, 0x00, 0xff };
 		
@@ -123,7 +123,7 @@ namespace timecapsule {
 				float(_render_texture_main_game_screen.texture.width) / 2.f,
 				float(_render_texture_main_game_screen.texture.height) / 2.f,
 			},
-			camera,
+			camera.current,
 			_render_texture_main_game_screen.texture.width,
 			_render_texture_main_game_screen.texture.height
 		);
@@ -134,7 +134,7 @@ namespace timecapsule {
 				0.f,
 				0.f,
 			},
-			camera,
+			camera.current,
 			_render_texture_main_game_screen.texture.width,
 			_render_texture_main_game_screen.texture.height
 		);
@@ -144,7 +144,7 @@ namespace timecapsule {
 				(float)_render_texture_main_game_screen.texture.width - 1,
 				0.f,
 			},
-			camera,
+			camera.current,
 			_render_texture_main_game_screen.texture.width,
 			_render_texture_main_game_screen.texture.height
 		);
@@ -154,7 +154,7 @@ namespace timecapsule {
 				0.f,
 				(float)_render_texture_main_game_screen.texture.height - 1,
 			},
-			camera,
+			camera.current,
 			_render_texture_main_game_screen.texture.width,
 			_render_texture_main_game_screen.texture.height
 		);
@@ -164,7 +164,7 @@ namespace timecapsule {
 				(float)_render_texture_main_game_screen.texture.width - 1,
 				(float)_render_texture_main_game_screen.texture.height - 1,
 			},
-			camera,
+			camera.current,
 			_render_texture_main_game_screen.texture.width,
 			_render_texture_main_game_screen.texture.height
 		);
@@ -180,70 +180,70 @@ namespace timecapsule {
 			// draw center
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x,
-					camera.position.y,
-					camera.position.z,
+					camera.current.position.x,
+					camera.current.position.y,
+					camera.current.position.z,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_center.direction.x * dist_far,
-					camera.position.y + ray_center.direction.y * dist_far,
-					camera.position.z + ray_center.direction.z * dist_far,
+					camera.current.position.x + ray_center.direction.x * dist_far,
+					camera.current.position.y + ray_center.direction.y * dist_far,
+					camera.current.position.z + ray_center.direction.z * dist_far,
 				},
 				dark_yellow
 			);
 			// draw top left
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x,
-					camera.position.y,
-					camera.position.z,
+					camera.current.position.x,
+					camera.current.position.y,
+					camera.current.position.z,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_tl.direction.x * dist_far,
-					camera.position.y + ray_tl.direction.y * dist_far,
-					camera.position.z + ray_tl.direction.z * dist_far,
+					camera.current.position.x + ray_tl.direction.x * dist_far,
+					camera.current.position.y + ray_tl.direction.y * dist_far,
+					camera.current.position.z + ray_tl.direction.z * dist_far,
 				},
 				dark_yellow
 			);
 			// draw top right
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x,
-					camera.position.y,
-					camera.position.z,
+					camera.current.position.x,
+					camera.current.position.y,
+					camera.current.position.z,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_tr.direction.x * dist_far,
-					camera.position.y + ray_tr.direction.y * dist_far,
-					camera.position.z + ray_tr.direction.z * dist_far,
+					camera.current.position.x + ray_tr.direction.x * dist_far,
+					camera.current.position.y + ray_tr.direction.y * dist_far,
+					camera.current.position.z + ray_tr.direction.z * dist_far,
 				},
 				dark_yellow
 			);
 			// draw bottom left
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x,
-					camera.position.y,
-					camera.position.z,
+					camera.current.position.x,
+					camera.current.position.y,
+					camera.current.position.z,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_bl.direction.x * dist_far,
-					camera.position.y + ray_bl.direction.y * dist_far,
-					camera.position.z + ray_bl.direction.z * dist_far,
+					camera.current.position.x + ray_bl.direction.x * dist_far,
+					camera.current.position.y + ray_bl.direction.y * dist_far,
+					camera.current.position.z + ray_bl.direction.z * dist_far,
 				},
 				dark_yellow
 			);
 			// draw bottom right
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x,
-					camera.position.y,
-					camera.position.z,
+					camera.current.position.x,
+					camera.current.position.y,
+					camera.current.position.z,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_br.direction.x * dist_far,
-					camera.position.y + ray_br.direction.y * dist_far,
-					camera.position.z + ray_br.direction.z * dist_far,
+					camera.current.position.x + ray_br.direction.x * dist_far,
+					camera.current.position.y + ray_br.direction.y * dist_far,
+					camera.current.position.z + ray_br.direction.z * dist_far,
 				},
 				dark_yellow
 			);
@@ -254,56 +254,56 @@ namespace timecapsule {
 			// TL->TR
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_tl.direction.x * dist_near,
-					camera.position.y + ray_tl.direction.y * dist_near,
-					camera.position.z + ray_tl.direction.z * dist_near,
+					camera.current.position.x + ray_tl.direction.x * dist_near,
+					camera.current.position.y + ray_tl.direction.y * dist_near,
+					camera.current.position.z + ray_tl.direction.z * dist_near,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_tr.direction.x * dist_near,
-					camera.position.y + ray_tr.direction.y * dist_near,
-					camera.position.z + ray_tr.direction.z * dist_near,
+					camera.current.position.x + ray_tr.direction.x * dist_near,
+					camera.current.position.y + ray_tr.direction.y * dist_near,
+					camera.current.position.z + ray_tr.direction.z * dist_near,
 				},
 				bright_yellow
 			);
 			// BL->BR
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_bl.direction.x * dist_near,
-					camera.position.y + ray_bl.direction.y * dist_near,
-					camera.position.z + ray_bl.direction.z * dist_near,
+					camera.current.position.x + ray_bl.direction.x * dist_near,
+					camera.current.position.y + ray_bl.direction.y * dist_near,
+					camera.current.position.z + ray_bl.direction.z * dist_near,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_br.direction.x * dist_near,
-					camera.position.y + ray_br.direction.y * dist_near,
-					camera.position.z + ray_br.direction.z * dist_near,
+					camera.current.position.x + ray_br.direction.x * dist_near,
+					camera.current.position.y + ray_br.direction.y * dist_near,
+					camera.current.position.z + ray_br.direction.z * dist_near,
 				},
 				bright_yellow
 			);
 			// TL->BL
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_tl.direction.x * dist_near,
-					camera.position.y + ray_tl.direction.y * dist_near,
-					camera.position.z + ray_tl.direction.z * dist_near,
+					camera.current.position.x + ray_tl.direction.x * dist_near,
+					camera.current.position.y + ray_tl.direction.y * dist_near,
+					camera.current.position.z + ray_tl.direction.z * dist_near,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_bl.direction.x * dist_near,
-					camera.position.y + ray_bl.direction.y * dist_near,
-					camera.position.z + ray_bl.direction.z * dist_near,
+					camera.current.position.x + ray_bl.direction.x * dist_near,
+					camera.current.position.y + ray_bl.direction.y * dist_near,
+					camera.current.position.z + ray_bl.direction.z * dist_near,
 				},
 				bright_yellow
 			);
 			// TR->BR
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_tr.direction.x * dist_near,
-					camera.position.y + ray_tr.direction.y * dist_near,
-					camera.position.z + ray_tr.direction.z * dist_near,
+					camera.current.position.x + ray_tr.direction.x * dist_near,
+					camera.current.position.y + ray_tr.direction.y * dist_near,
+					camera.current.position.z + ray_tr.direction.z * dist_near,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_br.direction.x * dist_near,
-					camera.position.y + ray_br.direction.y * dist_near,
-					camera.position.z + ray_br.direction.z * dist_near,
+					camera.current.position.x + ray_br.direction.x * dist_near,
+					camera.current.position.y + ray_br.direction.y * dist_near,
+					camera.current.position.z + ray_br.direction.z * dist_near,
 				},
 				bright_yellow
 			);
@@ -314,56 +314,56 @@ namespace timecapsule {
 			// TL->TR
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_tl.direction.x * dist_far,
-					camera.position.y + ray_tl.direction.y * dist_far,
-					camera.position.z + ray_tl.direction.z * dist_far,
+					camera.current.position.x + ray_tl.direction.x * dist_far,
+					camera.current.position.y + ray_tl.direction.y * dist_far,
+					camera.current.position.z + ray_tl.direction.z * dist_far,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_tr.direction.x * dist_far,
-					camera.position.y + ray_tr.direction.y * dist_far,
-					camera.position.z + ray_tr.direction.z * dist_far,
+					camera.current.position.x + ray_tr.direction.x * dist_far,
+					camera.current.position.y + ray_tr.direction.y * dist_far,
+					camera.current.position.z + ray_tr.direction.z * dist_far,
 				},
 				bright_yellow
 			);
 			// BL->BR
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_bl.direction.x * dist_far,
-					camera.position.y + ray_bl.direction.y * dist_far,
-					camera.position.z + ray_bl.direction.z * dist_far,
+					camera.current.position.x + ray_bl.direction.x * dist_far,
+					camera.current.position.y + ray_bl.direction.y * dist_far,
+					camera.current.position.z + ray_bl.direction.z * dist_far,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_br.direction.x * dist_far,
-					camera.position.y + ray_br.direction.y * dist_far,
-					camera.position.z + ray_br.direction.z * dist_far,
+					camera.current.position.x + ray_br.direction.x * dist_far,
+					camera.current.position.y + ray_br.direction.y * dist_far,
+					camera.current.position.z + ray_br.direction.z * dist_far,
 				},
 				bright_yellow
 			);
 			// TL->BL
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_tl.direction.x * dist_far,
-					camera.position.y + ray_tl.direction.y * dist_far,
-					camera.position.z + ray_tl.direction.z * dist_far,
+					camera.current.position.x + ray_tl.direction.x * dist_far,
+					camera.current.position.y + ray_tl.direction.y * dist_far,
+					camera.current.position.z + ray_tl.direction.z * dist_far,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_bl.direction.x * dist_far,
-					camera.position.y + ray_bl.direction.y * dist_far,
-					camera.position.z + ray_bl.direction.z * dist_far,
+					camera.current.position.x + ray_bl.direction.x * dist_far,
+					camera.current.position.y + ray_bl.direction.y * dist_far,
+					camera.current.position.z + ray_bl.direction.z * dist_far,
 				},
 				bright_yellow
 			);
 			// TR->BR
 			Raylib::DrawLine3D(
 				Raylib::Vector3 {
-					camera.position.x + ray_tr.direction.x * dist_far,
-					camera.position.y + ray_tr.direction.y * dist_far,
-					camera.position.z + ray_tr.direction.z * dist_far,
+					camera.current.position.x + ray_tr.direction.x * dist_far,
+					camera.current.position.y + ray_tr.direction.y * dist_far,
+					camera.current.position.z + ray_tr.direction.z * dist_far,
 				},
 				Raylib::Vector3 {
-					camera.position.x + ray_br.direction.x * dist_far,
-					camera.position.y + ray_br.direction.y * dist_far,
-					camera.position.z + ray_br.direction.z * dist_far,
+					camera.current.position.x + ray_br.direction.x * dist_far,
+					camera.current.position.y + ray_br.direction.y * dist_far,
+					camera.current.position.z + ray_br.direction.z * dist_far,
 				},
 				bright_yellow
 			);
@@ -372,14 +372,14 @@ namespace timecapsule {
 		// draw camera position sphere
 		{
 			float camera_sphere_radius = vdistance(
-				camera.position,
+				camera.current.position,
 				camera_sphere_radius_ref
 			);
 			
 			if(camera_sphere_radius < 1.f) camera_sphere_radius = 1.f;
 			camera_sphere_radius *= 0.001f;
 			
-			Raylib::DrawSphere(camera.position, camera_sphere_radius, Raylib::WHITE);
+			Raylib::DrawSphere(camera.current.position, camera_sphere_radius, Raylib::WHITE);
 		}
 	};
 
@@ -441,9 +441,9 @@ namespace timecapsule {
 			_curr_scene.render(_debug_camera, _render_texture_debug_screen);
 
 			Raylib::BeginTextureMode(_render_texture_debug_screen);
-			Raylib::BeginMode3D(_debug_camera);
+			Raylib::BeginMode3D(_debug_camera.current);
 			
-			draw_camera_frustrum_in_3d(_player_camera, _debug_camera.position);
+			draw_camera_frustrum_in_3d(_player_camera, _debug_camera.current.position);
 
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();

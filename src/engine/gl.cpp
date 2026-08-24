@@ -45,7 +45,7 @@ namespace timecapsule {
 		return Raylib::GetMouseDelta();
 	};
 	
-	void update_camera(camera_t &camera, vector3_t movement, vector3_t rotation, float zoom) {
+	void update_camera(gl_camera_t &camera, vector3_t movement, vector3_t rotation, float zoom) {
 		return Raylib::UpdateCameraPro(
 			&camera,
 			movement,

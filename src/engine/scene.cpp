@@ -101,9 +101,9 @@ namespace timecapsule {
 		Raylib::EndTextureMode();
 	};
 
-	void Scene::render(Raylib::Camera3D camera) {
+	void Scene::render(camera_t camera) {
 		Raylib::ClearBackground(Raylib::BLACK);
-		Raylib::BeginMode3D(camera);
+		Raylib::BeginMode3D(camera.current);
 
 		for(std::pair<std::string, model_t> entry : models) {
 			model_t model = entry.second;

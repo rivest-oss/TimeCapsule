@@ -43,3 +43,7 @@ float vdistance(timecapsule::vector3_t a, timecapsule::vector3_t b);
 
 float min(float a, float b);
 float max(float a, float b);
+
+float lerp(float a, float b, float t);
+timecapsule::vector2_t lerp(timecapsule::vector2_t a, timecapsule::vector2_t b, float t);
+timecapsule::vector3_t lerp(timecapsule::vector3_t a, timecapsule::vector3_t b, float t);
