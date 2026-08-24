@@ -530,7 +530,7 @@ namespace timecapsule {
 		
 		timecapsule::game::deinit();
 		_curr_scene.deinit();
-		lighting::deinit();
+		timecapsule::lighting::deinit();
 		timecapsule::deinit_resources();
 		
 		Raylib::CloseAudioDevice();

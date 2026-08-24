@@ -106,8 +106,8 @@ namespace timecapsule {
 		Raylib::ClearBackground(Raylib::BLACK);
 		Raylib::BeginMode3D(camera.current);
 
-		lighting::update(camera);
-		lighting::begin_rendering();
+		timecapsule::lighting::update(camera);
+		timecapsule::lighting::begin_rendering();
 
 		for(std::pair<std::string, model_t> entry : models) {
 			model_t model = entry.second;
@@ -132,7 +132,7 @@ namespace timecapsule {
 			);
 		};
 		
-		lighting::end_rendering();
+		timecapsule::lighting::end_rendering();
 		Raylib::EndMode3D();
 	};
 };

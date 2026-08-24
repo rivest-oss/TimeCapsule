@@ -241,49 +241,6 @@ namespace timecapsule {
 				return;
 
 			Raylib::EndShaderMode();
-			std::printf("\n");
-
-			for(int i = 0; i < Raylib::MAX_LIGHTS; i++) {
-				std::printf("%i:\n", i);
-
-				std::printf(
-					"    * Position: %.2f, %.2f, %2.f\n",
-					_lights[i].position.x,
-					_lights[i].position.y,
-					_lights[i].position.z
-				);
-				std::printf(
-					"    * Enabled: %s\n",
-					_lights[i].enabled ? "True" : "False"
-				);
-				std::printf(
-					"    * Color: %02x%02x%02x(%02x)\n",
-					_lights[i].color.r,
-					_lights[i].color.g,
-					_lights[i].color.b,
-					_lights[i].color.a
-				);
-
-				if(_lights[i].enabled) {
-					Raylib::DrawSphereEx(
-						_lights[i].position,
-						0.2f,
-						8,
-						8,
-						_lights[i].color
-					);
-				} else {
-					Raylib::DrawSphereWires(
-						_lights[i].position,
-						0.2f,
-						8,
-						8,
-						_lights[i].color
-					);
-				}
-			};
-
-			std::printf("\n");
 		};
 	};
 };
