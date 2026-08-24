@@ -25,6 +25,7 @@ namespace timecapsule {
 		void deinit(void);
 		void update(camera_t camera);
 		void begin_rendering(void);
+		void update_model_lighting(gl_model_t &model);
 		void end_rendering(void);
 	};
 };

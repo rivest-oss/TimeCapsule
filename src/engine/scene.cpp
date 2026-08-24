@@ -122,6 +122,8 @@ namespace timecapsule {
 				model.rotation.z * M_PI2f,
 			});
 
+			timecapsule::lighting::update_model_lighting(rmodel);
+
 			Raylib::DrawModelEx(
 				rmodel,
 				model.position,

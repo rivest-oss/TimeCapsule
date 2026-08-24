@@ -236,6 +236,11 @@ namespace timecapsule {
 			);
 		};
 
+		void update_model_lighting(gl_model_t &model) {
+			//for(int i = 0; i < model.materialCount; i++)
+			//	model.materials[i].shader = _shader;
+		};
+
 		void end_rendering(void) {
 			if(Raylib::IsShaderValid(_shader) == false)
 				return;
