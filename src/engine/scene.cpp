@@ -19,6 +19,7 @@
 #include "scene.hpp"
 #include "math.hpp"
 #include "gl.hpp"
+#include "lighting.hpp"
 
 namespace timecapsule {
 	model_t invalid_model {
@@ -105,6 +106,9 @@ namespace timecapsule {
 		Raylib::ClearBackground(Raylib::BLACK);
 		Raylib::BeginMode3D(camera.current);
 
+		lighting::update(camera);
+		lighting::begin_rendering();
+
 		for(std::pair<std::string, model_t> entry : models) {
 			model_t model = entry.second;
 			Raylib::Model rmodel = model.rmodel;
@@ -128,6 +132,7 @@ namespace timecapsule {
 			);
 		};
 		
+		lighting::end_rendering();
 		Raylib::EndMode3D();
 	};
 };

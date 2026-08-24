@@ -24,6 +24,7 @@
 #include "asset.hpp"
 #include "../misc/rtconfig.hpp"
 #include "../game/core.hpp"
+#include "lighting.hpp"
 
 namespace timecapsule {
 	Raylib::RenderTexture2D _render_texture_main_game_screen;
@@ -53,6 +54,11 @@ namespace timecapsule {
 		while(Raylib::IsAudioDeviceReady() == false) {};
 		
 		if(timecapsule::init_resources() < 0) {
+			deinit();
+			std::exit(1);
+		}
+
+		if(timecapsule::lighting::init() < 0) {
 			deinit();
 			std::exit(1);
 		}
@@ -524,6 +530,7 @@ namespace timecapsule {
 		
 		timecapsule::game::deinit();
 		_curr_scene.deinit();
+		lighting::deinit();
 		timecapsule::deinit_resources();
 		
 		Raylib::CloseAudioDevice();
