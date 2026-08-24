@@ -23,6 +23,15 @@
 namespace timecapsule {
 	namespace game {
 		game_state_t game_state = GAME_STATE_INVALID;
+		bool _game_is_handling_inputs = false;
+
+		void should_game_handle_inputs(bool enable) {
+			_game_is_handling_inputs = enable;
+		};
+
+		bool is_game_handling_inputs(void) {
+			return _game_is_handling_inputs;
+		};
 
 		void transition_game_state_to(game_state_t new_state) {
 			if(new_state == GAME_STATE_EXIT) {
@@ -56,6 +65,7 @@ namespace timecapsule {
 			if(game_sub_init() < 0)
 				return -1;
 			
+			_game_is_handling_inputs = true;
 			transition_game_state_to(GAME_STATE_PAUSED);
 
 			return 0;
@@ -67,7 +77,7 @@ namespace timecapsule {
 				return -1;
 			}
 			
-			if(timecapsule::is_key_pressed(timecapsule::KEY_ESCAPE) || timecapsule::is_key_pressed(timecapsule::KEY_PAUSE)) {
+			if(is_game_handling_inputs() && (timecapsule::is_key_pressed(timecapsule::KEY_ESCAPE) || timecapsule::is_key_pressed(timecapsule::KEY_PAUSE))) {
 				if(game_state == GAME_STATE_RUNNING)
 					transition_game_state_to(GAME_STATE_PAUSED);
 				

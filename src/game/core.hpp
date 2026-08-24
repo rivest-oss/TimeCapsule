@@ -26,6 +26,9 @@ namespace timecapsule {
 			GAME_STATE_RUNNING,
 			GAME_STATE_PAUSED,
 		} game_state_t;
+
+		void should_game_handle_inputs(bool enable);
+		bool is_game_handling_inputs(void);
 		
 		void transition_game_state_to(game_state_t new_state);
 		bool is_game_state_exit(void);

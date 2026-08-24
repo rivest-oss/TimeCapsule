@@ -36,6 +36,8 @@ namespace timecapsule {
 			return 0;
 		};
 
+		float time = 0.f;
+
 		void game_sub_update(double dt) {
 			if(get_game_state() != GAME_STATE_RUNNING)
 				return;
@@ -60,7 +62,7 @@ namespace timecapsule {
 			//if(timecapsule::is_key_pressed(timecapsule::KEY_P))
 			//	is_camera_third_person = is_camera_third_person == false;
 
-			if(true) {
+			if(is_game_handling_inputs()) {
 				timecapsule::update_camera(
 					timecapsule::get_player_camera(),
 					timecapsule::vector3_t {
@@ -81,14 +83,14 @@ namespace timecapsule {
 				// [TODO] : add third person camera.
 			}
 
+			time += dt;
+
 			/*
-			temp_t += dt;
+			timecapsule::model_t &model_person_at_scene = get_current_scene().get_model("person");
+			model_person_at_scene.position.x = std::sin(time);
 
-			timecapsule::model_t &model_person_at_scene = world_scene.get_model("person");
-			model_person_at_scene.position.x = std::sin(temp_t);
-
-			if(temp_t >= 6.0)
-				model_person_at_scene.rotation.z = std::sin(temp_t - 6.0);
+			if(time >= M_PI2f) {
+				model_person_at_scene.rotation.z = std::sin(time);
 			}
 			*/
 		};

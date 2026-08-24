@@ -91,8 +91,17 @@ namespace timecapsule {
 			deinit();
 			std::exit(1);
 		}
+
+		bool is_game_input_admin = true;
 		
 		while(true) {
+			if(timecapsule_should_render_debug_screen) {
+				if(is_key_pressed(Raylib::KEY_K))
+					is_game_input_admin = is_game_input_admin == false;
+				
+				timecapsule::game::should_game_handle_inputs(is_game_input_admin);
+			}
+
 			int rc = timecapsule::game::update(Raylib::GetFrameTime());
 			if(rc < 0)
 				break;
