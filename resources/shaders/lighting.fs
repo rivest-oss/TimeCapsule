@@ -88,7 +88,8 @@ void main() {
 	finalColor = texelColor;
 	*/
 
-	vec3 lightPos = vec3(8.1958, 4.7070, -7.1902);
+	vec3 lightPos = vec3(7.5116, 11.8093, 7.8237);
+	vec3 lightTarget = vec3(5.1272, 8.0162, 4.8359);
 
 	// Texel color fetching from texture sampler
 	vec4 texelColor = texture(texture0, fragTexCoord);
@@ -101,9 +102,9 @@ void main() {
 
 	//light = -normalize(lights[i].target - lights[i].position);
 
-	float lightThingy = dot(lightPos, fragPosition);
-	lightThingy = max(0.5, lightThingy);
+	vec3 lightDiff = normalize(lightPos - fragPosition);
+	float lightAngle = clamp(dot(normal, lightDiff), 0.25, 1.0);
 
 	finalColor = texelColor;
-	finalColor *= vec4(vec3(lightThingy), 1.0);
+	finalColor *= vec4(vec3(lightAngle), 1.0);
 }
