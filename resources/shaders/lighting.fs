@@ -101,6 +101,9 @@ void main() {
 
 	//light = -normalize(lights[i].target - lights[i].position);
 
+	float lightThingy = dot(lightPos, fragPosition);
+	lightThingy = max(0.5, lightThingy);
+
 	finalColor = texelColor;
-	finalColor *= vec4(normalize(lightPos - fragPosition), 1.0);
+	finalColor *= vec4(vec3(lightThingy), 1.0);
 }

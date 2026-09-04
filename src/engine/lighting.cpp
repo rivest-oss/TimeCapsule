@@ -84,9 +84,9 @@ namespace timecapsule {
 			);
 			Raylib::DrawCube(
 				Raylib::Vector3 {
+					-4.f,
 					0.f,
-					0.f,
-					0.f,
+					-4.f,
 				},
 				2.f,
 				4.f,
