@@ -453,6 +453,10 @@ namespace timecapsule {
 
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();
+
+			std::printf("[DEBUG] Player camera pos.: %.4f, %.4f, %.4f\n", _player_camera.current.position.x, _player_camera.current.position.y, _player_camera.current.position.z);
+			std::printf("[DEBUG]  Debug camera pos.: %.4f, %.4f, %.4f\n", _debug_camera.current.position.x, _debug_camera.current.position.y, _debug_camera.current.position.z);
+			std::printf("\n");
 		} else {
 			_curr_scene.render(_player_camera);
 		}
