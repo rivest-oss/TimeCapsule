@@ -37,6 +37,7 @@ namespace timecapsule {
 		};
 
 		float time = 0.f;
+		float time_since_movement = 0.f;
 
 		void game_sub_update(double dt) {
 			if(get_game_state() != GAME_STATE_RUNNING)
@@ -82,11 +83,22 @@ namespace timecapsule {
 					0.f
 				);
 
-				float lerp_time = dt * 16.f;
-				lerp_time = clampf(lerp_time, 0.00000001f, 1.f);
+				bool is_moving = vdistance(player_camera.current.position, player_camera.goal.position) > 0.f;
 
-				player_camera.current.position = lerp(player_camera.current.position, player_camera.goal.position, lerp_time);
-				player_camera.current.target = player_camera.goal.target;
+				if(is_moving) {
+					time_since_movement += dt;
+					float interp_time = time_since_movement;
+
+					interp_time = clampf(interp_time, 0.f, 1.f);
+					interp_time *= 6.f;
+					interp_time = clampf(interp_time, 0.f, 1.f);
+
+					player_camera.current.position = lerp(player_camera.current.position, player_camera.goal.position, interp_time);
+					player_camera.current.target = lerp(player_camera.current.target, player_camera.goal.target, interp_time);;
+				} else {
+					time_since_movement = 0.f;
+					player_camera.current.target = player_camera.goal.target;
+				}
 			} else {
 				// [TODO] : add third person camera.
 			}

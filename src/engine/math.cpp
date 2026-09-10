@@ -64,3 +64,24 @@ timecapsule::vector3_t lerp(timecapsule::vector3_t a, timecapsule::vector3_t b, 
 		lerp(a.z, b.z, t),
 	};
 };
+
+float dot(timecapsule::vector2_t a, timecapsule::vector2_t b) {
+	return a.x * b.x + a.y * b.y;
+};
+float dot(timecapsule::vector3_t a, timecapsule::vector3_t b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+};
+
+timecapsule::vector2_t subtract_vec(timecapsule::vector2_t a, timecapsule::vector2_t b) {
+	timecapsule::vector2_t r;
+	r.x = a.x - b.x;
+	r.y = a.y - b.y;
+	return r;
+};
+timecapsule::vector3_t subtract_vec(timecapsule::vector3_t a, timecapsule::vector3_t b) {
+	timecapsule::vector3_t r;
+	r.x = a.x - b.x;
+	r.y = a.y - b.y;
+	r.z = a.z - b.z;
+	return r;
+};

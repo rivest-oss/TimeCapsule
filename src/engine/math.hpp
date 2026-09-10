@@ -47,3 +47,9 @@ float max(float a, float b);
 float lerp(float a, float b, float t);
 timecapsule::vector2_t lerp(timecapsule::vector2_t a, timecapsule::vector2_t b, float t);
 timecapsule::vector3_t lerp(timecapsule::vector3_t a, timecapsule::vector3_t b, float t);
+
+float dot(timecapsule::vector2_t a, timecapsule::vector2_t b);
+float dot(timecapsule::vector3_t a, timecapsule::vector3_t b);
+
+timecapsule::vector2_t subtract_vec(timecapsule::vector2_t a, timecapsule::vector2_t b);
+timecapsule::vector3_t subtract_vec(timecapsule::vector3_t a, timecapsule::vector3_t b);
