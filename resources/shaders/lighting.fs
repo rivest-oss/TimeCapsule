@@ -5,6 +5,7 @@ in vec3 fragPosition;
 in vec2 fragTexCoord;
 in vec4 fragColor;
 in vec3 fragNormal;
+in vec4 gl_FragCoord;
 
 // Input uniform values
 uniform sampler2D texture0;
@@ -32,26 +33,8 @@ uniform Light lights[MAX_LIGHTS];
 uniform vec4 ambient;
 uniform vec3 viewPos;
 
-float randomFloat(ivec2 p) {
-	uint v0 = uint(p.x) * 2u + uint(p.x < 0);
-	v0 ^= v0 >> 12u;
-	v0 ^= v0 << 25u;
-	v0 ^= v0 >> 27u;
-	v0 *= 0x9e3779b9u;
-	
-	uint v1 = uint(p.y) * 2u + uint(p.y < 0);
-	v1 ^= v1 << 12u;
-	v1 ^= v1 >> 25u;
-	v1 ^= v1 << 27u;
-	v1 *= 0x6a09e667u;
-	
-	uint v = v0 + v1;
-	v ^= v >> 12u;
-	v ^= v << 25u;
-	v ^= v >> 27u;
-	v *= 0x98765432u;
-	
-	return v * (1.0 / 4294967296.0);
+float random(in vec2 p) {
+	return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453).x;
 };
 
 void main() {
@@ -128,13 +111,13 @@ void main() {
 	float lightAngle = clamp(dot(normal, lightDiff), 0.25, 1.0);
 
 	finalColor = texelColor;
-	//finalColor *= vec4(vec3(lightAngle), 1.0);
+	finalColor *= vec4(vec3(lightAngle), 1.0);
 
-	float texelNoise = randomFloat(ivec2(int(fragTexCoord.x * 100.0), int(fragTexCoord.y * 100.0)));
+	float texelNoise = random(vec2(gl_FragCoord.x, gl_FragCoord.y) * vec2(0.1));
 	finalColor = vec4(
-		texelNoise,
-		texelNoise,
-		0.5,
-		1.0
+		finalColor.r * 0.97 + texelNoise * 0.03 * finalColor.r,
+		finalColor.g * 0.97 + texelNoise * 0.03 * finalColor.g,
+		finalColor.b * 0.97 + texelNoise * 0.03 * finalColor.b,
+		finalColor.a
 	);
-}
+};
