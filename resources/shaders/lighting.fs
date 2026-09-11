@@ -32,6 +32,28 @@ uniform Light lights[MAX_LIGHTS];
 uniform vec4 ambient;
 uniform vec3 viewPos;
 
+float randomFloat(ivec2 p) {
+	uint v0 = uint(p.x) * 2u + uint(p.x < 0);
+	v0 ^= v0 >> 12u;
+	v0 ^= v0 << 25u;
+	v0 ^= v0 >> 27u;
+	v0 *= 0x9e3779b9u;
+	
+	uint v1 = uint(p.y) * 2u + uint(p.y < 0);
+	v1 ^= v1 << 12u;
+	v1 ^= v1 >> 25u;
+	v1 ^= v1 << 27u;
+	v1 *= 0x6a09e667u;
+	
+	uint v = v0 + v1;
+	v ^= v >> 12u;
+	v ^= v << 25u;
+	v ^= v >> 27u;
+	v *= 0x98765432u;
+	
+	return v * (1.0 / 4294967296.0);
+};
+
 void main() {
 	/*
 	// Texel color fetching from texture sampler
@@ -106,5 +128,13 @@ void main() {
 	float lightAngle = clamp(dot(normal, lightDiff), 0.25, 1.0);
 
 	finalColor = texelColor;
-	finalColor *= vec4(vec3(lightAngle), 1.0);
+	//finalColor *= vec4(vec3(lightAngle), 1.0);
+
+	float texelNoise = randomFloat(ivec2(int(fragTexCoord.x * 100.0), int(fragTexCoord.y * 100.0)));
+	finalColor = vec4(
+		texelNoise,
+		texelNoise,
+		0.5,
+		1.0
+	);
 }
