@@ -20,6 +20,7 @@
 
 namespace Raylib {
 	#include <raylib.h>
+	#include <rlgl.h>
 };
 
 #include "lighting.hpp"
@@ -45,13 +46,13 @@ namespace timecapsule {
 			if(Raylib::IsShaderValid(_shader) == false)
 				return;
 
+			/*
 			float light_pos[3] {
 				camera.current.position.x,
 				camera.current.position.y,
 				camera.current.position.z,
 			};
-
-			/*
+			
 			Raylib::SetShaderValue(
 				_shader,
 				_shader.locs[Raylib::SHADER_LOC_VECTOR_VIEW],

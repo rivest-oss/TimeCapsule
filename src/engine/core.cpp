@@ -27,8 +27,59 @@
 #include "lighting.hpp"
 
 namespace timecapsule {
-	Raylib::RenderTexture2D _render_texture_main_game_screen;
-	Raylib::RenderTexture2D _render_texture_debug_screen;
+	typedef struct game_render_textures_t {
+		Raylib::RenderTexture2D game_play;
+		Raylib::RenderTexture2D world_debug;
+
+		void unload(void) {
+			if(Raylib::IsRenderTextureValid(game_play))
+				unload_render_texture(game_play);
+			if(Raylib::IsRenderTextureValid(world_debug))
+				unload_render_texture(world_debug);
+
+			game_play.id =
+			game_play.texture.id =
+			game_play.texture.width =
+			game_play.texture.height =
+			world_debug.id =
+			world_debug.texture.id =
+			world_debug.texture.width =
+			world_debug.texture.height = 0;
+		};
+
+		int resize(int game_w, int game_h, int debug_w, int debug_h) {
+			int old_game_w = game_play.texture.width;
+			int old_game_h = game_play.texture.height;
+			int old_debug_w = world_debug.texture.width;
+			int old_debug_h = world_debug.texture.height;
+
+			if(
+				Raylib::IsRenderTextureValid(game_play) == false
+				|| Raylib::IsRenderTextureValid(world_debug) == false
+				|| old_game_w != game_w
+				|| old_game_h != game_h
+				|| old_debug_w != debug_w
+				|| old_debug_h != debug_h
+			) {
+				unload();
+
+				game_play = load_render_texture(game_w, game_h);
+				world_debug = load_render_texture(debug_w, debug_h);
+
+				if(
+					Raylib::IsRenderTextureValid(game_play) == false
+					|| Raylib::IsRenderTextureValid(world_debug) == false
+				) {
+					unload();
+					return -1;
+				}
+			}
+
+			return 0;
+		};
+	} game_render_textures_t;
+
+	game_render_textures_t _game_render_textures;
 	timecapsule::camera_t _player_camera;
 	timecapsule::camera_t _debug_camera;
 	timecapsule::Scene _curr_scene;
@@ -43,6 +94,7 @@ namespace timecapsule {
 
 		Raylib::SetConfigFlags(
 			Raylib::FLAG_WINDOW_RESIZABLE
+			| Raylib::FLAG_MSAA_4X_HINT
 		);
 		
 		Raylib::InitWindow(640, 360, "TimeCapsule");
@@ -63,20 +115,10 @@ namespace timecapsule {
 			std::exit(1);
 		}
 
-		if(timecapsule_should_render_debug_screen) {
-			_render_texture_main_game_screen = timecapsule::load_render_texture(16, 16);
-			if(Raylib::IsRenderTextureValid(_render_texture_main_game_screen) == false) {
-				std::fprintf(stderr, "Couldn't load game main render texture.\n");
-				deinit();
-				std::exit(1);
-			}
-			
-			_render_texture_debug_screen = timecapsule::load_render_texture(16, 16);
-			if(Raylib::IsRenderTextureValid(_render_texture_debug_screen) == false) {
-				std::fprintf(stderr, "Couldn't load game main debug render texture.\n");
-				deinit();
-				std::exit(1);
-			}
+		if(_game_render_textures.resize(1, 1, 1, 1) < 0) {
+			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
+			deinit();
+			std::exit(1);
 		}
 
 		_curr_scene.deinit();
@@ -126,12 +168,12 @@ namespace timecapsule {
 		// center
 		Raylib::Ray ray_center = Raylib::GetScreenToWorldRayEx(
 			Raylib::Vector2 {
-				float(_render_texture_main_game_screen.texture.width) / 2.f,
-				float(_render_texture_main_game_screen.texture.height) / 2.f,
+				float(_game_render_textures.game_play.texture.width) / 2.f,
+				float(_game_render_textures.game_play.texture.height) / 2.f,
 			},
 			camera.current,
-			_render_texture_main_game_screen.texture.width,
-			_render_texture_main_game_screen.texture.height
+			_game_render_textures.game_play.texture.width,
+			_game_render_textures.game_play.texture.height
 		);
 		
 		// top left
@@ -141,38 +183,38 @@ namespace timecapsule {
 				0.f,
 			},
 			camera.current,
-			_render_texture_main_game_screen.texture.width,
-			_render_texture_main_game_screen.texture.height
+			_game_render_textures.game_play.texture.width,
+			_game_render_textures.game_play.texture.height
 		);
 		// top right
 		Raylib::Ray ray_tr = Raylib::GetScreenToWorldRayEx(
 			Raylib::Vector2 {
-				(float)_render_texture_main_game_screen.texture.width - 1,
+				(float)_game_render_textures.game_play.texture.width - 1,
 				0.f,
 			},
 			camera.current,
-			_render_texture_main_game_screen.texture.width,
-			_render_texture_main_game_screen.texture.height
+			_game_render_textures.game_play.texture.width,
+			_game_render_textures.game_play.texture.height
 		);
 		// bottom left
 		Raylib::Ray ray_bl = Raylib::GetScreenToWorldRayEx(
 			Raylib::Vector2 {
 				0.f,
-				(float)_render_texture_main_game_screen.texture.height - 1,
+				(float)_game_render_textures.game_play.texture.height - 1,
 			},
 			camera.current,
-			_render_texture_main_game_screen.texture.width,
-			_render_texture_main_game_screen.texture.height
+			_game_render_textures.game_play.texture.width,
+			_game_render_textures.game_play.texture.height
 		);
 		// bottom right
 		Raylib::Ray ray_br = Raylib::GetScreenToWorldRayEx(
 			Raylib::Vector2 {
-				(float)_render_texture_main_game_screen.texture.width - 1,
-				(float)_render_texture_main_game_screen.texture.height - 1,
+				(float)_game_render_textures.game_play.texture.width - 1,
+				(float)_game_render_textures.game_play.texture.height - 1,
 			},
 			camera.current,
-			_render_texture_main_game_screen.texture.width,
-			_render_texture_main_game_screen.texture.height
+			_game_render_textures.game_play.texture.width,
+			_game_render_textures.game_play.texture.height
 		);
 		
 		float dist_near = float(Raylib::rlGetCullDistanceNear());
@@ -414,68 +456,49 @@ namespace timecapsule {
 		if(game_main_screen_width < 16) game_main_screen_width = 16;
 		if(game_main_screen_height < 16) game_main_screen_height = 16;
 
+		int rc;
+
+		if(
+			_game_render_textures.resize(
+				game_main_screen_width,
+				game_main_screen_height,
+				timecapsule_should_render_debug_screen ? game_main_debug_screen_width : 1,
+				timecapsule_should_render_debug_screen ? game_main_debug_screen_height : 1
+			) < 0
+		) {
+			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
+			deinit();
+			std::exit(1);
+		}
+
+		_curr_scene.render(_player_camera, _game_render_textures.game_play);
+
 		if(timecapsule_should_render_debug_screen) {
-			if(
-				game_main_screen_width != _render_texture_main_game_screen.texture.width
-				|| game_main_screen_height != _render_texture_main_game_screen.texture.height
-			) {
-				timecapsule::unload_render_texture(_render_texture_main_game_screen);
-				
-				_render_texture_main_game_screen = timecapsule::load_render_texture(game_main_screen_width, game_main_screen_height);
-				if(Raylib::IsRenderTextureValid(_render_texture_main_game_screen) == false) {
-					std::fprintf(stderr, "Couldn't load game main render texture.\n");
-					deinit();
-					std::exit(1);
-				}
-			}
+			_curr_scene.render(_debug_camera, _game_render_textures.world_debug);
 
-			if(
-				game_main_debug_screen_width != _render_texture_debug_screen.texture.width
-				|| game_main_debug_screen_height != _render_texture_debug_screen.texture.height
-			) {
-				timecapsule::unload_render_texture(_render_texture_debug_screen);
-				
-				_render_texture_debug_screen = timecapsule::load_render_texture(game_main_debug_screen_width, game_main_debug_screen_height);
-				if(Raylib::IsRenderTextureValid(_render_texture_debug_screen) == false) {
-					std::fprintf(stderr, "Couldn't load game main render texture.\n");
-					deinit();
-					std::exit(1);
-				}
-			}
-
-			_curr_scene.render(_player_camera, _render_texture_main_game_screen);
-			_curr_scene.render(_debug_camera, _render_texture_debug_screen);
-
-			Raylib::BeginTextureMode(_render_texture_debug_screen);
+			Raylib::BeginTextureMode(_game_render_textures.world_debug);
 			Raylib::BeginMode3D(_debug_camera.current);
 			
 			draw_camera_frustrum_in_3d(_player_camera, _debug_camera.current.position);
 
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();
-
-			std::printf("[DEBUG] Player camera pos.: %.4f, %.4f, %.4f\n", _player_camera.current.position.x, _player_camera.current.position.y, _player_camera.current.position.z);
-			std::printf("[DEBUG]  Debug camera pos.: %.4f, %.4f, %.4f\n", _debug_camera.current.position.x, _debug_camera.current.position.y, _debug_camera.current.position.z);
-			std::printf("[DEBUG] Debug camera targ.: %.4f, %.4f, %.4f\n", _debug_camera.current.target.x, _debug_camera.current.target.y, _debug_camera.current.target.z);
-			std::printf("\n");
-		} else {
-			_curr_scene.render(_player_camera);
 		}
 
 		if(timecapsule_should_render_debug_screen) {
 			Raylib::DrawTexturePro(
-				_render_texture_main_game_screen.texture,
+				_game_render_textures.game_play.texture,
 				Raylib::Rectangle {
 					0.f,
 					0.f,
-					(float)_render_texture_main_game_screen.texture.width,
-					-(float)_render_texture_main_game_screen.texture.height,
+					(float)_game_render_textures.game_play.texture.width,
+					-(float)_game_render_textures.game_play.texture.height,
 				},
 				Raylib::Rectangle {
 					0.f,
 					0.f,
-					(float)_render_texture_main_game_screen.texture.width,
-					(float)_render_texture_main_game_screen.texture.height,
+					(float)_game_render_textures.game_play.texture.width,
+					(float)_game_render_textures.game_play.texture.height,
 				},
 				Raylib::Vector2 {
 					0.f,
@@ -486,18 +509,18 @@ namespace timecapsule {
 			);
 
 			Raylib::DrawTexturePro(
-				_render_texture_debug_screen.texture,
+				_game_render_textures.world_debug.texture,
 				Raylib::Rectangle {
 					0.f,
 					0.f,
-					(float)_render_texture_debug_screen.texture.width,
-					-(float)_render_texture_debug_screen.texture.height,
+					(float)_game_render_textures.world_debug.texture.width,
+					-(float)_game_render_textures.world_debug.texture.height,
 				},
 				Raylib::Rectangle {
-					(float)screen_width - _render_texture_debug_screen.texture.width,
+					(float)screen_width - _game_render_textures.world_debug.texture.width,
 					0.f,
-					(float)_render_texture_debug_screen.texture.width,
-					(float)_render_texture_debug_screen.texture.height,
+					(float)_game_render_textures.world_debug.texture.width,
+					(float)_game_render_textures.world_debug.texture.height,
 				},
 				Raylib::Vector2 {
 					0.f,
@@ -511,7 +534,7 @@ namespace timecapsule {
 			if(border_width < 0) border_width *= -1;
 			
 			Raylib::DrawRectangle(
-				_render_texture_main_game_screen.texture.width,
+				_game_render_textures.game_play.texture.width,
 				0,
 				border_width,
 				screen_height,
@@ -519,11 +542,33 @@ namespace timecapsule {
 			);
 			
 			Raylib::DrawRectangle(
-				_render_texture_main_game_screen.texture.width + border_width / 4.f,
+				_game_render_textures.game_play.texture.width + border_width / 4.f,
 				0,
 				border_width / 2.f,
 				screen_height,
 				Raylib::GRAY
+			);
+		} else {
+			Raylib::DrawTexturePro(
+				_game_render_textures.game_play.texture,
+				Raylib::Rectangle {
+					0.f,
+					0.f,
+					(float)_game_render_textures.game_play.texture.width,
+					-(float)_game_render_textures.game_play.texture.height,
+				},
+				Raylib::Rectangle {
+					0.f,
+					0.f,
+					(float)_game_render_textures.game_play.texture.width,
+					(float)_game_render_textures.game_play.texture.height,
+				},
+				Raylib::Vector2 {
+					0.f,
+					0.f,
+				},
+				0.f,
+				Raylib::WHITE
 			);
 		}
 
