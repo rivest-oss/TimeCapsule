@@ -79,6 +79,7 @@ namespace timecapsule {
 		};
 	} game_render_textures_t;
 
+	unsigned int _debug_screen_page = 0;
 	game_render_textures_t _game_render_textures;
 	timecapsule::camera_t _player_camera;
 	timecapsule::camera_t _debug_camera;
@@ -114,6 +115,8 @@ namespace timecapsule {
 			deinit();
 			std::exit(1);
 		}
+
+		_debug_screen_page = 0u;
 
 		if(_game_render_textures.resize(1, 1, 1, 1) < 0) {
 			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
@@ -434,6 +437,16 @@ namespace timecapsule {
 	void render(void) {
 		Raylib::BeginDrawing();
 		Raylib::ClearBackground(Raylib::BLACK);
+
+		if(Raylib::IsKeyPressed(Raylib::KEY_F3))
+			_debug_screen_page++;
+
+		if(
+			timecapsule_should_render_debug_screen == false
+			|| (timecapsule_should_render_debug_screen && _debug_screen_page > 1u)
+		) {
+			_debug_screen_page = 0u;
+		}
 		
 		int screen_width = Raylib::GetScreenWidth();
 		int screen_height = Raylib::GetScreenHeight();
@@ -455,9 +468,7 @@ namespace timecapsule {
 
 		if(game_main_screen_width < 16) game_main_screen_width = 16;
 		if(game_main_screen_height < 16) game_main_screen_height = 16;
-
-		int rc;
-
+		
 		if(
 			_game_render_textures.resize(
 				game_main_screen_width,
@@ -570,6 +581,62 @@ namespace timecapsule {
 				0.f,
 				Raylib::WHITE
 			);
+		}
+
+		if(_debug_screen_page != 0u) {
+			Raylib::Vector2 pos {
+				16.f,
+				16.f,
+			};
+
+			if(true) {
+				int fps_no = Raylib::GetFPS();
+				const char *fps_text = Raylib::TextFormat("%i FPS", fps_no);
+
+				Raylib::Font font = Raylib::GetFontDefault();
+				float font_size = 24.f;
+				float text_spacing = 1.f;
+
+				Raylib::Vector2 msr = Raylib::MeasureTextEx(
+					font,
+					fps_text,
+					font_size,
+					text_spacing
+				);
+
+				for(int oy = -1; oy <= 1; oy++) {
+					for(int ox = -1; ox <= 1; ox++) {
+						if(ox == 0 && oy == 0)
+							continue;
+
+						Raylib::DrawTextEx(
+							font,
+							fps_text,
+							Raylib::Vector2 {
+								std::round(pos.x) + ox,
+								std::round(pos.y) + oy,
+							},
+							font_size,
+							text_spacing,
+							Raylib::BLACK
+						);
+					};
+				};
+
+				Raylib::DrawTextEx(
+					font,
+					fps_text,
+					Raylib::Vector2 {
+						std::round(pos.x),
+						std::round(pos.y),
+					},
+					font_size,
+					text_spacing,
+					Raylib::WHITE
+				);
+
+				pos.y += msr.y + 1.f + 8.f;
+			}
 		}
 
 		Raylib::EndDrawing();
