@@ -28,6 +28,7 @@ namespace timecapsule {
 	timecapsule::gl_texture_t load_texture_from_image(timecapsule::gl_image_t img);
 	timecapsule::gl_texture_t load_texture(const char *filename);
 	timecapsule::gl_render_texture_t load_render_texture(int width, int height);
+	timecapsule::gl_render_texture_t load_render_texture_with_depth(int width, int height);
 	timecapsule::gl_font_t load_font(const char *filename, int font_size = 32, int num_of_characters_to_load = 256);
 	timecapsule::gl_model_t load_model(const char *filename);
 	timecapsule::gl_model_t load_model_from_mesh(timecapsule::gl_mesh_t mesh);
@@ -37,6 +38,7 @@ namespace timecapsule {
 	void unload_image(timecapsule::gl_image_t img);
 	void unload_texture(timecapsule::gl_texture_t tex);
 	void unload_render_texture(timecapsule::gl_render_texture_t tex);
+	void unload_render_texture_with_depth(timecapsule::gl_render_texture_t tex);
 	void unload_font(timecapsule::gl_font_t font);
 	void unload_model(timecapsule::gl_model_t model);
 };

@@ -30,8 +30,15 @@ namespace timecapsule {
 			if(timecapsule::is_model_valid(model_person) == false)
 				return -1;
 
-			timecapsule::model_t &model_person_at_scene = get_current_scene().add_model("person", model_person);
-			model_person_at_scene.position.x = 0.f;
+			{
+				timecapsule::model_t &model_person_at_scene = get_current_scene().add_model("person", model_person);
+				model_person_at_scene.position.x = 0.f;
+			}
+
+			get_current_scene().add_model("a", model_person).position.x = 1.f;
+			get_current_scene().add_model("b", model_person).position.x = -1.f;
+			get_current_scene().add_model("c", model_person).position.z = 1.f;
+			get_current_scene().add_model("d", model_person).position.z = -1.f;
 
 			return 0;
 		};

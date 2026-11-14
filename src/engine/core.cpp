@@ -33,7 +33,7 @@ namespace timecapsule {
 
 		void unload(void) {
 			if(Raylib::IsRenderTextureValid(game_play))
-				unload_render_texture(game_play);
+				unload_render_texture_with_depth(game_play);
 			if(Raylib::IsRenderTextureValid(world_debug))
 				unload_render_texture(world_debug);
 
@@ -63,7 +63,7 @@ namespace timecapsule {
 			) {
 				unload();
 
-				game_play = load_render_texture(game_w, game_h);
+				game_play = load_render_texture_with_depth(game_w, game_h);
 				world_debug = load_render_texture(debug_w, debug_h);
 
 				if(
@@ -434,7 +434,44 @@ namespace timecapsule {
 		}
 	};
 
+	Raylib::Shader depth_shader;
+	int depth_shader_tex_loc;
+
 	void render(void) {
+		if(Raylib::IsShaderValid(depth_shader) == false)
+			depth_shader = Raylib::LoadShaderFromMemory(
+				nullptr,
+				""
+				"#version 330\n"
+				"\n"
+				"// Input vertex attributes (from vertex shader)\n"
+				"in vec2 fragTexCoord;\n"
+				"// Input uniform values\n"
+				"uniform sampler2D depthTexture;\n"
+				"uniform float nearPlane;\n"
+				"uniform float farPlane;\n"
+				"\n"
+				"// Output fragment color\n"
+				"out vec4 finalColor;\n"
+				"void main() {\n"
+				"\t// Handle potential Y-flipping\n"
+				"\tvec2 texCoord = fragTexCoord;\n"
+				"\tif (true) texCoord.y = 1.0 - texCoord.y;\n"
+				"\t\n"
+				"\t// Sample depth\n"
+				"\tfloat depth = texture(depthTexture, texCoord).r;\n"
+				"\t\n"
+				"\t// Linearize depth value\n"
+				"\tfloat linearDepth = (2.0*nearPlane)/(farPlane + nearPlane - depth*(farPlane - nearPlane));\n"
+				"\t\n"
+				"\t// Output final color\n"
+				"\tfinalColor = vec4(vec3(linearDepth, 0.0, linearDepth), 0.5);\n"
+				"}"
+			);
+
+		if(Raylib::IsShaderValid(depth_shader))
+			depth_shader_tex_loc = Raylib::GetShaderLocation(depth_shader, "depthTexture");
+
 		Raylib::BeginDrawing();
 		Raylib::ClearBackground(Raylib::BLACK);
 
@@ -518,6 +555,15 @@ namespace timecapsule {
 				0.f,
 				Raylib::WHITE
 			);
+
+			Raylib::BeginShaderMode(depth_shader);
+				float near_plane = Raylib::rlGetCullDistanceNear();
+				float far_plane = Raylib::rlGetCullDistanceFar();
+				Raylib::SetShaderValueTexture(depth_shader, depth_shader_tex_loc, _game_render_textures.game_play.depth);
+				Raylib::SetShaderValue(depth_shader, Raylib::GetShaderLocation(depth_shader, "nearPlane"), &near_plane, Raylib::SHADER_UNIFORM_FLOAT);
+				Raylib::SetShaderValue(depth_shader, Raylib::GetShaderLocation(depth_shader, "farPlane"), &far_plane, Raylib::SHADER_UNIFORM_FLOAT);
+				Raylib::DrawTexture(_game_render_textures.game_play.depth, 0, 0, Raylib::WHITE);
+			Raylib::EndShaderMode();
 
 			Raylib::DrawTexturePro(
 				_game_render_textures.world_debug.texture,
@@ -635,7 +681,19 @@ namespace timecapsule {
 					Raylib::WHITE
 				);
 
-				pos.y += msr.y + 1.f + 8.f;
+				pos.y += msr.y + 2.f;
+
+				Raylib::DrawTextEx(
+					font,
+					fps_text,
+					Raylib::Vector2 {
+						std::round(pos.x),
+						std::round(pos.y),
+					},
+					font_size,
+					text_spacing,
+					Raylib::WHITE
+				);
 			}
 		}
 

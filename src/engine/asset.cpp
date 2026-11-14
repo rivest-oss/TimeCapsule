@@ -22,9 +22,61 @@
 #include "../Ox/include/nuclei.hpp"
 
 namespace timecapsule {
+	Raylib::RenderTexture2D rl_load_render_texture_with_depth(int width, int height) {
+		Raylib::RenderTexture2D target;
+		target.id = target.texture.id = target.depth.id = 0;
+		target.texture.width = target.depth.width = 0;
+
+		// Load an empty framebufffer.
+		target.id = Raylib::rlLoadFramebuffer();
+
+		if(target.id > 0) {
+			Raylib::rlEnableFramebuffer(target.id);
+
+			// Create color texture (default to RGBA).
+			target.texture.id = Raylib::rlLoadTexture(0, width, height, Raylib::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8, 1);
+			target.texture.width = width;
+			target.texture.height = height;
+			target.texture.format = Raylib::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+			target.texture.mipmaps = 1;
+
+			// Create color texture (default to RGBA).
+			target.depth.id = Raylib::rlLoadTextureDepth(width, height, false);
+			target.depth.width = width;
+			target.depth.height = height;
+			target.depth.format = 19;
+			target.depth.mipmaps = 1;
+
+			// Attach color texture and depth to FBO.
+			Raylib::rlFramebufferAttach(target.id, target.texture.id, Raylib::RL_ATTACHMENT_COLOR_CHANNEL0, Raylib::RL_ATTACHMENT_TEXTURE2D, 0);
+			Raylib::rlFramebufferAttach(target.id, target.depth.id, Raylib::RL_ATTACHMENT_DEPTH, Raylib::RL_ATTACHMENT_TEXTURE2D, 0);
+
+			// Check if FBO is complete with attachments (valid).
+			if(Raylib::rlFramebufferComplete(target.id)) TRACELOG(Raylib::LOG_INFO, "FBO: [ID %i] Framebuffer object created successfully", target.id);
+
+			Raylib::rlDisableFramebuffer();
+		} else {
+			TRACELOG(Raylib::LOG_WARNING, "FBO: Framebuffer object can not be created");
+		}
+
+		return target;
+	};
+
+	void rl_unload_render_texture_with_depth(Raylib::RenderTexture2D target) {
+		if(target.id > 0) {
+			// Color texture attachment to FBO is deleted.
+			Raylib::rlUnloadTexture(target.texture.id);
+			Raylib::rlUnloadTexture(target.depth.id);
+
+			// NOTE: Depth texture is automatically queried and deleted before deleting framebuffer.
+			Raylib::rlUnloadFramebuffer(target.id);
+		}
+	};
+
 	std::unordered_map<std::string, Raylib::Image> _loaded_images;
 	std::unordered_map<std::string, Raylib::Texture2D> _loaded_textures;
 	std::unordered_map<std::string, Raylib::RenderTexture2D> _loaded_render_textures;
+	std::unordered_map<std::string, Raylib::RenderTexture2D> _loaded_render_textures_with_depth;
 	std::unordered_map<std::string, Raylib::Font> _loaded_fonts;
 	std::unordered_map<std::string, Raylib::Model> _loaded_models;
 
@@ -43,12 +95,22 @@ namespace timecapsule {
 		for(auto pair : _loaded_render_textures)
 			if(Raylib::IsRenderTextureValid(pair.second))
 				Raylib::UnloadRenderTexture(pair.second);
+		for(auto pair : _loaded_render_textures_with_depth)
+			if(Raylib::IsRenderTextureValid(pair.second))
+				rl_unload_render_texture_with_depth(pair.second);
 		for(auto pair : _loaded_fonts)
 			if(Raylib::IsFontValid(pair.second))
 				Raylib::UnloadFont(pair.second);
 		for(auto pair : _loaded_models)
 			if(Raylib::IsModelValid(pair.second))
 				Raylib::UnloadModel(pair.second);
+		
+		_loaded_images.clear();
+		_loaded_textures.clear();
+		_loaded_render_textures.clear();
+		_loaded_render_textures_with_depth.clear();
+		_loaded_fonts.clear();
+		_loaded_models.clear();
 	};
 	
 	std::string _get_id_image(Raylib::Image img) {
@@ -199,7 +261,7 @@ namespace timecapsule {
 		_loaded_render_textures.insert_or_assign(_get_id_render_texture(tex), tex);
 		return tex;
 	};
-	
+
 	void unload_render_texture(Raylib::RenderTexture2D tex) {
 		if(Raylib::IsRenderTextureValid(tex) == false)
 			return;
@@ -209,6 +271,26 @@ namespace timecapsule {
 		
 		if(_loaded_render_textures.find(id) != _loaded_render_textures.cend())
 			_loaded_render_textures.erase(id);
+	};
+
+	Raylib::RenderTexture2D load_render_texture_with_depth(int width, int height) {
+		Raylib::RenderTexture2D tex = rl_load_render_texture_with_depth(width, height);
+		if(Raylib::IsRenderTextureValid(tex) == false)
+			return tex;
+		
+		_loaded_render_textures_with_depth.insert_or_assign(_get_id_render_texture(tex), tex);
+		return tex;
+	};
+
+	void unload_render_texture_with_depth(timecapsule::gl_render_texture_t tex) {
+		if(Raylib::IsRenderTextureValid(tex) == false)
+			return;
+		
+		std::string id = _get_id_render_texture(tex);
+		rl_unload_render_texture_with_depth(tex);
+		
+		if(_loaded_render_textures_with_depth.find(id) != _loaded_render_textures_with_depth.cend())
+			_loaded_render_textures_with_depth.erase(id);
 	};
 	
 	Raylib::Font load_font(const char *filename, int font_size, int num_of_characters_to_load) {
