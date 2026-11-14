@@ -31,11 +31,23 @@ namespace timecapsule {
 		Raylib::RenderTexture2D game_play;
 		Raylib::RenderTexture2D world_debug;
 
+		Raylib::RenderTexture2D game_play_downscaled[8];
+
 		void unload(void) {
 			if(Raylib::IsRenderTextureValid(game_play))
 				unload_render_texture_with_depth(game_play);
 			if(Raylib::IsRenderTextureValid(world_debug))
 				unload_render_texture(world_debug);
+			
+			for(int i = 0; i < 8; i++) {
+				if(Raylib::IsRenderTextureValid(game_play_downscaled[i]))
+					unload_render_texture(game_play_downscaled[i]);
+
+				game_play_downscaled[i].id =
+				game_play_downscaled[i].texture.id =
+				game_play_downscaled[i].texture.width =
+				game_play_downscaled[i].texture.height = 0;
+			};
 
 			game_play.id =
 			game_play.texture.id =
@@ -65,6 +77,23 @@ namespace timecapsule {
 
 				game_play = load_render_texture_with_depth(game_w, game_h);
 				world_debug = load_render_texture(debug_w, debug_h);
+				
+				for(int i = 1; i < 8; i++) {
+					if(((float)game_w / i) < 16.f || ((float)game_h / i) < 16.f)
+						break;
+
+					game_play_downscaled[i - 1] = load_render_texture(
+						(float)game_w / i,
+						(float)game_h / i
+					);
+
+					if(Raylib::IsRenderTextureValid(game_play_downscaled[i - 1]) == false) {
+						unload();
+						return -1;
+					}
+
+					Raylib::SetTextureFilter(game_play_downscaled[i - 1].texture, Raylib::TEXTURE_FILTER_BILINEAR);
+				};
 
 				if(
 					Raylib::IsRenderTextureValid(game_play) == false
@@ -84,6 +113,7 @@ namespace timecapsule {
 	timecapsule::camera_t _player_camera;
 	timecapsule::camera_t _debug_camera;
 	timecapsule::Scene _curr_scene;
+	Raylib::Shader _fod_shader;
 
 	void render(void);
 	
@@ -137,6 +167,13 @@ namespace timecapsule {
 		_debug_camera.current.up = _debug_camera.goal.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
 		_debug_camera.current.fovy = _debug_camera.goal.fovy = 45.f;
 		_debug_camera.current.projection = _debug_camera.goal.projection = Raylib::CAMERA_PERSPECTIVE;
+
+		_fod_shader = Raylib::LoadShader(nullptr, "./resources/shaders/fod.fs");
+		if(Raylib::IsShaderValid(_fod_shader) == false) {
+			std::fprintf(stderr, "[ENGINE] Error: Couldn't load load or compile FoD shader.\n");
+			deinit();
+			std::exit(1);
+		}
 		
 		if(timecapsule::game::init() < 0) {
 			deinit();
@@ -434,44 +471,7 @@ namespace timecapsule {
 		}
 	};
 
-	Raylib::Shader depth_shader;
-	int depth_shader_tex_loc;
-
 	void render(void) {
-		if(Raylib::IsShaderValid(depth_shader) == false)
-			depth_shader = Raylib::LoadShaderFromMemory(
-				nullptr,
-				""
-				"#version 330\n"
-				"\n"
-				"// Input vertex attributes (from vertex shader)\n"
-				"in vec2 fragTexCoord;\n"
-				"// Input uniform values\n"
-				"uniform sampler2D depthTexture;\n"
-				"uniform float nearPlane;\n"
-				"uniform float farPlane;\n"
-				"\n"
-				"// Output fragment color\n"
-				"out vec4 finalColor;\n"
-				"void main() {\n"
-				"\t// Handle potential Y-flipping\n"
-				"\tvec2 texCoord = fragTexCoord;\n"
-				"\tif (true) texCoord.y = 1.0 - texCoord.y;\n"
-				"\t\n"
-				"\t// Sample depth\n"
-				"\tfloat depth = texture(depthTexture, texCoord).r;\n"
-				"\t\n"
-				"\t// Linearize depth value\n"
-				"\tfloat linearDepth = (2.0*nearPlane)/(farPlane + nearPlane - depth*(farPlane - nearPlane));\n"
-				"\t\n"
-				"\t// Output final color\n"
-				"\tfinalColor = vec4(vec3(linearDepth, 0.0, linearDepth), 0.5);\n"
-				"}"
-			);
-
-		if(Raylib::IsShaderValid(depth_shader))
-			depth_shader_tex_loc = Raylib::GetShaderLocation(depth_shader, "depthTexture");
-
 		Raylib::BeginDrawing();
 		Raylib::ClearBackground(Raylib::BLACK);
 
@@ -532,37 +532,71 @@ namespace timecapsule {
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();
 		}
+		
+		for(int i = 0; i < 8; i++) {
+			Raylib::RenderTexture2D target = _game_render_textures.game_play_downscaled[i];
+			Raylib::RenderTexture2D source = i < 1 ? _game_render_textures.game_play : _game_render_textures.game_play_downscaled[i - 1];
+
+			Raylib::BeginTextureMode(target);
+				Raylib::DrawTexturePro(
+					source.texture,
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)source.texture.width,
+						(float)source.texture.height,
+					},
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)target.texture.width,
+						(float)target.texture.height,
+					},
+					Raylib::Vector2 {
+						0.f,
+						0.f,
+					},
+					0.f,
+					Raylib::WHITE
+				);
+			Raylib::EndTextureMode();
+		};
 
 		if(timecapsule_should_render_debug_screen) {
-			Raylib::DrawTexturePro(
-				_game_render_textures.game_play.texture,
-				Raylib::Rectangle {
-					0.f,
-					0.f,
-					(float)_game_render_textures.game_play.texture.width,
-					-(float)_game_render_textures.game_play.texture.height,
-				},
-				Raylib::Rectangle {
-					0.f,
-					0.f,
-					(float)_game_render_textures.game_play.texture.width,
-					(float)_game_render_textures.game_play.texture.height,
-				},
-				Raylib::Vector2 {
-					0.f,
-					0.f,
-				},
-				0.f,
-				Raylib::WHITE
-			);
+			Raylib::BeginShaderMode(_fod_shader);
+				Raylib::Texture2D blurry_texture = _game_render_textures.game_play.texture;
+				for(int i = 0; i < 8; i++) {
+					if(Raylib::IsRenderTextureValid(_game_render_textures.game_play_downscaled[i]) == false)
+						break;
 
-			Raylib::BeginShaderMode(depth_shader);
-				float near_plane = Raylib::rlGetCullDistanceNear();
-				float far_plane = Raylib::rlGetCullDistanceFar();
-				Raylib::SetShaderValueTexture(depth_shader, depth_shader_tex_loc, _game_render_textures.game_play.depth);
-				Raylib::SetShaderValue(depth_shader, Raylib::GetShaderLocation(depth_shader, "nearPlane"), &near_plane, Raylib::SHADER_UNIFORM_FLOAT);
-				Raylib::SetShaderValue(depth_shader, Raylib::GetShaderLocation(depth_shader, "farPlane"), &far_plane, Raylib::SHADER_UNIFORM_FLOAT);
-				Raylib::DrawTexture(_game_render_textures.game_play.depth, 0, 0, Raylib::WHITE);
+					blurry_texture = _game_render_textures.game_play_downscaled[i].texture;
+				};
+
+				Raylib::SetShaderValueTexture(_fod_shader, Raylib::GetShaderLocation(_fod_shader, "depthTexture"), _game_render_textures.game_play.depth);
+				Raylib::SetShaderValueTexture(_fod_shader, Raylib::GetShaderLocation(_fod_shader, "focusedTexture"), _game_render_textures.game_play.texture);
+				Raylib::SetShaderValueTexture(_fod_shader, Raylib::GetShaderLocation(_fod_shader, "blurryTexture"), blurry_texture);
+
+				Raylib::DrawTexturePro(
+					_game_render_textures.game_play.texture,
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)_game_render_textures.game_play.texture.width,
+						-(float)_game_render_textures.game_play.texture.height,
+					},
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)_game_render_textures.game_play.texture.width,
+						(float)_game_render_textures.game_play.texture.height,
+					},
+					Raylib::Vector2 {
+						0.f,
+						0.f,
+					},
+					0.f,
+					Raylib::WHITE
+				);
 			Raylib::EndShaderMode();
 
 			Raylib::DrawTexturePro(
@@ -586,7 +620,7 @@ namespace timecapsule {
 				0.f,
 				Raylib::WHITE
 			);
-			
+
 			int border_width = screen_width - (game_main_debug_screen_width + game_main_screen_width);
 			if(border_width < 0) border_width *= -1;
 			
