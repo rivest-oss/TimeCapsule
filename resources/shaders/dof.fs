@@ -9,16 +9,13 @@ uniform sampler2D focusedTexture;
 uniform sampler2D blurryTexture;
 
 const float nearPlane = 0.1;
-//const float farPlane = 100.0;
-const float farPlane = 1.0;
+const float farPlane = 100000.0;
 
 // Output fragment color
 out vec4 finalColor;
 
 void main() {
-	// Handle potential Y-flipping
 	vec2 texCoord = fragTexCoord;
-	//if (flipY) texCoord.y = 1.0 - texCoord.y;
 
 	// Sample depth
 	float depth = texture(depthTexture, texCoord).r;
@@ -28,7 +25,11 @@ void main() {
 
 	// Linearize depth value
 	float linearDepth = (2.0*nearPlane)/(farPlane + nearPlane - depth*(farPlane - nearPlane));
-	linearDepth *= 1666.0;
+	if(linearDepth < 0.0) linearDepth = 0.0;
+	if(linearDepth > 1.0) linearDepth = 1.0;
+
+	if(linearDepth < 0.5) linearDepth = 0.0;
+	else linearDepth = (linearDepth - 0.5) / 0.5;
 
 	// Output final color
 	//finalColor = vec4(vec3(linearDepth), 1.0);

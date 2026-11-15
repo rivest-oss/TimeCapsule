@@ -113,7 +113,7 @@ namespace timecapsule {
 	timecapsule::camera_t _player_camera;
 	timecapsule::camera_t _debug_camera;
 	timecapsule::Scene _curr_scene;
-	Raylib::Shader _fod_shader;
+	Raylib::Shader _dof_shader;
 
 	void render(void);
 	
@@ -168,9 +168,9 @@ namespace timecapsule {
 		_debug_camera.current.fovy = _debug_camera.goal.fovy = 45.f;
 		_debug_camera.current.projection = _debug_camera.goal.projection = Raylib::CAMERA_PERSPECTIVE;
 
-		_fod_shader = Raylib::LoadShader(nullptr, "./resources/shaders/fod.fs");
-		if(Raylib::IsShaderValid(_fod_shader) == false) {
-			std::fprintf(stderr, "[ENGINE] Error: Couldn't load load or compile FoD shader.\n");
+		_dof_shader = Raylib::LoadShader(nullptr, "./resources/shaders/dof.fs");
+		if(Raylib::IsShaderValid(_dof_shader) == false) {
+			std::fprintf(stderr, "[ENGINE] Error: Couldn't load load or compile dof shader.\n");
 			deinit();
 			std::exit(1);
 		}
@@ -563,7 +563,7 @@ namespace timecapsule {
 		};
 
 		if(timecapsule_should_render_debug_screen) {
-			Raylib::BeginShaderMode(_fod_shader);
+			Raylib::BeginShaderMode(_dof_shader);
 				Raylib::Texture2D blurry_texture = _game_render_textures.game_play.texture;
 				for(int i = 0; i < 8; i++) {
 					if(Raylib::IsRenderTextureValid(_game_render_textures.game_play_downscaled[i]) == false)
@@ -572,9 +572,9 @@ namespace timecapsule {
 					blurry_texture = _game_render_textures.game_play_downscaled[i].texture;
 				};
 
-				Raylib::SetShaderValueTexture(_fod_shader, Raylib::GetShaderLocation(_fod_shader, "depthTexture"), _game_render_textures.game_play.depth);
-				Raylib::SetShaderValueTexture(_fod_shader, Raylib::GetShaderLocation(_fod_shader, "focusedTexture"), _game_render_textures.game_play.texture);
-				Raylib::SetShaderValueTexture(_fod_shader, Raylib::GetShaderLocation(_fod_shader, "blurryTexture"), blurry_texture);
+				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "depthTexture"), _game_render_textures.game_play.depth);
+				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "focusedTexture"), _game_render_textures.game_play.texture);
+				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "blurryTexture"), blurry_texture);
 
 				Raylib::DrawTexturePro(
 					_game_render_textures.game_play.texture,
