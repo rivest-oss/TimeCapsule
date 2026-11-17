@@ -20,6 +20,11 @@ void main() {
 
 	// Sample depth
 	float depth = texture(depthTexture, texCoord).r;
+
+	vec4 blurryColor = texture(blurryTexture, vec2(texCoord.x, 1.0 - texCoord.y));
+	finalColor = mix(focusedColor, blurryColor, 0.75);
+
+	/*
 	if(depth >= 1.0) {
 		finalColor = focusedColor;
 	} else {
@@ -38,4 +43,5 @@ void main() {
 
 		finalColor = mix(focusedColor, blurryColor, linearDepth);
 	}
+	*/
 }

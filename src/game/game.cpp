@@ -35,10 +35,15 @@ namespace timecapsule {
 				model_person_at_scene.position.x = 0.f;
 			}
 
-			get_current_scene().add_model("a", model_person).position.x = 1.f;
-			get_current_scene().add_model("b", model_person).position.x = -1.f;
-			get_current_scene().add_model("c", model_person).position.z = 1.f;
-			get_current_scene().add_model("d", model_person).position.z = -1.f;
+			for(int x = -10; x <= +10; x++) {
+				for(int z = -10; z <= +10; z++) {
+					int i = 100 * x + z;
+					std::string id = std::to_string(i);
+					model_t &m = get_current_scene().add_model(id, model_person);
+					m.position.x = (float)x;
+					m.position.z = (float)z;
+				};
+			};
 
 			return 0;
 		};
