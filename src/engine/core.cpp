@@ -117,7 +117,7 @@ namespace timecapsule {
 	timecapsule::Scene _curr_scene;
 	Raylib::Shader _dof_shader;
 
-	void render(void);
+	void render(double game_dt);
 	
 	[[noreturn]] void init(int argc, const char **argv) {
 		timecapsule::config_t conf = timecapsule::read_config_from_args(argc, argv);
@@ -192,11 +192,13 @@ namespace timecapsule {
 				timecapsule::game::should_game_handle_inputs(is_game_input_admin);
 			}
 
+			double t0 = Raylib::GetTime();
 			int rc = timecapsule::game::update(Raylib::GetFrameTime());
+
 			if(rc < 0)
 				break;
-			
-			render();
+
+			render(Raylib::GetTime() - t0);
 		};
 		
 		deinit();
@@ -205,17 +207,23 @@ namespace timecapsule {
 	
 	highlevel_debug::_debug_perf_entry_t _debug_perf_entries[4096];
 	
-	void render(void) {
+	void render(double game_dt) {
 		int _debug_perf_entries_len = 0;
+
+		_debug_perf_entries[_debug_perf_entries_len++] = highlevel_debug::_debug_perf_entry_t {
+			"game",
+			game_dt,
+			0,
+		};
 		
 		#define PERF_START_RECORD Raylib::rlBeginQuery();
 		
-		#define PERF_STOP_RECORD(s,colorid)	\
+		#define PERF_STOP_RECORD(s)	\
 			Raylib::rlEndQuery();	\
 			_debug_perf_entries[_debug_perf_entries_len++] = highlevel_debug::_debug_perf_entry_t {	\
 				s,	\
 				Raylib::rlGetQueryResult(),	\
-				colorid,	\
+				_debug_perf_entries_len,	\
 			};
 		
 		Raylib::BeginDrawing();
@@ -263,14 +271,14 @@ namespace timecapsule {
 				timecapsule_should_render_debug_screen ? game_main_debug_screen_height : 1
 			) < 0
 		) {
-			PERF_STOP_RECORD("resolution change", 0);
+			PERF_STOP_RECORD("resolution change");
 			
 			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
 			deinit();
 			std::exit(1);
 		}
 		
-		PERF_STOP_RECORD("resolution change", 1);
+		PERF_STOP_RECORD("resolution change");
 		PERF_START_RECORD;
 
 		unsigned int player_render_triangle_count;
@@ -279,7 +287,7 @@ namespace timecapsule {
 		_curr_scene.render(_player_camera, _game_render_textures.game_play);
 		player_render_triangle_count = _curr_scene.get_sent_triangles_count();
 		
-		PERF_STOP_RECORD("player render", 2);
+		PERF_STOP_RECORD("player render");
 		PERF_START_RECORD;
 
 		if(timecapsule_should_render_debug_screen) {
@@ -294,7 +302,7 @@ namespace timecapsule {
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();
 			
-			PERF_STOP_RECORD("debug render", 3);
+			PERF_STOP_RECORD("debug render");
 			PERF_START_RECORD;
 		}
 		
@@ -359,7 +367,7 @@ namespace timecapsule {
 			Raylib::EndTextureMode();
 		};
 		
-		PERF_STOP_RECORD("blurred scene", 4);
+		PERF_STOP_RECORD("blurred scene");
 		PERF_START_RECORD;
 
 		if(timecapsule_should_render_debug_screen) {
@@ -393,7 +401,7 @@ namespace timecapsule {
 				);
 			Raylib::EndShaderMode();
 			
-			PERF_STOP_RECORD("postprocessing", 5);
+			PERF_STOP_RECORD("postprocessing");
 			PERF_START_RECORD;
 			
 			Raylib::DrawTexturePro(
@@ -460,7 +468,7 @@ namespace timecapsule {
 			);
 		}
 		
-		PERF_STOP_RECORD("screen", 6);
+		PERF_STOP_RECORD("screen");
 
 		highlevel_debug::draw_debug_page(_debug_screen_page, highlevel_debug::perf_data_t {
 			_debug_perf_entries,
