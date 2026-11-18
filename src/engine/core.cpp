@@ -19,13 +19,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include "core.hpp"
-#include "math.hpp"
 #include "gl.hpp"
 #include "asset.hpp"
 #include "../misc/rtconfig.hpp"
 #include "../game/core.hpp"
 #include "lighting.hpp"
 #include "rlgl-extra.hpp"
+#include "hl-debug.hpp"
 
 namespace timecapsule {
 	typedef struct game_render_textures_t {
@@ -202,297 +202,19 @@ namespace timecapsule {
 		std::exit(0);
 	};
 	
-	void draw_camera_frustrum_in_3d(camera_t camera, Raylib::Vector3 camera_sphere_radius_ref) {
-		Raylib::Color bright_yellow = Raylib::YELLOW;
-		Raylib::Color dark_yellow = Raylib::Color { 0xff, 0x99, 0x00, 0xff };
-		
-		// center
-		Raylib::Ray ray_center = Raylib::GetScreenToWorldRayEx(
-			Raylib::Vector2 {
-				float(_game_render_textures.game_play.texture.width) / 2.f,
-				float(_game_render_textures.game_play.texture.height) / 2.f,
-			},
-			camera.current,
-			_game_render_textures.game_play.texture.width,
-			_game_render_textures.game_play.texture.height
-		);
-		
-		// top left
-		Raylib::Ray ray_tl = Raylib::GetScreenToWorldRayEx(
-			Raylib::Vector2 {
-				0.f,
-				0.f,
-			},
-			camera.current,
-			_game_render_textures.game_play.texture.width,
-			_game_render_textures.game_play.texture.height
-		);
-		// top right
-		Raylib::Ray ray_tr = Raylib::GetScreenToWorldRayEx(
-			Raylib::Vector2 {
-				(float)_game_render_textures.game_play.texture.width - 1,
-				0.f,
-			},
-			camera.current,
-			_game_render_textures.game_play.texture.width,
-			_game_render_textures.game_play.texture.height
-		);
-		// bottom left
-		Raylib::Ray ray_bl = Raylib::GetScreenToWorldRayEx(
-			Raylib::Vector2 {
-				0.f,
-				(float)_game_render_textures.game_play.texture.height - 1,
-			},
-			camera.current,
-			_game_render_textures.game_play.texture.width,
-			_game_render_textures.game_play.texture.height
-		);
-		// bottom right
-		Raylib::Ray ray_br = Raylib::GetScreenToWorldRayEx(
-			Raylib::Vector2 {
-				(float)_game_render_textures.game_play.texture.width - 1,
-				(float)_game_render_textures.game_play.texture.height - 1,
-			},
-			camera.current,
-			_game_render_textures.game_play.texture.width,
-			_game_render_textures.game_play.texture.height
-		);
-		
-		float dist_near = float(Raylib::rlGetCullDistanceNear());
-		//float dist_far = float(Raylib::rlGetCullDistanceFar());
-		float dist_far = dist_near + 0.1f;
-		
-		// drawing
-		
-		// (center & corners, 0,0 to dist_far)
-		{
-			// draw center
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x,
-					camera.current.position.y,
-					camera.current.position.z,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_center.direction.x * dist_far,
-					camera.current.position.y + ray_center.direction.y * dist_far,
-					camera.current.position.z + ray_center.direction.z * dist_far,
-				},
-				dark_yellow
-			);
-			// draw top left
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x,
-					camera.current.position.y,
-					camera.current.position.z,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tl.direction.x * dist_far,
-					camera.current.position.y + ray_tl.direction.y * dist_far,
-					camera.current.position.z + ray_tl.direction.z * dist_far,
-				},
-				dark_yellow
-			);
-			// draw top right
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x,
-					camera.current.position.y,
-					camera.current.position.z,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tr.direction.x * dist_far,
-					camera.current.position.y + ray_tr.direction.y * dist_far,
-					camera.current.position.z + ray_tr.direction.z * dist_far,
-				},
-				dark_yellow
-			);
-			// draw bottom left
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x,
-					camera.current.position.y,
-					camera.current.position.z,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_bl.direction.x * dist_far,
-					camera.current.position.y + ray_bl.direction.y * dist_far,
-					camera.current.position.z + ray_bl.direction.z * dist_far,
-				},
-				dark_yellow
-			);
-			// draw bottom right
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x,
-					camera.current.position.y,
-					camera.current.position.z,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_br.direction.x * dist_far,
-					camera.current.position.y + ray_br.direction.y * dist_far,
-					camera.current.position.z + ray_br.direction.z * dist_far,
-				},
-				dark_yellow
-			);
-		}
-		
-		// (corners, dist_near)
-		{
-			// TL->TR
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tl.direction.x * dist_near,
-					camera.current.position.y + ray_tl.direction.y * dist_near,
-					camera.current.position.z + ray_tl.direction.z * dist_near,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tr.direction.x * dist_near,
-					camera.current.position.y + ray_tr.direction.y * dist_near,
-					camera.current.position.z + ray_tr.direction.z * dist_near,
-				},
-				bright_yellow
-			);
-			// BL->BR
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_bl.direction.x * dist_near,
-					camera.current.position.y + ray_bl.direction.y * dist_near,
-					camera.current.position.z + ray_bl.direction.z * dist_near,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_br.direction.x * dist_near,
-					camera.current.position.y + ray_br.direction.y * dist_near,
-					camera.current.position.z + ray_br.direction.z * dist_near,
-				},
-				bright_yellow
-			);
-			// TL->BL
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tl.direction.x * dist_near,
-					camera.current.position.y + ray_tl.direction.y * dist_near,
-					camera.current.position.z + ray_tl.direction.z * dist_near,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_bl.direction.x * dist_near,
-					camera.current.position.y + ray_bl.direction.y * dist_near,
-					camera.current.position.z + ray_bl.direction.z * dist_near,
-				},
-				bright_yellow
-			);
-			// TR->BR
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tr.direction.x * dist_near,
-					camera.current.position.y + ray_tr.direction.y * dist_near,
-					camera.current.position.z + ray_tr.direction.z * dist_near,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_br.direction.x * dist_near,
-					camera.current.position.y + ray_br.direction.y * dist_near,
-					camera.current.position.z + ray_br.direction.z * dist_near,
-				},
-				bright_yellow
-			);
-		}
-		
-		// (corners, dist_far)
-		{
-			// TL->TR
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tl.direction.x * dist_far,
-					camera.current.position.y + ray_tl.direction.y * dist_far,
-					camera.current.position.z + ray_tl.direction.z * dist_far,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tr.direction.x * dist_far,
-					camera.current.position.y + ray_tr.direction.y * dist_far,
-					camera.current.position.z + ray_tr.direction.z * dist_far,
-				},
-				bright_yellow
-			);
-			// BL->BR
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_bl.direction.x * dist_far,
-					camera.current.position.y + ray_bl.direction.y * dist_far,
-					camera.current.position.z + ray_bl.direction.z * dist_far,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_br.direction.x * dist_far,
-					camera.current.position.y + ray_br.direction.y * dist_far,
-					camera.current.position.z + ray_br.direction.z * dist_far,
-				},
-				bright_yellow
-			);
-			// TL->BL
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tl.direction.x * dist_far,
-					camera.current.position.y + ray_tl.direction.y * dist_far,
-					camera.current.position.z + ray_tl.direction.z * dist_far,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_bl.direction.x * dist_far,
-					camera.current.position.y + ray_bl.direction.y * dist_far,
-					camera.current.position.z + ray_bl.direction.z * dist_far,
-				},
-				bright_yellow
-			);
-			// TR->BR
-			Raylib::DrawLine3D(
-				Raylib::Vector3 {
-					camera.current.position.x + ray_tr.direction.x * dist_far,
-					camera.current.position.y + ray_tr.direction.y * dist_far,
-					camera.current.position.z + ray_tr.direction.z * dist_far,
-				},
-				Raylib::Vector3 {
-					camera.current.position.x + ray_br.direction.x * dist_far,
-					camera.current.position.y + ray_br.direction.y * dist_far,
-					camera.current.position.z + ray_br.direction.z * dist_far,
-				},
-				bright_yellow
-			);
-		}
-		
-		// draw camera position sphere
-		{
-			float camera_sphere_radius = vdistance(
-				camera.current.position,
-				camera_sphere_radius_ref
-			);
-			
-			if(camera_sphere_radius < 1.f) camera_sphere_radius = 1.f;
-			camera_sphere_radius *= 0.001f;
-			
-			Raylib::DrawSphere(camera.current.position, camera_sphere_radius, Raylib::WHITE);
-		}
-	};
-	
-	const unsigned int _debug_perf_entry_color_palette[64] { 0x000000,0x00FF00,0x0000FF,0xFF0000,0x01FFFE,0xFFA6FE,0xFFDB66,0x006401,0x010067,0x95003A,0x007DB5,0xFF00F6,0xFFEEE8,0x774D00,0x90FB92,0x0076FF,0xD5FF00,0xFF937E,0x6A826C,0xFF029D,0xFE8900,0x7A4782,0x7E2DD2,0x85A900,0xFF0056,0xA42400,0x00AE7E,0x683D3B,0xBDC6FF,0x263400,0xBDD393,0x00B917,0x9E008E,0x001544,0xC28C9F,0xFF74A3,0x01D0FF,0x004754,0xE56FFE,0x788231,0x0E4CA1,0x91D0CB,0xBE9970,0x968AE8,0xBB8800,0x43002C,0xDEFF74,0x00FFC6,0xFFE502,0x620E00,0x008F9C,0x98FF52,0x7544B1,0xB500FF,0x00FF78,0xFF6E41,0x005F39,0x6B6882,0x5FAD4E,0xA75740,0xA5FFD2,0xFFB167,0x009BFF,0xE85EBE };
-	
-	typedef struct _debug_perf_entry_t {
-		std::string title;
-		double time;
-		int color_index;
-	} _debug_perf_entry_t;
-	
-	_debug_perf_entry_t _debug_perf_entries[4096];
+	highlevel_debug::_debug_perf_entry_t _debug_perf_entries[4096];
 	
 	void render(void) {
 		int _debug_perf_entries_len = 0;
 		
 		#define PERF_START_RECORD Raylib::rlBeginQuery();
 		
-		#define PERF_STOP_RECORD(s,colorid)													\
-			Raylib::rlEndQuery();													\
-			_debug_perf_entries[_debug_perf_entries_len++] = _debug_perf_entry_t {	\
-				s,																	\
-				Raylib::rlGetQueryResult(),											\
-				colorid,															\
+		#define PERF_STOP_RECORD(s,colorid)	\
+			Raylib::rlEndQuery();	\
+			_debug_perf_entries[_debug_perf_entries_len++] = highlevel_debug::_debug_perf_entry_t {	\
+				s,	\
+				Raylib::rlGetQueryResult(),	\
+				colorid,	\
 			};
 		
 		Raylib::BeginDrawing();
@@ -550,18 +272,23 @@ namespace timecapsule {
 		PERF_STOP_RECORD("resolution change", 1);
 		PERF_START_RECORD;
 
+		unsigned int player_render_triangle_count;
+		unsigned int debug_render_triangle_count = 0;
+
 		_curr_scene.render(_player_camera, _game_render_textures.game_play);
+		player_render_triangle_count = _curr_scene.get_sent_triangles_count();
 		
 		PERF_STOP_RECORD("player render", 2);
 		PERF_START_RECORD;
 
 		if(timecapsule_should_render_debug_screen) {
 			_curr_scene.render(_debug_camera, _game_render_textures.world_debug);
+			debug_render_triangle_count = _curr_scene.get_sent_triangles_count();
 
 			Raylib::BeginTextureMode(_game_render_textures.world_debug);
 			Raylib::BeginMode3D(_debug_camera.current);
 			
-			draw_camera_frustrum_in_3d(_player_camera, _debug_camera.current.position);
+			highlevel_debug::draw_camera_frustrum_in_3d(_player_camera, _debug_camera.current.position, _game_render_textures.game_play.texture);
 
 			Raylib::EndMode3D();
 			Raylib::EndTextureMode();
@@ -708,146 +435,12 @@ namespace timecapsule {
 		
 		PERF_STOP_RECORD("screen", 6);
 
-		if(_debug_screen_page != 0u) {
-			Raylib::Vector2 pos {
-				16.f,
-				16.f,
-			};
-
-			if(true) {
-				int fps_no = Raylib::GetFPS();
-				const char *fps_text = Raylib::TextFormat("%i FPS", fps_no);
-
-				Raylib::Font font = Raylib::GetFontDefault();
-				float font_size = 24.f;
-				float text_spacing = 1.f;
-
-				Raylib::Vector2 msr = Raylib::MeasureTextEx(
-					font,
-					fps_text,
-					font_size,
-					text_spacing
-				);
-
-				for(int oy = -1; oy <= 1; oy++) {
-					for(int ox = -1; ox <= 1; ox++) {
-						if(ox == 0 && oy == 0)
-							continue;
-
-						Raylib::DrawTextEx(
-							font,
-							fps_text,
-							Raylib::Vector2 {
-								std::round(pos.x) + ox,
-								std::round(pos.y) + oy,
-							},
-							font_size,
-							text_spacing,
-							Raylib::BLACK
-						);
-					};
-				};
-
-				Raylib::DrawTextEx(
-					font,
-					fps_text,
-					Raylib::Vector2 {
-						std::round(pos.x),
-						std::round(pos.y),
-					},
-					font_size,
-					text_spacing,
-					Raylib::WHITE
-				);
-
-				pos.y += msr.y + 2.f;
-			}
-			
-			if(_debug_screen_page == 1u) {
-				double total_perf_time = 0.0;
-				for(int i = 0; i < _debug_perf_entries_len; i++)
-					total_perf_time += _debug_perf_entries[i].time;
-				
-				Raylib::Font font = Raylib::GetFontDefault();
-				
-				float off_x = pos.x;
-				float height = 20.f;
-				float max_font_size = 24.f;
-				float text_spacing = 1.f;
-				
-				pos.y += max_font_size;
-				
-				for(int i = 0; i < _debug_perf_entries_len; i++) {
-					_debug_perf_entry_t entry = _debug_perf_entries[i];
-					
-					Raylib::Color color = Raylib::GetColor((_debug_perf_entry_color_palette[i] << 8) | 0xff);
-					
-					float width;
-					float frame_budget = 1.0 / 60.0;
-					
-					if(total_perf_time > frame_budget) {
-						if(total_perf_time <= (2.f * frame_budget)) {
-							width = (float)Raylib::GetScreenWidth() * 0.25f;
-							width *= entry.time / frame_budget;
-						} else {
-							width = (float)Raylib::GetScreenWidth() * 0.90f;
-							width *= (entry.time / total_perf_time);
-						}
-					} else {
-						width = (float)Raylib::GetScreenWidth() * 0.25f;
-						width *= entry.time / frame_budget;
-					}
-					
-					float font_size;
-					for(font_size = max_font_size; font_size >= 8.f && font_size <= max_font_size; font_size -= 1.f) {
-						Raylib::Vector2 msr = Raylib::MeasureTextEx(
-							font,
-							entry.title.c_str(),
-							font_size,
-							text_spacing
-						);
-						
-						if(msr.x <= width)
-							break;
-					};
-					
-					if(font_size >= 8.f) {
-						Raylib::Vector2 msr = Raylib::MeasureTextEx(
-							font,
-							entry.title.c_str(),
-							font_size,
-							text_spacing
-						);
-						
-						Raylib::DrawTextEx(
-							font,
-							entry.title.c_str(),
-							Raylib::Vector2 {
-								off_x,
-								pos.y - msr.y,
-							},
-							font_size,
-							text_spacing,
-							Raylib::WHITE
-						);
-					}
-					
-					Raylib::DrawRectangleRec(
-						Raylib::Rectangle {
-							off_x,
-							pos.y,
-							width,
-							height,
-						},
-						color
-					);
-					
-					off_x += width;
-				};
-				
-				pos.y += height + 1.0;
-			}
-		}
+		highlevel_debug::draw_debug_page(_debug_screen_page, highlevel_debug::perf_data_t {
+			_debug_perf_entries,
+			_debug_perf_entries_len,
+			player_render_triangle_count,
+			debug_render_triangle_count,
+		});
 		
 		Raylib::EndDrawing();
 	};

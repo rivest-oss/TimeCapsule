@@ -35,8 +35,10 @@ namespace timecapsule {
 				model_person_at_scene.position.x = 0.f;
 			}
 
-			for(int x = -10; x <= +10; x++) {
-				for(int z = -10; z <= +10; z++) {
+			//for(int x = -10; x <= +10; x++) {
+			//	for(int z = -10; z <= +10; z++) {
+			for(int x = -1; x <= +1; x++) {
+				for(int z = -1; z <= +1; z++) {
 					int i = 100 * x + z;
 					std::string id = std::to_string(i);
 					model_t &m = get_current_scene().add_model(id, model_person);
@@ -116,6 +118,9 @@ namespace timecapsule {
 			}
 
 			time += dt;
+			
+			timecapsule::model_t &model_person_at_scene = get_current_scene().get_model("1");
+			model_person_at_scene.rotation.z = std::sin(time);
 
 			/*
 			timecapsule::model_t &model_person_at_scene = get_current_scene().get_model("person");

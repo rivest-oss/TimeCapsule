@@ -36,6 +36,7 @@ namespace timecapsule {
 	class Scene {
 		private:
 			std::unordered_map<std::string, model_t> models;
+			unsigned int triangles_count = 0;
 		
 		public:
 			Scene(void);
@@ -49,5 +50,7 @@ namespace timecapsule {
 
 			void render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target);
 			void render(timecapsule::camera_t camera);
+
+			unsigned int get_sent_triangles_count(void);
 	};
 };
