@@ -150,7 +150,7 @@ namespace timecapsule {
 
 		_debug_screen_page = 0u;
 
-		if(_game_render_textures.resize(1, 1, 1, 1) < 0) {
+		if(_game_render_textures.resize(2, 2, 2, 2) < 0) {
 			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
 			deinit();
 			std::exit(1);
