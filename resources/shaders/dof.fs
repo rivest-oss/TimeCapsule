@@ -22,6 +22,7 @@ void main() {
 	float depth = texture(depthTexture, texCoord).r;
 
 	vec4 blurryColor = texture(blurryTexture, vec2(texCoord.x, 1.0 - texCoord.y));
+	//vec4 blurryColor = texture(blurryTexture, vec2(texCoord.x, texCoord.y));
 	finalColor = mix(focusedColor, blurryColor, 0.75);
 
 	/*

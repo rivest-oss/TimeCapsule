@@ -28,11 +28,13 @@
 #include "hl-debug.hpp"
 
 namespace timecapsule {
+	const int COUNT_OF_BLURRY_TEXTURES = 3;
+
 	typedef struct game_render_textures_t {
 		Raylib::RenderTexture2D game_play;
 		Raylib::RenderTexture2D world_debug;
 
-		Raylib::RenderTexture2D game_play_downscaled[8];
+		Raylib::RenderTexture2D game_play_downscaled[COUNT_OF_BLURRY_TEXTURES];
 
 		void unload(void) {
 			if(Raylib::IsRenderTextureValid(game_play))
@@ -40,7 +42,7 @@ namespace timecapsule {
 			if(Raylib::IsRenderTextureValid(world_debug))
 				unload_render_texture(world_debug);
 			
-			for(int i = 0; i < 8; i++) {
+			for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
 				if(Raylib::IsRenderTextureValid(game_play_downscaled[i]))
 					unload_render_texture(game_play_downscaled[i]);
 
@@ -79,21 +81,20 @@ namespace timecapsule {
 				game_play = load_render_texture_with_depth(game_w, game_h);
 				world_debug = load_render_texture(debug_w, debug_h);
 				
-				for(int i = 1; i < 8; i++) {
-					if(((float)game_w / i) < 16.f || ((float)game_h / i) < 16.f)
+				for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
+					int j = i + 1;
+					if(((float)game_w / j) < 16.f || ((float)game_h / j) < 16.f)
 						break;
 
-					game_play_downscaled[i - 1] = load_render_texture(
-						(float)game_w / i,
-						(float)game_h / i
+					game_play_downscaled[i] = load_render_texture(
+						(float)game_w / (1 << j),
+						(float)game_h / (1 << j)
 					);
 
-					if(Raylib::IsRenderTextureValid(game_play_downscaled[i - 1]) == false) {
+					if(Raylib::IsRenderTextureValid(game_play_downscaled[i]) == false) {
 						unload();
 						return -1;
 					}
-
-					Raylib::SetTextureFilter(game_play_downscaled[i - 1].texture, Raylib::TEXTURE_FILTER_BILINEAR);
 				};
 
 				if(
@@ -297,9 +298,41 @@ namespace timecapsule {
 			PERF_START_RECORD;
 		}
 		
-		for(int i = 0; i < 8; i++) {
+		for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
 			Raylib::RenderTexture2D target = _game_render_textures.game_play_downscaled[i];
 			Raylib::RenderTexture2D source = i < 1 ? _game_render_textures.game_play : _game_render_textures.game_play_downscaled[i - 1];
+
+			Raylib::BeginTextureMode(target);
+				Raylib::DrawTexturePro(
+					source.texture,
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)source.texture.width,
+						(float)source.texture.height,
+					},
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)target.texture.width,
+						(float)target.texture.height,
+					},
+					Raylib::Vector2 {
+						0.f,
+						0.f,
+					},
+					0.f,
+					Raylib::WHITE
+				);
+			Raylib::EndTextureMode();
+		};
+
+		for(int i = COUNT_OF_BLURRY_TEXTURES - 1; i > 0; i--) {
+			if(Raylib::IsRenderTextureValid(_game_render_textures.game_play_downscaled[i]) == false)
+				continue;
+
+			Raylib::RenderTexture2D source = _game_render_textures.game_play_downscaled[i];
+			Raylib::RenderTexture2D target = _game_render_textures.game_play_downscaled[i - 1];
 
 			Raylib::BeginTextureMode(target);
 				Raylib::DrawTexturePro(
@@ -331,13 +364,7 @@ namespace timecapsule {
 
 		if(timecapsule_should_render_debug_screen) {
 			Raylib::BeginShaderMode(_dof_shader);
-				Raylib::Texture2D blurry_texture = _game_render_textures.game_play.texture;
-				for(int i = 0; i < 8; i++) {
-					if(Raylib::IsRenderTextureValid(_game_render_textures.game_play_downscaled[i]) == false)
-						break;
-
-					blurry_texture = _game_render_textures.game_play_downscaled[i].texture;
-				};
+				Raylib::Texture2D blurry_texture = _game_render_textures.game_play_downscaled[0].texture;
 
 				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "depthTexture"), _game_render_textures.game_play.depth);
 				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "focusedTexture"), _game_render_textures.game_play.texture);

@@ -227,8 +227,10 @@ namespace timecapsule {
 			return Raylib::Texture2D { 0, -1, -1, -1, 0 };
 		
 		Raylib::Texture2D tex = Raylib::LoadTextureFromImage(img);
-		if(Raylib::IsTextureValid(tex))
+		if(Raylib::IsTextureValid(tex)) {
 			_loaded_textures.insert_or_assign(_get_id_texture(tex), tex);
+			Raylib::SetTextureFilter(tex, Raylib::TEXTURE_FILTER_BILINEAR);
+		}
 		
 		return tex;
 	};
@@ -236,8 +238,10 @@ namespace timecapsule {
 	Raylib::Texture2D load_texture(const char *filename) {
 		Raylib::Texture2D tex = Raylib::LoadTexture(filename);
 		
-		if(Raylib::IsTextureValid(tex))
+		if(Raylib::IsTextureValid(tex)) {
 			_loaded_textures.insert_or_assign(_get_id_texture(tex), tex);
+			Raylib::SetTextureFilter(tex, Raylib::TEXTURE_FILTER_BILINEAR);
+		}
 		
 		return tex;
 	};
@@ -259,6 +263,7 @@ namespace timecapsule {
 			return tex;
 		
 		_loaded_render_textures.insert_or_assign(_get_id_render_texture(tex), tex);
+		Raylib::SetTextureFilter(tex.texture, Raylib::TEXTURE_FILTER_BILINEAR);
 		return tex;
 	};
 
@@ -279,6 +284,7 @@ namespace timecapsule {
 			return tex;
 		
 		_loaded_render_textures_with_depth.insert_or_assign(_get_id_render_texture(tex), tex);
+		Raylib::SetTextureFilter(tex.texture, Raylib::TEXTURE_FILTER_BILINEAR);
 		return tex;
 	};
 
