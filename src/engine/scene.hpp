@@ -30,7 +30,9 @@ namespace timecapsule {
 		timecapsule::vector3_t scale = timecapsule::vector3_t { 1.f, 1.f, 1.f };
 		timecapsule::vector3_t rotation = timecapsule::vector3_t { 0.f, 0.f, 0.f };
 		timecapsule::srgb_color_t tint = srgb_color_t { 0xff, 0xff, 0xff, 0xff };
+
 		bool visible = true;
+		bool culled = false;
 	} model_t;
 	
 	class Scene {
@@ -48,8 +50,8 @@ namespace timecapsule {
 			model_t &get_model(std::string id);
 			bool model_exists(std::string id);
 
-			void render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target);
-			void render(timecapsule::camera_t camera);
+			void render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target, bool update_cull = true);
+			void render(timecapsule::camera_t camera, bool update_cull = true);
 
 			unsigned int get_sent_triangles_count(void);
 	};

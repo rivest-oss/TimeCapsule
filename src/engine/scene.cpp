@@ -96,16 +96,16 @@ namespace timecapsule {
 		return models.find(id) != models.cend();
 	};
 
-	void Scene::render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target) {
+	void Scene::render(timecapsule::camera_t camera, timecapsule::gl_render_texture_t target, bool update_cull) {
 		if(Raylib::IsRenderTextureValid(target) == false)
 			return;
 
 		Raylib::BeginTextureMode(target);
-		render(camera);
+		render(camera, update_cull);
 		Raylib::EndTextureMode();
 	};
 
-	void Scene::render(camera_t camera) {
+	void Scene::render(camera_t camera, bool update_cull) {
 		triangles_count = 0;
 		
 		Raylib::ClearBackground(Raylib::BLACK);
@@ -159,8 +159,12 @@ namespace timecapsule {
 			RLFrustum frustum;
 			frustum.Extract();
 
-			bool culled = frustum.AABBoxIn(bb.min, bb.max) == false;
-			if(culled)
+			if(update_cull) {
+				model.culled = frustum.AABBoxIn(bb.min, bb.max) == false;
+				models.at(entry.first).culled = model.culled;
+			}
+
+			if(model.culled)
 				continue;
 
 			timecapsule::lighting::update_model_lighting(rmodel);

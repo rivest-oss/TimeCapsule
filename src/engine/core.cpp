@@ -304,14 +304,17 @@ namespace timecapsule {
 		unsigned int player_render_triangle_count;
 		unsigned int debug_render_triangle_count = 0;
 
-		_curr_scene.render(_player_camera, _game_render_textures.game_play);
+		_curr_scene.render(_player_camera, _game_render_textures.game_play, true);
 		player_render_triangle_count = _curr_scene.get_sent_triangles_count();
 		
 		PERF_STOP_RECORD("player render");
 		PERF_START_RECORD;
 
 		if(timecapsule_should_render_debug_screen) {
-			_curr_scene.render(_debug_camera, _game_render_textures.world_debug);
+			// set 'update_cull' to 'false' if you want to watch culling in action.
+			// set it to 'true' if you just want to see the actual world itself and optimized too.
+			_curr_scene.render(_debug_camera, _game_render_textures.world_debug, false);
+
 			debug_render_triangle_count = _curr_scene.get_sent_triangles_count();
 
 			Raylib::BeginTextureMode(_game_render_textures.world_debug);
