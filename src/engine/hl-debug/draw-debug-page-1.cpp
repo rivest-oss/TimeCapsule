@@ -141,7 +141,8 @@ namespace timecapsule {
 						);
 					}
 
-					const char *entry_weight_text = Raylib::TextFormat("%i%%", (int)((entry.time / frame_total_time) * 100.f));
+					//const char *entry_weight_text = Raylib::TextFormat("%i%%", (int)((entry.time / frame_total_time) * 100.f));
+					const char *entry_weight_text = Raylib::TextFormat("%.02fms", entry.time * 1000.f);
 
 					for(font_size = max_font_size; font_size >= min_font_size && font_size <= max_font_size; font_size -= 1.f) {
 						Raylib::Vector2 msr = Raylib::MeasureTextEx(
