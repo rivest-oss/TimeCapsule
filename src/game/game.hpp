@@ -21,6 +21,6 @@
 namespace timecapsule {
 	namespace game {
 		int game_sub_init(void);
-		void game_sub_update(double dt);
+		void game_sub_update(void);
 	};
 };

@@ -71,7 +71,7 @@ namespace timecapsule {
 			return 0;
 		};
 
-		int update(double dt) {
+		int update(void) {
 			if(timecapsule::window_should_close()) {
 				transition_game_state_to(GAME_STATE_EXIT);
 				return -1;
@@ -88,7 +88,7 @@ namespace timecapsule {
 			if(is_game_state_exit())
 				return -1;
 			
-			game_sub_update(dt);
+			game_sub_update();
 
 			if(is_game_state_exit())
 				return -1;

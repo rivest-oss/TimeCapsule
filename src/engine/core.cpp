@@ -28,6 +28,12 @@
 #include "hl-debug.hpp"
 
 namespace timecapsule {
+	double scaled_time = 0.0;
+	double unscaled_time = 0.0;
+	double scaled_delta_time = 0.0;
+	double unscaled_delta_time = 0.0;
+	double time_scale = 1.0;
+
 	const int COUNT_OF_BLURRY_TEXTURES = 3;
 
 	typedef struct game_render_textures_t {
@@ -137,6 +143,11 @@ namespace timecapsule {
 		
 		Raylib::InitAudioDevice();
 		while(Raylib::IsAudioDeviceReady() == false) {};
+
+		scaled_time = 0.0;
+		scaled_delta_time = 0.0;
+		unscaled_delta_time = 0.0;
+		time_scale = 1.0;
 		
 		if(timecapsule::init_resources() < 0) {
 			deinit();
@@ -183,8 +194,17 @@ namespace timecapsule {
 		}
 
 		bool is_game_input_admin = true;
+
+		unscaled_time = Raylib::GetTime();
+		double t0 = Raylib::GetTime();
 		
 		while(true) {
+			unscaled_delta_time = Raylib::GetTime() - t0;
+			t0 = Raylib::GetTime();
+
+			scaled_delta_time = unscaled_delta_time * time_scale;
+			scaled_time += scaled_delta_time;
+
 			if(timecapsule_should_render_debug_screen) {
 				if(is_key_pressed(Raylib::KEY_K))
 					is_game_input_admin = is_game_input_admin == false;
@@ -192,13 +212,13 @@ namespace timecapsule {
 				timecapsule::game::should_game_handle_inputs(is_game_input_admin);
 			}
 
-			double t0 = Raylib::GetTime();
-			int rc = timecapsule::game::update(Raylib::GetFrameTime());
+			double t_game = Raylib::GetTime();
+			int rc = timecapsule::game::update();
 
 			if(rc < 0)
 				break;
 
-			render(Raylib::GetTime() - t0);
+			render(Raylib::GetTime() - t_game);
 		};
 		
 		deinit();
@@ -506,5 +526,29 @@ namespace timecapsule {
 		//return _player_camera;
 		if(Raylib::IsKeyPressed(Raylib::KEY_P)) _what_thingy_should_i_update = _what_thingy_should_i_update == false;
 		return _what_thingy_should_i_update ? _debug_camera : _player_camera;
+	};
+
+	double get_time(void) {
+		return scaled_time;
+	};
+
+	double get_unscaled_time(void) {
+		return Raylib::GetTime() - unscaled_time;
+	};
+
+	double get_delta_time(void) {
+		return scaled_delta_time;
+	};
+
+	double get_unscaled_delta_time(void) {
+		return unscaled_delta_time;
+	};
+
+	double get_time_scale(void) {
+		return time_scale;
+	};
+
+	void set_time_scale(double factor) {
+		time_scale = factor;
 	};
 };

@@ -29,4 +29,12 @@ namespace timecapsule {
 	void set_current_scene(Scene &scene);
 	Scene &get_current_scene(void);
 	timecapsule::camera_t &get_player_camera(void);
+
+	double get_time(void);
+	double get_unscaled_time(void);
+	double get_delta_time(void);
+	double get_unscaled_delta_time(void);
+	
+	double get_time_scale(void);
+	void set_time_scale(double factor);
 };

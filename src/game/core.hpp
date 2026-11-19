@@ -35,7 +35,7 @@ namespace timecapsule {
 		game_state_t get_game_state(void);
 
 		int init(void);
-		int update(double dt);
+		int update(void);
 		void deinit(void);
 	};
 };

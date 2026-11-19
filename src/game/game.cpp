@@ -50,10 +50,9 @@ namespace timecapsule {
 			return 0;
 		};
 
-		float time = 0.f;
 		float time_since_movement = 0.f;
 
-		void game_sub_update(double dt) {
+		void game_sub_update(void) {
 			if(get_game_state() != GAME_STATE_RUNNING)
 				return;
 			
@@ -83,15 +82,15 @@ namespace timecapsule {
 				timecapsule::update_camera(
 					player_camera.goal,
 					timecapsule::vector3_t {
-						timecapsule::is_key_down(timecapsule::KEY_W) * forward_movement_speed * (float)dt
-						- timecapsule::is_key_down(timecapsule::KEY_S) * forward_movement_speed * (float)dt,
-						timecapsule::is_key_down(timecapsule::KEY_D) * forward_movement_speed * (float)dt
-						- timecapsule::is_key_down(timecapsule::KEY_A) * forward_movement_speed * (float)dt,
-						timecapsule::get_mouse_wheel_delta() * upward_movement_speed * (float)dt,
+						timecapsule::is_key_down(timecapsule::KEY_W) * forward_movement_speed * (float)get_delta_time()
+						- timecapsule::is_key_down(timecapsule::KEY_S) * forward_movement_speed * (float)get_delta_time(),
+						timecapsule::is_key_down(timecapsule::KEY_D) * forward_movement_speed * (float)get_delta_time()
+						- timecapsule::is_key_down(timecapsule::KEY_A) * forward_movement_speed * (float)get_delta_time(),
+						timecapsule::get_mouse_wheel_delta() * upward_movement_speed * (float)get_delta_time(),
 					},
 					timecapsule::vector3_t {
-						timecapsule::get_mouse_delta().x * M_PI2f * (float)dt,
-						timecapsule::get_mouse_delta().y * M_PI2f * (float)dt,
+						timecapsule::get_mouse_delta().x * M_PI2f * (float)get_delta_time(),
+						timecapsule::get_mouse_delta().y * M_PI2f * (float)get_delta_time(),
 						0.f,
 					},
 					0.f
@@ -100,7 +99,7 @@ namespace timecapsule {
 				bool is_moving = vdistance(player_camera.current.position, player_camera.goal.position) > 0.f;
 
 				if(is_moving) {
-					time_since_movement += dt;
+					time_since_movement += (float)get_delta_time();
 					float interp_time = time_since_movement;
 
 					interp_time = clampf(interp_time, 0.f, 1.f);
@@ -117,10 +116,8 @@ namespace timecapsule {
 				// [TODO] : add third person camera.
 			}
 
-			time += dt;
-			
 			timecapsule::model_t &model_person_at_scene = get_current_scene().get_model("1");
-			model_person_at_scene.rotation.z = std::sin(time);
+			model_person_at_scene.rotation.z = std::sin(get_time());
 
 			/*
 			timecapsule::model_t &model_person_at_scene = get_current_scene().get_model("person");
