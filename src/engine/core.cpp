@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "core.hpp"
+#include "core-private.hpp"
 #include "gl.hpp"
 #include "asset.hpp"
 #include "../misc/rtconfig.hpp"
@@ -34,96 +35,86 @@ namespace timecapsule {
 	double unscaled_delta_time = 0.0;
 	double time_scale = 1.0;
 
-	const int COUNT_OF_BLURRY_TEXTURES = 3;
-
-	typedef struct game_render_textures_t {
-		Raylib::RenderTexture2D game_play;
-		Raylib::RenderTexture2D world_debug;
-
-		Raylib::RenderTexture2D game_play_downscaled[COUNT_OF_BLURRY_TEXTURES];
-
-		void unload(void) {
-			if(Raylib::IsRenderTextureValid(game_play))
-				unload_render_texture_with_depth(game_play);
-			if(Raylib::IsRenderTextureValid(world_debug))
-				unload_render_texture(world_debug);
-			
-			for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
-				if(Raylib::IsRenderTextureValid(game_play_downscaled[i]))
-					unload_render_texture(game_play_downscaled[i]);
-
-				game_play_downscaled[i].id =
-				game_play_downscaled[i].texture.id =
-				game_play_downscaled[i].texture.width =
-				game_play_downscaled[i].texture.height = 0;
-			};
-
-			game_play.id =
-			game_play.texture.id =
-			game_play.texture.width =
-			game_play.texture.height =
-			world_debug.id =
-			world_debug.texture.id =
-			world_debug.texture.width =
-			world_debug.texture.height = 0;
-		};
-
-		int resize(int game_w, int game_h, int debug_w, int debug_h) {
-			int old_game_w = game_play.texture.width;
-			int old_game_h = game_play.texture.height;
-			int old_debug_w = world_debug.texture.width;
-			int old_debug_h = world_debug.texture.height;
-
-			if(
-				Raylib::IsRenderTextureValid(game_play) == false
-				|| Raylib::IsRenderTextureValid(world_debug) == false
-				|| old_game_w != game_w
-				|| old_game_h != game_h
-				|| old_debug_w != debug_w
-				|| old_debug_h != debug_h
-			) {
-				unload();
-
-				game_play = load_render_texture_with_depth(game_w, game_h);
-				world_debug = load_render_texture(debug_w, debug_h);
-				
-				for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
-					int j = i + 1;
-					if(((float)game_w / j) < 16.f || ((float)game_h / j) < 16.f)
-						break;
-
-					game_play_downscaled[i] = load_render_texture(
-						(float)game_w / (1 << j),
-						(float)game_h / (1 << j)
-					);
-
-					if(Raylib::IsRenderTextureValid(game_play_downscaled[i]) == false) {
-						unload();
-						return -1;
-					}
-				};
-
-				if(
-					Raylib::IsRenderTextureValid(game_play) == false
-					|| Raylib::IsRenderTextureValid(world_debug) == false
-				) {
-					unload();
-					return -1;
-				}
-			}
-
-			return 0;
-		};
-	} game_render_textures_t;
-
-	unsigned int _debug_screen_page = 0;
 	game_render_textures_t _game_render_textures;
 	timecapsule::camera_t _player_camera;
 	timecapsule::camera_t _debug_camera;
 	timecapsule::Scene _curr_scene;
 	Raylib::Shader _dof_shader;
-
+	
 	void render(double game_dt);
+	
+	void game_render_textures_t::unload(void) {
+		if(Raylib::IsRenderTextureValid(game_play))
+			unload_render_texture_with_depth(game_play);
+		if(Raylib::IsRenderTextureValid(world_debug))
+			unload_render_texture(world_debug);
+		
+		for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
+			if(Raylib::IsRenderTextureValid(game_play_downscaled[i]))
+				unload_render_texture(game_play_downscaled[i]);
+
+			game_play_downscaled[i].id =
+			game_play_downscaled[i].texture.id =
+			game_play_downscaled[i].texture.width =
+			game_play_downscaled[i].texture.height = 0;
+		};
+
+		game_play.id =
+		game_play.texture.id =
+		game_play.texture.width =
+		game_play.texture.height =
+		world_debug.id =
+		world_debug.texture.id =
+		world_debug.texture.width =
+		world_debug.texture.height = 0;
+	};
+
+	int game_render_textures_t::resize(int game_w, int game_h, int debug_w, int debug_h) {
+		int old_game_w = game_play.texture.width;
+		int old_game_h = game_play.texture.height;
+		int old_debug_w = world_debug.texture.width;
+		int old_debug_h = world_debug.texture.height;
+
+		if(
+			Raylib::IsRenderTextureValid(game_play) == false
+			|| Raylib::IsRenderTextureValid(world_debug) == false
+			|| old_game_w != game_w
+			|| old_game_h != game_h
+			|| old_debug_w != debug_w
+			|| old_debug_h != debug_h
+		) {
+			unload();
+
+			game_play = load_render_texture_with_depth(game_w, game_h);
+			world_debug = load_render_texture(debug_w, debug_h);
+			
+			for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
+				int j = i + 1;
+				if(((float)game_w / j) < 16.f || ((float)game_h / j) < 16.f)
+					break;
+
+				game_play_downscaled[i] = load_render_texture(
+					(float)game_w / (1 << j),
+					(float)game_h / (1 << j)
+				);
+
+				if(Raylib::IsRenderTextureValid(game_play_downscaled[i]) == false) {
+					unload();
+					return -1;
+				}
+			};
+
+			if(
+				Raylib::IsRenderTextureValid(game_play) == false
+				|| Raylib::IsRenderTextureValid(world_debug) == false
+			) {
+				unload();
+				return -1;
+			}
+		}
+
+		return 0;
+	};
 	
 	[[noreturn]] void init(int argc, const char **argv) {
 		timecapsule::config_t conf = timecapsule::read_config_from_args(argc, argv);
@@ -158,8 +149,6 @@ namespace timecapsule {
 			deinit();
 			std::exit(1);
 		}
-
-		_debug_screen_page = 0u;
 
 		if(_game_render_textures.resize(2, 2, 2, 2) < 0) {
 			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
@@ -250,16 +239,6 @@ namespace timecapsule {
 		
 		Raylib::ClearBackground(Raylib::BLACK);
 
-		if(Raylib::IsKeyPressed(Raylib::KEY_F3))
-			_debug_screen_page++;
-
-		if(
-			timecapsule_should_render_debug_screen == false
-			|| (timecapsule_should_render_debug_screen && _debug_screen_page > 1u)
-		) {
-			_debug_screen_page = 0u;
-		}
-		
 		int screen_width = Raylib::GetScreenWidth();
 		int screen_height = Raylib::GetScreenHeight();
 
@@ -493,11 +472,12 @@ namespace timecapsule {
 		
 		PERF_STOP_RECORD("screen");
 
-		highlevel_debug::draw_debug_page(_debug_screen_page, highlevel_debug::perf_data_t {
+		highlevel_debug::draw_debug_page(highlevel_debug::perf_data_t {
 			_debug_perf_entries,
 			_debug_perf_entries_len,
 			player_render_triangle_count,
 			debug_render_triangle_count,
+			&_game_render_textures
 		});
 		
 		Raylib::EndDrawing();

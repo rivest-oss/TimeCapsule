@@ -41,4 +41,9 @@ namespace timecapsule {
 	void unload_render_texture_with_depth(timecapsule::gl_render_texture_t tex);
 	void unload_font(timecapsule::gl_font_t font);
 	void unload_model(timecapsule::gl_model_t model);
+	
+	void debug_copy_texture(gl_texture_t &target, unsigned int it, unsigned int &len, std::string &target_id);
+	void debug_copy_render_texture(gl_render_texture_t &target, unsigned int it, unsigned int &len, std::string &target_id);
+	void debug_copy_render_texture_with_depth(gl_render_texture_t &target, unsigned int it, unsigned int &len, std::string &target_id);
+	void debug_copy_model(gl_model_t &target, unsigned int it, unsigned int &len, std::string &target_id);
 };

@@ -19,6 +19,7 @@
 #pragma once
 #include "asset.hpp"
 #include "gl.hpp"
+#include "core-private.hpp"
 
 namespace timecapsule {
 	namespace highlevel_debug {
@@ -35,9 +36,10 @@ namespace timecapsule {
 			int entries_len;
 			unsigned int player_render_triangle_count;
 			unsigned int debug_render_triangle_count;
+			game_render_textures_t *game_render_textures;
 		} perf_data_t;
 
-		void draw_debug_page(unsigned int page, perf_data_t perf_data);
+		void draw_debug_page(perf_data_t perf_data);
 
 		void draw_camera_frustrum_in_3d(camera_t camera, Raylib::Vector3 camera_sphere_radius_ref, Raylib::Texture2D &game_play_texture);
 	};

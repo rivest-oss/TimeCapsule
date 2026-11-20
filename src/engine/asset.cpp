@@ -368,4 +368,69 @@ namespace timecapsule {
 
 		return model;
 	};
+	
+	void debug_copy_texture(gl_texture_t &target, unsigned int it, unsigned int &len, std::string &target_id) {
+		unsigned int i = 0;
+		target.id = 0;
+		len = _loaded_textures.size();
+		for(std::pair<std::string, Raylib::Texture2D> entry : _loaded_textures) {
+			if(i != it) {
+				i++;
+				continue;
+			}
+			
+			target_id = entry.first;
+			target = entry.second;
+			
+			break;
+		};
+	};
+	void debug_copy_render_texture(gl_render_texture_t &target, unsigned int it, unsigned int &len, std::string &target_id) {
+		unsigned int i = 0;
+		target.id = 0;
+		len = _loaded_render_textures.size();
+		for(std::pair<std::string, Raylib::RenderTexture2D> entry : _loaded_render_textures) {
+			if(i != it) {
+				i++;
+				continue;
+			}
+			
+			target_id = entry.first;
+			target = entry.second;
+			
+			break;
+		};
+	};
+	void debug_copy_render_texture_with_depth(gl_render_texture_t &target, unsigned int it, unsigned int &len, std::string &target_id) {
+		unsigned int i = 0;
+		target.id = 0;
+		len = _loaded_render_textures_with_depth.size();
+		for(std::pair<std::string, Raylib::RenderTexture2D> entry : _loaded_render_textures_with_depth) {
+			if(i != it) {
+				i++;
+				continue;
+			}
+			
+			target_id = entry.first;
+			target = entry.second;
+			
+			break;
+		};
+	};
+	void debug_copy_model(gl_model_t &target, unsigned int it, unsigned int &len, std::string &target_id) {
+		unsigned int i = 0;
+		target.meshes = nullptr, target.meshCount = 0;
+		len = _loaded_render_textures_with_depth.size();
+		for(std::pair<std::string, Raylib::Model> entry : _loaded_models) {
+			if(i != it) {
+				i++;
+				continue;
+			}
+			
+			target_id = entry.first;
+			target = entry.second;
+			
+			break;
+		};
+	};
 };
