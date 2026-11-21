@@ -104,7 +104,7 @@ namespace timecapsule {
 					
 					debug_copy_texture(tex, _debug_page2_it_value, len, id);
 					
-					text = Raylib::TextFormat("texture (%i/%i): %s", _debug_page2_it_value, len, id.c_str());
+					text = Raylib::TextFormat("texture (%i/%i) (%ix%i): %s", _debug_page2_it_value, len, tex.width, tex.height, id.c_str());
 					
 					if(Raylib::IsTextureValid(tex)) {
 						Raylib::DrawTexturePro(
@@ -140,7 +140,7 @@ namespace timecapsule {
 					
 					debug_copy_render_texture(tex, _debug_page2_it_value, len, id);
 					
-					text = Raylib::TextFormat("render tex. (%i/%i): %s", _debug_page2_it_value, len, id.c_str());
+					text = Raylib::TextFormat("render tex. (%i/%i) (%ix%i): %s", _debug_page2_it_value, len, tex.texture.width, tex.texture.height, id.c_str());
 					
 					if(Raylib::IsRenderTextureValid(tex)) {
 						Raylib::DrawTexturePro(
@@ -176,7 +176,7 @@ namespace timecapsule {
 					
 					debug_copy_render_texture_with_depth(tex, _debug_page2_it_value, len, id);
 					
-					text = Raylib::TextFormat("render tex. w/ depth (%i/%i): %s", _debug_page2_it_value, len, id.c_str());
+					text = Raylib::TextFormat("render tex. w/ depth (%i/%i) (%ix%i): %s", _debug_page2_it_value, len, tex.texture.width, tex.texture.height, id.c_str());
 					
 					if(Raylib::IsRenderTextureValid(tex)) {
 						Raylib::DrawTexturePro(
@@ -215,7 +215,14 @@ namespace timecapsule {
 					text = Raylib::TextFormat("model (%i/%i): %s", _debug_page2_it_value, len, id.c_str());
 					
 					if(Raylib::IsModelValid(model)) {
-						Raylib::UpdateCamera(&_debug_page2_3d_camera, Raylib::CAMERA_THIRD_PERSON);
+						Raylib::UpdateCamera(&_debug_page2_3d_camera, Raylib::CAMERA_ORBITAL);
+						
+						if(Raylib::IsKeyDown(Raylib::KEY_Q))
+							_debug_page2_3d_camera.position.y -= get_unscaled_delta_time(),
+							_debug_page2_3d_camera.target.y -= get_unscaled_delta_time();
+						if(Raylib::IsKeyDown(Raylib::KEY_E))
+							_debug_page2_3d_camera.position.y += get_unscaled_delta_time(),
+							_debug_page2_3d_camera.target.y += get_unscaled_delta_time();
 						
 						Raylib::BeginMode3D(_debug_page2_3d_camera);
 						
@@ -234,7 +241,11 @@ namespace timecapsule {
 					}
 				}
 				
-				Raylib::DrawText(text, 1, Raylib::GetScreenHeight() - 17, 16, Raylib::PURPLE);
+				Raylib::DrawText(text, 0, Raylib::GetScreenHeight() - 18, 16, Raylib::BLACK);
+				Raylib::DrawText(text, 2, Raylib::GetScreenHeight() - 18, 16, Raylib::BLACK);
+				Raylib::DrawText(text, 0, Raylib::GetScreenHeight() - 16, 16, Raylib::BLACK);
+				Raylib::DrawText(text, 2, Raylib::GetScreenHeight() - 16, 16, Raylib::BLACK);
+				Raylib::DrawText(text, 1, Raylib::GetScreenHeight() - 17, 16, Raylib::WHITE);
 			}
 			
 			if(_debug_page_no == 1u)
