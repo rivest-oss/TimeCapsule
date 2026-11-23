@@ -26,7 +26,8 @@ namespace timecapsule {
 		Raylib::RenderTexture2D game_play;
 		Raylib::RenderTexture2D world_debug;
 
-		Raylib::RenderTexture2D game_play_downscaled[3];
+		static const int dontchange_game_play_downscaled_len = 3;
+		Raylib::RenderTexture2D game_play_downscaled[dontchange_game_play_downscaled_len];
 		
 		void unload(void);
 		int resize(int game_w, int game_h, int debug_w, int debug_h);

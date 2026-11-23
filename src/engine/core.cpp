@@ -49,7 +49,7 @@ namespace timecapsule {
 		if(Raylib::IsRenderTextureValid(world_debug))
 			unload_render_texture(world_debug);
 		
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < dontchange_game_play_downscaled_len; i++) {
 			if(Raylib::IsRenderTextureValid(game_play_downscaled[i]))
 				unload_render_texture(game_play_downscaled[i]);
 
@@ -88,7 +88,7 @@ namespace timecapsule {
 			game_play = load_render_texture_with_depth(game_w, game_h);
 			world_debug = load_render_texture(debug_w, debug_h);
 			
-			for(int i = 0; i < 3; i++) {
+			for(int i = 0; i < _game_render_textures.dontchange_game_play_downscaled_len; i++) {
 				int j = i + 1;
 
 				game_play_downscaled[i] = load_render_texture(
@@ -308,7 +308,7 @@ namespace timecapsule {
 			PERF_START_RECORD;
 		}
 		
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < _game_render_textures.dontchange_game_play_downscaled_len; i++) {
 			Raylib::RenderTexture2D target = _game_render_textures.game_play_downscaled[i];
 			Raylib::RenderTexture2D source = i < 1 ? _game_render_textures.game_play : _game_render_textures.game_play_downscaled[i - 1];
 
@@ -337,7 +337,7 @@ namespace timecapsule {
 			Raylib::EndTextureMode();
 		};
 
-		for(int i = 3 - 1; i > 0; i--) {
+		for(int i = _game_render_textures.dontchange_game_play_downscaled_len - 1; i > 0; i--) {
 			if(Raylib::IsRenderTextureValid(_game_render_textures.game_play_downscaled[i]) == false)
 				continue;
 
