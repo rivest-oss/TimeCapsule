@@ -22,14 +22,11 @@
 #define timecapsule_should_render_debug_screen true
 
 namespace timecapsule {
-	// internal usage only
-	const int COUNT_OF_BLURRY_TEXTURES = 3;
-	// internal usage only
 	typedef struct game_render_textures_t {
 		Raylib::RenderTexture2D game_play;
 		Raylib::RenderTexture2D world_debug;
 
-		Raylib::RenderTexture2D game_play_downscaled[COUNT_OF_BLURRY_TEXTURES];
+		Raylib::RenderTexture2D game_play_downscaled[3];
 		
 		void unload(void);
 		int resize(int game_w, int game_h, int debug_w, int debug_h);

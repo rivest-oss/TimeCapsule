@@ -49,7 +49,7 @@ namespace timecapsule {
 		if(Raylib::IsRenderTextureValid(world_debug))
 			unload_render_texture(world_debug);
 		
-		for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
+		for(int i = 0; i < 3; i++) {
 			if(Raylib::IsRenderTextureValid(game_play_downscaled[i]))
 				unload_render_texture(game_play_downscaled[i]);
 
@@ -88,10 +88,8 @@ namespace timecapsule {
 			game_play = load_render_texture_with_depth(game_w, game_h);
 			world_debug = load_render_texture(debug_w, debug_h);
 			
-			for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
+			for(int i = 0; i < 3; i++) {
 				int j = i + 1;
-				if(((float)game_w / j) < 16.f || ((float)game_h / j) < 16.f)
-					break;
 
 				game_play_downscaled[i] = load_render_texture(
 					(float)game_w / (1 << j),
@@ -150,8 +148,8 @@ namespace timecapsule {
 			std::exit(1);
 		}
 
-		if(_game_render_textures.resize(2, 2, 2, 2) < 0) {
-			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
+		if(_game_render_textures.resize(16, 16, 2, 2) < 0) {
+			std::fprintf(stderr, "[ENGINE] Error: Couldn't load initial render textures\n");
 			deinit();
 			std::exit(1);
 		}
@@ -237,13 +235,18 @@ namespace timecapsule {
 		
 		Raylib::BeginDrawing();
 		
-		Raylib::ClearBackground(Raylib::BLACK);
-
 		int screen_width = Raylib::GetScreenWidth();
 		int screen_height = Raylib::GetScreenHeight();
+		
+		int game_main_screen_width = screen_width * 0.60f;
+		int game_main_screen_height = screen_height;
 
-		if(screen_width < 2 || screen_height < 2) {
-			std::printf("[DEBUG] Screen is %ix%i, rendering aborted.\n", screen_width, screen_height);
+		if(game_main_screen_width < 16) game_main_screen_width = 16;
+		if(game_main_screen_height < 16) game_main_screen_height = 16;
+
+		// Game screen must be at least 16x16.
+		if(game_main_screen_width < 16 || game_main_screen_height < 16) {
+			std::printf("[DEBUG] Game internal resolution is too small (%ix%i), rendering aborted.\n", screen_width, screen_height);
 			
 			if(int(Raylib::GetTime()) & 0x1)
 				Raylib::ClearBackground(Raylib::Color { 0xff, 0x00, 0x00, 0xff });
@@ -251,16 +254,13 @@ namespace timecapsule {
 			Raylib::EndDrawing();
 			return;
 		}
-		
-		PERF_START_RECORD;
 
-		int game_main_screen_width = screen_width * 0.60f;
-		int game_main_screen_height = screen_height;
 		int game_main_debug_screen_width = screen_width * 0.39f;
 		int game_main_debug_screen_height = screen_height;
 
-		if(game_main_screen_width < 16) game_main_screen_width = 16;
-		if(game_main_screen_height < 16) game_main_screen_height = 16;
+		Raylib::ClearBackground(Raylib::BLACK);
+
+		PERF_START_RECORD;
 
 		if(
 			_game_render_textures.resize(
@@ -272,7 +272,7 @@ namespace timecapsule {
 		) {
 			PERF_STOP_RECORD("resolution change");
 			
-			std::fprintf(stderr, "[ENGINE] Error: Couldn't load render textures\n");
+			std::fprintf(stderr, "[ENGINE] Error: Couldn't load resized render textures\n");
 			deinit();
 			std::exit(1);
 		}
@@ -308,7 +308,7 @@ namespace timecapsule {
 			PERF_START_RECORD;
 		}
 		
-		for(int i = 0; i < COUNT_OF_BLURRY_TEXTURES; i++) {
+		for(int i = 0; i < 3; i++) {
 			Raylib::RenderTexture2D target = _game_render_textures.game_play_downscaled[i];
 			Raylib::RenderTexture2D source = i < 1 ? _game_render_textures.game_play : _game_render_textures.game_play_downscaled[i - 1];
 
@@ -337,7 +337,7 @@ namespace timecapsule {
 			Raylib::EndTextureMode();
 		};
 
-		for(int i = COUNT_OF_BLURRY_TEXTURES - 1; i > 0; i--) {
+		for(int i = 3 - 1; i > 0; i--) {
 			if(Raylib::IsRenderTextureValid(_game_render_textures.game_play_downscaled[i]) == false)
 				continue;
 
