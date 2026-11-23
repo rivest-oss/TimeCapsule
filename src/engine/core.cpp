@@ -214,9 +214,12 @@ namespace timecapsule {
 			scaled_delta_time = unscaled_delta_time * time_scale;
 			scaled_time += scaled_delta_time;
 
-			if(timecapsule_should_render_debug_screen)
-				if(is_key_pressed(Raylib::KEY_K))
+			if(timecapsule_should_render_debug_screen) {
+				if(engine_internals::is_key_pressed(Raylib::KEY_K))
 					is_game_input_admin = is_game_input_admin == false;
+
+				engine_internals::block_game_input(is_game_input_admin == false);
+			}
 
 			double t_game = Raylib::GetTime();
 			int rc = game_update();
@@ -232,6 +235,7 @@ namespace timecapsule {
 					std::printf("  * Time: %f\n", _recording_perf_time);
 					std::printf("  * Frames: %u\n", _recording_perf_frame_number);
 					std::printf("  * Average frame time: %f (~%f FPS)\n", _recording_perf_frame_time, 1.0 / _recording_perf_frame_time);
+					std::printf("  * Score: %f%%\n", ((1.0 / 61.0) / _recording_perf_frame_time) * 100.0);
 				} else {
 					std::printf("[DEBUG] Recording performance... Press (F3 + R) to stop.\n");
 
@@ -555,7 +559,7 @@ namespace timecapsule {
 	
 	timecapsule::camera_t &get_player_camera(void) {
 		//return _player_camera;
-		if(Raylib::IsKeyPressed(Raylib::KEY_P)) _what_thingy_should_i_update = _what_thingy_should_i_update == false;
+		if(engine_internals::is_key_pressed(Raylib::KEY_P)) _what_thingy_should_i_update = _what_thingy_should_i_update == false;
 		return _what_thingy_should_i_update ? _debug_camera : _player_camera;
 	};
 
