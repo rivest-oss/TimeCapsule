@@ -23,7 +23,6 @@
 #include "gl.hpp"
 #include "asset.hpp"
 #include "../misc/rtconfig.hpp"
-#include "../game/core.hpp"
 #include "lighting.hpp"
 #include "rlgl-extra.hpp"
 #include "hl-debug.hpp"
@@ -40,6 +39,10 @@ namespace timecapsule {
 	timecapsule::camera_t _debug_camera;
 	timecapsule::Scene _curr_scene;
 	Raylib::Shader _dof_shader;
+
+	game_init_t game_init_f = nullptr;
+	game_update_t game_update_f = nullptr;
+	game_deinit_t game_deinit_f = nullptr;
 	
 	void render(double game_dt);
 	
@@ -114,7 +117,21 @@ namespace timecapsule {
 		return 0;
 	};
 	
-	[[noreturn]] void init(int argc, const char **argv) {
+	[[noreturn]] void init(int argc, const char **argv, game_init_t game_init, game_update_t game_update, game_deinit_t game_deinit) {
+		game_init_f = game_init;
+		game_update_f = game_update;
+		game_deinit_f = game_deinit;
+
+		if(
+			game_init == nullptr
+			|| game_update == nullptr
+			|| game_deinit == nullptr
+		) {
+			std::fprintf(stderr, "Invalid game functions were provided.\n");
+			deinit();
+			std::exit(1);
+		}
+
 		timecapsule::config_t conf = timecapsule::read_config_from_args(argc, argv);
 		(void)conf;
 		
@@ -175,7 +192,7 @@ namespace timecapsule {
 			std::exit(1);
 		}
 		
-		if(timecapsule::game::init() < 0) {
+		if(game_init() < 0) {
 			deinit();
 			std::exit(1);
 		}
@@ -192,15 +209,12 @@ namespace timecapsule {
 			scaled_delta_time = unscaled_delta_time * time_scale;
 			scaled_time += scaled_delta_time;
 
-			if(timecapsule_should_render_debug_screen) {
+			if(timecapsule_should_render_debug_screen)
 				if(is_key_pressed(Raylib::KEY_K))
 					is_game_input_admin = is_game_input_admin == false;
-				
-				timecapsule::game::should_game_handle_inputs(is_game_input_admin);
-			}
 
 			double t_game = Raylib::GetTime();
-			int rc = timecapsule::game::update();
+			int rc = game_update();
 
 			if(rc < 0)
 				break;
@@ -486,7 +500,9 @@ namespace timecapsule {
 	void deinit(void) {
 		Raylib::EnableCursor();
 		
-		timecapsule::game::deinit();
+		if(game_deinit_f != nullptr)
+			game_deinit_f();
+
 		_curr_scene.deinit();
 		timecapsule::lighting::deinit();
 		timecapsule::deinit_resources();

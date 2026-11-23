@@ -17,13 +17,14 @@
 **/
 
 #pragma once
+#include "game-type.hpp"
 #include "scene.hpp"
 #include "gl.hpp"
 
 #define timecapsule_should_render_debug_screen true
 
 namespace timecapsule {
-	[[noreturn]] void init(int argc, const char **argv);
+	[[noreturn]] void init(int argc, const char **argv, game_init_t game_init, game_update_t game_update, game_deinit_t game_deinit);
 	void deinit(void);
 
 	void set_current_scene(Scene &scene);

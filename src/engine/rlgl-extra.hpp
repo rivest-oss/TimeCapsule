@@ -17,6 +17,7 @@
 **/
 
 #pragma once
+#include "gl.hpp"
 
 namespace Raylib {
 	#include <raylib.h>
@@ -26,4 +27,15 @@ namespace Raylib {
 	void rlEndQuery(void);
 	bool rlIsQueryResultReady(void);
 	double rlGetQueryResult(void);
+};
+
+namespace timecapsule {
+	namespace engine_internals {
+		void block_game_input(bool enable);
+		bool is_key_up(unsigned int key);
+		bool is_key_down(unsigned int key);
+		bool is_key_pressed(unsigned int key);
+		float get_mouse_wheel_delta(void);
+		vector2_t get_mouse_delta(void);
+	};
 };

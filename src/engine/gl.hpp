@@ -53,7 +53,7 @@ namespace timecapsule {
 		KEY_ESCAPE = Raylib::KEY_ESCAPE,
 		KEY_PAUSE = Raylib::KEY_PAUSE,
 	};
-	
+
 	bool is_key_up(unsigned int key);
 	bool is_key_down(unsigned int key);
 	bool is_key_pressed(unsigned int key);

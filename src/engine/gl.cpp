@@ -17,32 +17,58 @@
 **/
 
 #include "gl.hpp"
+#include "rlgl-extra.hpp"
 
 namespace timecapsule {
 	bool _cursor_enabled = true;
-	
+	bool _game_input_is_blocked = false;
+
+	void engine_internals::block_game_input(bool enable) {
+		_game_input_is_blocked = enable;
+	};
+
+	bool engine_internals::is_key_up(unsigned int key) {
+		return Raylib::IsKeyUp(key);
+	};
+
+	bool engine_internals::is_key_down(unsigned int key) {
+		return Raylib::IsKeyDown(key);
+	};
+
+	bool engine_internals::is_key_pressed(unsigned int key) {
+		return Raylib::IsKeyPressed(key);
+	};
+
+	float engine_internals::get_mouse_wheel_delta(void) {
+		return Raylib::GetMouseWheelMove();
+	};
+
+	vector2_t engine_internals::get_mouse_delta(void) {
+		return Raylib::GetMouseDelta();
+	};
+
 	bool is_model_valid(gl_model_t model) {
 		return Raylib::IsModelValid(model);
 	};
 	
 	bool is_key_up(unsigned int key) {
-		return Raylib::IsKeyUp(key);
+		return _game_input_is_blocked ? false : engine_internals::is_key_up(key);
 	};
 	
 	bool is_key_down(unsigned int key) {
-		return Raylib::IsKeyDown(key);
+		return _game_input_is_blocked ? false : engine_internals::is_key_down(key);
 	};
 	
 	bool is_key_pressed(unsigned int key) {
-		return Raylib::IsKeyPressed(key);
+		return _game_input_is_blocked ? false : engine_internals::is_key_pressed(key);
 	};
 	
 	float get_mouse_wheel_delta(void) {
-		return Raylib::GetMouseWheelMove();
+		return _game_input_is_blocked ? 0.f : engine_internals::get_mouse_wheel_delta();
 	};
 	
 	vector2_t get_mouse_delta(void) {
-		return Raylib::GetMouseDelta();
+		return _game_input_is_blocked ? (vector2_t { 0.f, 0.f }) : engine_internals::get_mouse_delta();
 	};
 	
 	void update_camera(gl_camera_t &camera, vector3_t movement, vector3_t rotation, float zoom) {

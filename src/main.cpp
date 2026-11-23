@@ -17,8 +17,9 @@
 **/
 
 #include "engine/core.hpp"
+#include "game/core.hpp"
 
 int main(int argc, const char **argv) {
-	timecapsule::init(argc, argv);
+	timecapsule::init(argc, argv, timecapsule::game::init, timecapsule::game::update, timecapsule::game::deinit);
 	return 0;
 };
