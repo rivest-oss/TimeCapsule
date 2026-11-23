@@ -34,6 +34,11 @@ namespace timecapsule {
 	double unscaled_delta_time = 0.0;
 	double time_scale = 1.0;
 
+	bool _recording_perf_enabled = false;
+	double _recording_perf_time = 0.0;
+	unsigned int _recording_perf_frame_number = 0u;
+	double _recording_perf_frame_time = 0.0;
+
 	game_render_textures_t _game_render_textures;
 	timecapsule::camera_t _player_camera;
 	timecapsule::camera_t _debug_camera;
@@ -218,6 +223,25 @@ namespace timecapsule {
 
 			if(rc < 0)
 				break;
+
+			if(engine_internals::is_key_down(Raylib::KEY_F3) && engine_internals::is_key_pressed(Raylib::KEY_R)) {
+				if(_recording_perf_enabled) {
+					_recording_perf_frame_time /= (double)_recording_perf_frame_number;
+
+					std::printf("[DEBUG] Recorded performance:\n");
+					std::printf("  * Time: %f\n", _recording_perf_time);
+					std::printf("  * Frames: %u\n", _recording_perf_frame_number);
+					std::printf("  * Average frame time: %f (~%f FPS)\n", _recording_perf_frame_time, 1.0 / _recording_perf_frame_time);
+				} else {
+					std::printf("[DEBUG] Recording performance... Press (F3 + R) to stop.\n");
+
+					_recording_perf_time = 0.0;
+					_recording_perf_frame_number = 0u;
+					_recording_perf_frame_time = 0.0;
+				}
+
+				_recording_perf_enabled = _recording_perf_enabled == false;
+			}
 
 			render(Raylib::GetTime() - t_game);
 		};
@@ -493,6 +517,14 @@ namespace timecapsule {
 			debug_render_triangle_count,
 			&_game_render_textures
 		});
+
+		if(_recording_perf_enabled) {
+			_recording_perf_frame_number++;
+			_recording_perf_time += get_unscaled_delta_time();
+
+			for(int i = 0; i < _debug_perf_entries_len; i++)
+				_recording_perf_frame_time += _debug_perf_entries[i].time;
+		}
 		
 		Raylib::EndDrawing();
 	};
