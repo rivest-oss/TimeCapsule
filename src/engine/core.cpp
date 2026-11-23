@@ -142,10 +142,7 @@ namespace timecapsule {
 		
 		Raylib::SetTargetFPS(60);
 
-		Raylib::SetConfigFlags(
-			Raylib::FLAG_WINDOW_RESIZABLE
-			| Raylib::FLAG_MSAA_4X_HINT
-		);
+		Raylib::SetConfigFlags(Raylib::FLAG_WINDOW_RESIZABLE);
 		
 		Raylib::InitWindow(640, 360, "TimeCapsule");
 		while(Raylib::IsWindowReady() == false) {};
@@ -178,7 +175,7 @@ namespace timecapsule {
 
 		_curr_scene.deinit();
 		
-		_player_camera.current.position = _player_camera.goal.position = Raylib::Vector3 { 0.f, 0.6f, 1.f };
+		_player_camera.current.position = _player_camera.goal.position = Raylib::Vector3 { 0.f, 0.6f, 1.5f };
 		_player_camera.current.target = _player_camera.goal.target = Raylib::Vector3 { 0.3, 0.4, -0.7, };
 		_player_camera.current.up = _player_camera.goal.up = Raylib::Vector3 { 0.f, 1.f, 0.f };
 		_player_camera.current.fovy = _player_camera.goal.fovy = 45.f;
@@ -296,6 +293,10 @@ namespace timecapsule {
 			Raylib::EndDrawing();
 			return;
 		}
+
+		// Enforce 16x16 resolution.
+		game_main_screen_width >>= 4; game_main_screen_width <<= 4;
+		game_main_screen_height >>= 4; game_main_screen_height <<= 4;
 
 		int game_main_debug_screen_width = screen_width * 0.39f;
 		int game_main_debug_screen_height = screen_height;
