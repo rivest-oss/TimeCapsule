@@ -53,6 +53,8 @@ namespace timecapsule {
 	game_init_t game_init_f = nullptr;
 	game_update_t game_update_f = nullptr;
 	game_deinit_t game_deinit_f = nullptr;
+
+	std::unordered_map<std::string, highlevel_debug::_debug_perf_entry_t> _debug_perf_entries;
 	
 	void render(double game_dt);
 	
@@ -181,6 +183,8 @@ namespace timecapsule {
 			std::exit(1);
 		}
 
+		Raylib::rlExtrasInit();
+
 		_curr_scene.deinit();
 		
 		_player_camera.current.position = _player_camera.goal.position = Raylib::Vector3 { 0.f, 0.6f, 1.5f };
@@ -276,8 +280,6 @@ namespace timecapsule {
 		std::exit(0);
 	};
 	
-	highlevel_debug::_debug_perf_entry_t _debug_perf_entries[4096];
-
 	void blur_game_scene_texture(void) {
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[0]);
 			Raylib::DrawTexturePro(
@@ -415,26 +417,22 @@ namespace timecapsule {
 	}
 	
 	void render(double game_dt) {
-		int _debug_perf_entries_len = 0;
+		int _debug_perf_entries_count = 0;
 
-		_debug_perf_entries[_debug_perf_entries_len++] = highlevel_debug::_debug_perf_entry_t {
-			"game",
-			game_dt,
-			0,
-		};
-		
-		#define PERF_START_RECORD Raylib::rlBeginQuery();
+		#define PERF_START_RECORD(s)	\
+			_debug_perf_entries.insert_or_assign(s, highlevel_debug::_debug_perf_entry_t {	\
+				0.0,	\
+				_debug_perf_entries_count++,	\
+				Raylib::rlBeginQuery(),	\
+				0u,	\
+			});
 		
 		#define PERF_STOP_RECORD(s)	\
-			Raylib::rlEndQuery();	\
-			_debug_perf_entries[_debug_perf_entries_len++] = highlevel_debug::_debug_perf_entry_t {	\
-				s,	\
-				Raylib::rlGetQueryResult(),	\
-				_debug_perf_entries_len,	\
-			};
+			if(_debug_perf_entries.find(s) != _debug_perf_entries.cend())	\
+				_debug_perf_entries.at(s).gl_query_id_stop = Raylib::rlBeginQuery();
 		
 		Raylib::BeginDrawing();
-		
+
 		int screen_width = Raylib::GetScreenWidth();
 		int screen_height = Raylib::GetScreenHeight();
 		
@@ -464,7 +462,7 @@ namespace timecapsule {
 
 		Raylib::ClearBackground(Raylib::BLACK);
 
-		PERF_START_RECORD;
+		PERF_START_RECORD("resolution change");
 
 		if(
 			_game_render_textures.resize(
@@ -482,7 +480,7 @@ namespace timecapsule {
 		}
 		
 		PERF_STOP_RECORD("resolution change");
-		PERF_START_RECORD;
+		PERF_START_RECORD("player render");
 
 		unsigned int player_render_triangle_count;
 		unsigned int debug_render_triangle_count = 0;
@@ -491,9 +489,10 @@ namespace timecapsule {
 		player_render_triangle_count = _curr_scene.get_sent_triangles_count();
 		
 		PERF_STOP_RECORD("player render");
-		PERF_START_RECORD;
 
 		if(timecapsule_should_render_debug_screen) {
+			PERF_START_RECORD("debug render");
+			
 			// set 'update_cull' to 'false' if you want to watch culling in action.
 			// set it to 'true' if you just want to see the actual world itself and optimized too.
 			_curr_scene.render(_debug_camera, _game_render_textures.world_debug, false);
@@ -509,48 +508,49 @@ namespace timecapsule {
 			Raylib::EndTextureMode();
 			
 			PERF_STOP_RECORD("debug render");
-			PERF_START_RECORD;
 		}
-		
-		blur_game_scene_texture();
-		
-		PERF_STOP_RECORD("blurred scene");
-		PERF_START_RECORD;
+
+		PERF_START_RECORD("blur");
+			blur_game_scene_texture();
+		PERF_STOP_RECORD("blur");
+
+		PERF_START_RECORD("screen");
+
+		Raylib::BeginShaderMode(_dof_shader);
+			Raylib::Texture2D blurry_texture = _game_render_textures.game_play_downscaled[1].texture;
+
+			Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "depthTexture"), _game_render_textures.game_play.depth);
+			Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "focusedTexture"), _game_render_textures.game_play.texture);
+			Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "blurryTexture"), blurry_texture);
+
+			Raylib::DrawTexturePro(
+				_game_render_textures.game_play.texture,
+				Raylib::Rectangle {
+					0.f,
+					0.f,
+					(float)_game_render_textures.game_play.texture.width,
+					-(float)_game_render_textures.game_play.texture.height,
+				},
+				Raylib::Rectangle {
+					0.f,
+					0.f,
+					(float)_game_render_textures.game_play.texture.width,
+					(float)_game_render_textures.game_play.texture.height,
+				},
+				Raylib::Vector2 {
+					0.f,
+					0.f,
+				},
+				0.f,
+				Raylib::WHITE
+			);
+		Raylib::EndShaderMode();
+
+		PERF_STOP_RECORD("screen");
 
 		if(timecapsule_should_render_debug_screen) {
-			Raylib::BeginShaderMode(_dof_shader);
-				Raylib::Texture2D blurry_texture = _game_render_textures.game_play_downscaled[1].texture;
+			PERF_START_RECORD("editor");
 
-				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "depthTexture"), _game_render_textures.game_play.depth);
-				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "focusedTexture"), _game_render_textures.game_play.texture);
-				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "blurryTexture"), blurry_texture);
-
-				Raylib::DrawTexturePro(
-					_game_render_textures.game_play.texture,
-					Raylib::Rectangle {
-						0.f,
-						0.f,
-						(float)_game_render_textures.game_play.texture.width,
-						-(float)_game_render_textures.game_play.texture.height,
-					},
-					Raylib::Rectangle {
-						0.f,
-						0.f,
-						(float)_game_render_textures.game_play.texture.width,
-						(float)_game_render_textures.game_play.texture.height,
-					},
-					Raylib::Vector2 {
-						0.f,
-						0.f,
-					},
-					0.f,
-					Raylib::WHITE
-				);
-			Raylib::EndShaderMode();
-			
-			PERF_STOP_RECORD("postprocessing");
-			PERF_START_RECORD;
-			
 			Raylib::DrawTexturePro(
 				_game_render_textures.world_debug.texture,
 				Raylib::Rectangle {
@@ -591,35 +591,22 @@ namespace timecapsule {
 				screen_height,
 				Raylib::GRAY
 			);
-		} else {
-			Raylib::DrawTexturePro(
-				_game_render_textures.game_play.texture,
-				Raylib::Rectangle {
-					0.f,
-					0.f,
-					(float)_game_render_textures.game_play.texture.width,
-					-(float)_game_render_textures.game_play.texture.height,
-				},
-				Raylib::Rectangle {
-					0.f,
-					0.f,
-					(float)_game_render_textures.game_play.texture.width,
-					(float)_game_render_textures.game_play.texture.height,
-				},
-				Raylib::Vector2 {
-					0.f,
-					0.f,
-				},
-				0.f,
-				Raylib::WHITE
-			);
+
+			PERF_STOP_RECORD("editor");
 		}
-		
-		PERF_STOP_RECORD("screen");
+
+		for(std::pair<std::string, highlevel_debug::_debug_perf_entry_t> e : _debug_perf_entries) {
+			while(Raylib::rlIsQueryResultReady(e.second.gl_query_id_start) == false) {};
+			unsigned long start = Raylib::rlGetQueryResultI64(e.second.gl_query_id_start);
+
+			while(Raylib::rlIsQueryResultReady(e.second.gl_query_id_stop) == false) {};
+			unsigned long stop = Raylib::rlGetQueryResultI64(e.second.gl_query_id_stop);
+
+			_debug_perf_entries.at(e.first).time = double(stop - start) / 1000000000.0;
+		};
 
 		highlevel_debug::draw_debug_page(highlevel_debug::perf_data_t {
 			_debug_perf_entries,
-			_debug_perf_entries_len,
 			player_render_triangle_count,
 			debug_render_triangle_count,
 			&_game_render_textures
@@ -629,10 +616,12 @@ namespace timecapsule {
 			_recording_perf_frame_number++;
 			_recording_perf_time += get_unscaled_delta_time();
 
-			for(int i = 0; i < _debug_perf_entries_len; i++)
-				_recording_perf_frame_time += _debug_perf_entries[i].time;
+			for(std::pair<std::string, highlevel_debug::_debug_perf_entry_t> e : _debug_perf_entries)
+				_recording_perf_frame_time += e.second.time;
 		}
-		
+
+		Raylib::rlClearQueries();
+
 		Raylib::EndDrawing();
 	};
 	
@@ -643,6 +632,7 @@ namespace timecapsule {
 			game_deinit_f();
 
 		_curr_scene.deinit();
+		Raylib::rlExtrasDeinit();
 		timecapsule::lighting::deinit();
 		timecapsule::deinit_resources();
 		

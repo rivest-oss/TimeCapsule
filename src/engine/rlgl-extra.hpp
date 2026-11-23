@@ -23,10 +23,14 @@ namespace Raylib {
 	#include <raylib.h>
 	#include <rlgl.h>
 
-	void rlBeginQuery(void);
-	void rlEndQuery(void);
-	bool rlIsQueryResultReady(void);
-	double rlGetQueryResult(void);
+	unsigned int rlBeginQuery(void);
+	bool rlIsQueryResultReady(unsigned int id);
+	double rlGetQueryResultF64(unsigned int id);
+	unsigned long rlGetQueryResultI64(unsigned int id);
+	void rlClearQueries(void);
+
+	void rlExtrasInit(void);
+	void rlExtrasDeinit(void);
 };
 
 namespace timecapsule {
