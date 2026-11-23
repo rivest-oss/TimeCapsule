@@ -109,10 +109,9 @@ namespace timecapsule {
 				return -1;
 			}
 
-			game_play_downscaled[0] = load_render_texture(game_w, game_h);
-			game_play_downscaled[1] = load_render_texture(game_w >> 1, game_h >> 1);
+			game_play_downscaled[0] = load_render_texture(game_w >> 1, game_h >> 1);
+			game_play_downscaled[1] = load_render_texture(game_w >> 2, game_h >> 2);
 			game_play_downscaled[2] = load_render_texture(game_w >> 2, game_h >> 2);
-			game_play_downscaled[3] = load_render_texture(game_w >> 2, game_h >> 2);
 			
 			for(int i = 0; i < _game_render_textures.dontchange_game_play_downscaled_len; i++) {
 				if(Raylib::IsRenderTextureValid(game_play_downscaled[i]) == false) {
@@ -280,7 +279,7 @@ namespace timecapsule {
 	highlevel_debug::_debug_perf_entry_t _debug_perf_entries[4096];
 
 	void blur_game_scene_texture(void) {
-		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[1]);
+		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[0]);
 			Raylib::DrawTexturePro(
 				_game_render_textures.game_play.texture,
 				Raylib::Rectangle {
@@ -292,6 +291,27 @@ namespace timecapsule {
 				Raylib::Rectangle {
 					0.f,
 					0.f,
+					(float)_game_render_textures.game_play_downscaled[0].texture.width,
+					(float)_game_render_textures.game_play_downscaled[0].texture.height,
+				},
+				Raylib::Vector2 { 0.f, 0.f },
+				0.f,
+				Raylib::WHITE
+			);
+		Raylib::EndTextureMode();
+
+		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[1]);
+			Raylib::DrawTexturePro(
+				_game_render_textures.game_play_downscaled[0].texture,
+				Raylib::Rectangle {
+					0.f,
+					0.f,
+					(float)_game_render_textures.game_play_downscaled[0].texture.width,
+					(float)_game_render_textures.game_play_downscaled[0].texture.height,
+				},
+				Raylib::Rectangle {
+					0.f,
+					0.f,
 					(float)_game_render_textures.game_play_downscaled[1].texture.width,
 					(float)_game_render_textures.game_play_downscaled[1].texture.height,
 				},
@@ -302,29 +322,32 @@ namespace timecapsule {
 		Raylib::EndTextureMode();
 
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[2]);
-			Raylib::DrawTexturePro(
-				_game_render_textures.game_play_downscaled[1].texture,
-				Raylib::Rectangle {
+			Raylib::BeginShaderMode(shader_horizontal_gaussian_blur);
+				Raylib::SetShaderValueTexture(shader_horizontal_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[1].texture);
+				Raylib::DrawTexturePro(
+					_game_render_textures.game_play_downscaled[1].texture,
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)_game_render_textures.game_play_downscaled[1].texture.width,
+						(float)_game_render_textures.game_play_downscaled[1].texture.height,
+					},
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)_game_render_textures.game_play_downscaled[2].texture.width,
+						(float)_game_render_textures.game_play_downscaled[2].texture.height,
+					},
+					Raylib::Vector2 { 0.f, 0.f },
 					0.f,
-					0.f,
-					(float)_game_render_textures.game_play_downscaled[1].texture.width,
-					(float)_game_render_textures.game_play_downscaled[1].texture.height,
-				},
-				Raylib::Rectangle {
-					0.f,
-					0.f,
-					(float)_game_render_textures.game_play_downscaled[2].texture.width,
-					(float)_game_render_textures.game_play_downscaled[2].texture.height,
-				},
-				Raylib::Vector2 { 0.f, 0.f },
-				0.f,
-				Raylib::WHITE
-			);
+					Raylib::WHITE
+				);
+			Raylib::EndShaderMode();
 		Raylib::EndTextureMode();
 
-		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[3]);
-			Raylib::BeginShaderMode(shader_horizontal_gaussian_blur);
-				Raylib::SetShaderValueTexture(shader_horizontal_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[2].texture);
+		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[1]);
+			Raylib::BeginShaderMode(shader_vertical_gaussian_blur);
+				Raylib::SetShaderValueTexture(shader_vertical_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[2].texture);
 				Raylib::DrawTexturePro(
 					_game_render_textures.game_play_downscaled[2].texture,
 					Raylib::Rectangle {
@@ -336,32 +359,8 @@ namespace timecapsule {
 					Raylib::Rectangle {
 						0.f,
 						0.f,
-						(float)_game_render_textures.game_play_downscaled[3].texture.width,
-						(float)_game_render_textures.game_play_downscaled[3].texture.height,
-					},
-					Raylib::Vector2 { 0.f, 0.f },
-					0.f,
-					Raylib::WHITE
-				);
-			Raylib::EndShaderMode();
-		Raylib::EndTextureMode();
-
-		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[2]);
-			Raylib::BeginShaderMode(shader_vertical_gaussian_blur);
-				Raylib::SetShaderValueTexture(shader_vertical_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[3].texture);
-				Raylib::DrawTexturePro(
-					_game_render_textures.game_play_downscaled[3].texture,
-					Raylib::Rectangle {
-						0.f,
-						0.f,
-						(float)_game_render_textures.game_play_downscaled[3].texture.width,
-						(float)_game_render_textures.game_play_downscaled[3].texture.height,
-					},
-					Raylib::Rectangle {
-						0.f,
-						0.f,
-						(float)_game_render_textures.game_play_downscaled[2].texture.width,
-						(float)_game_render_textures.game_play_downscaled[2].texture.height,
+						(float)_game_render_textures.game_play_downscaled[1].texture.width,
+						(float)_game_render_textures.game_play_downscaled[1].texture.height,
 					},
 					Raylib::Vector2 { 0.f, 0.f },
 					0.f,
@@ -371,20 +370,20 @@ namespace timecapsule {
 		Raylib::EndTextureMode();
 
 		if(false) {
-			Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[1]);
+			Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[0]);
 				Raylib::DrawTexturePro(
-					_game_render_textures.game_play_downscaled[2].texture,
-					Raylib::Rectangle {
-						0.f,
-						0.f,
-						(float)_game_render_textures.game_play_downscaled[2].texture.width,
-						(float)_game_render_textures.game_play_downscaled[2].texture.height,
-					},
+					_game_render_textures.game_play_downscaled[1].texture,
 					Raylib::Rectangle {
 						0.f,
 						0.f,
 						(float)_game_render_textures.game_play_downscaled[1].texture.width,
 						(float)_game_render_textures.game_play_downscaled[1].texture.height,
+					},
+					Raylib::Rectangle {
+						0.f,
+						0.f,
+						(float)_game_render_textures.game_play_downscaled[0].texture.width,
+						(float)_game_render_textures.game_play_downscaled[0].texture.height,
 					},
 					Raylib::Vector2 { 0.f, 0.f },
 					0.f,
@@ -394,12 +393,12 @@ namespace timecapsule {
 			
 			Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[0]);
 				Raylib::DrawTexturePro(
-					_game_render_textures.game_play_downscaled[1].texture,
+					_game_render_textures.game_play_downscaled[0].texture,
 					Raylib::Rectangle {
 						0.f,
 						0.f,
-						(float)_game_render_textures.game_play_downscaled[1].texture.width,
-						(float)_game_render_textures.game_play_downscaled[1].texture.height,
+						(float)_game_render_textures.game_play_downscaled[0].texture.width,
+						(float)_game_render_textures.game_play_downscaled[0].texture.height,
 					},
 					Raylib::Rectangle {
 						0.f,
@@ -520,7 +519,7 @@ namespace timecapsule {
 
 		if(timecapsule_should_render_debug_screen) {
 			Raylib::BeginShaderMode(_dof_shader);
-				Raylib::Texture2D blurry_texture = _game_render_textures.game_play_downscaled[2].texture;
+				Raylib::Texture2D blurry_texture = _game_render_textures.game_play_downscaled[1].texture;
 
 				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "depthTexture"), _game_render_textures.game_play.depth);
 				Raylib::SetShaderValueTexture(_dof_shader, Raylib::GetShaderLocation(_dof_shader, "focusedTexture"), _game_render_textures.game_play.texture);
