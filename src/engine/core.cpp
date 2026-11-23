@@ -119,7 +119,13 @@ namespace timecapsule {
 					unload();
 					return -1;
 				}
+
+				Raylib::SetTextureFilter(game_play_downscaled[i].texture, Raylib::TEXTURE_FILTER_BILINEAR);
+				Raylib::SetTextureWrap(game_play_downscaled[i].texture, Raylib::TEXTURE_WRAP_CLAMP);
 			};
+
+			Raylib::SetTextureFilter(game_play.texture, Raylib::TEXTURE_FILTER_BILINEAR);
+			Raylib::SetTextureWrap(game_play.texture, Raylib::TEXTURE_WRAP_CLAMP);
 		}
 
 		return 0;
