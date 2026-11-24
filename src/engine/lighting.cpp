@@ -45,24 +45,6 @@ namespace timecapsule {
 		void update(camera_t camera) {
 			if(Raylib::IsShaderValid(_shader) == false)
 				return;
-
-			/*
-			float light_pos[3] {
-				camera.current.position.x,
-				camera.current.position.y,
-				camera.current.position.z,
-			};
-			
-			Raylib::SetShaderValue(
-				_shader,
-				_shader.locs[Raylib::SHADER_LOC_VECTOR_VIEW],
-				camera_pos_vec3,
-				Raylib::SHADER_UNIFORM_VEC3
-			);
-
-			for(int i = 0; i < Raylib::MAX_LIGHTS; i++)
-				Raylib::UpdateLightValues(_shader, _lights[i]);
-			*/
 		};
 
 		void begin_rendering(void) {
@@ -70,30 +52,6 @@ namespace timecapsule {
 				return;
 
 			Raylib::BeginShaderMode(_shader);
-
-			Raylib::DrawPlane(
-				Raylib::Vector3 {
-					0.f,
-					0.f,
-					0.f,
-				},
-				Raylib::Vector2 {
-					10.f,
-					10.f,
-				},
-				Raylib::WHITE
-			);
-			Raylib::DrawCube(
-				Raylib::Vector3 {
-					-4.f,
-					0.f,
-					-4.f,
-				},
-				2.f,
-				4.f,
-				2.f,
-				Raylib::WHITE
-			);
 		};
 
 		void update_model_lighting(gl_model_t &model) {

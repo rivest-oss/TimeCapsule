@@ -9,12 +9,13 @@ uniform sampler2D focusedTexture;
 uniform sampler2D blurryTexture;
 
 const float nearPlane = 0.05;
-const float farPlane = 4000.0;
+const float farPlane = 10.0;
 
 // Output fragment color
 out vec4 finalColor;
 
 void main() {
+	/*
 	vec2 texCoord = fragTexCoord;
 	vec4 focusedColor = texture(focusedTexture, texCoord);
 
@@ -23,12 +24,18 @@ void main() {
 
 	vec4 blurryColor = texture(blurryTexture, vec2(texCoord.x, texCoord.y));
 	finalColor = mix(focusedColor, blurryColor, 1.0);
+	*/
 
-	/*
+	vec2 texCoord = fragTexCoord;
+	vec4 focusedColor = texture(focusedTexture, texCoord);
+
+	// Sample depth
+	float depth = texture(depthTexture, texCoord).r;
+
 	if(depth >= 1.0) {
 		finalColor = focusedColor;
 	} else {
-		vec4 blurryColor = texture(blurryTexture, vec2(texCoord.x, 1.0 - texCoord.y));
+		vec4 blurryColor = texture(blurryTexture, texCoord);
 
 		// Linearize depth value
 		float linearDepth = (2.0*nearPlane)/(farPlane + nearPlane - depth*(farPlane - nearPlane));
@@ -41,7 +48,6 @@ void main() {
 		// Output final color
 		//finalColor = vec4(vec3(linearDepth), 1.0);
 
-		finalColor = mix(focusedColor, blurryColor, linearDepth);
+		finalColor = mix(focusedColor, blurryColor, 1.0);
 	}
-	*/
 }

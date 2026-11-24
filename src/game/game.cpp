@@ -47,6 +47,12 @@ namespace timecapsule {
 				};
 			};
 
+			{
+				timecapsule::model_t &model_person_at_scene = get_current_scene().add_model("fasfasfasf", model_person);
+				model_person_at_scene.position.x += 60.f;
+				model_person_at_scene.scale *= 10000.f;
+			}
+
 			return 0;
 		};
 
