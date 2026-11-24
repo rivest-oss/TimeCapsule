@@ -26,7 +26,7 @@
 namespace timecapsule {
 	namespace game {
 		int game_sub_init(void) {
-			timecapsule::gl_model_t model_person = timecapsule::load_model("resources/models/not-for-distribution/person/scene.gltf");
+			timecapsule::gl_model_t model_person = timecapsule::load_model("resources/models/not-for-distribution/person/scene.glb");
 			if(timecapsule::is_model_valid(model_person) == false)
 				return -1;
 

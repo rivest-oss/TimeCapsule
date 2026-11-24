@@ -51,8 +51,6 @@ namespace timecapsule {
 			if(p1_comparator < frame_time_budget)
 				p1_comparator = frame_time_budget;
 			
-			std::printf("p1_comparator: %f\n", p1_comparator * 1000.f);
-
 			// draw cost of frames
 			if(Raylib::GetScreenWidth() >= 400) {
 				float off_x = 16.f;

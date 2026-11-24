@@ -323,9 +323,12 @@ namespace timecapsule {
 			);
 		Raylib::EndTextureMode();
 
+		const float gaussian_weights[] { 0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216 };
+
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[2]);
 			Raylib::BeginShaderMode(shader_horizontal_gaussian_blur);
 				Raylib::SetShaderValueTexture(shader_horizontal_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[1].texture);
+				Raylib::SetShaderValueV(shader_horizontal_gaussian_blur, Raylib::GetShaderLocation(shader_horizontal_gaussian_blur, "weight"), gaussian_weights, Raylib::SHADER_UNIFORM_FLOAT, 5);
 				Raylib::DrawTexturePro(
 					_game_render_textures.game_play_downscaled[1].texture,
 					Raylib::Rectangle {
@@ -350,6 +353,7 @@ namespace timecapsule {
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[1]);
 			Raylib::BeginShaderMode(shader_vertical_gaussian_blur);
 				Raylib::SetShaderValueTexture(shader_vertical_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[2].texture);
+				Raylib::SetShaderValueV(shader_vertical_gaussian_blur, Raylib::GetShaderLocation(shader_vertical_gaussian_blur, "weight"), gaussian_weights, Raylib::SHADER_UNIFORM_FLOAT, 5);
 				Raylib::DrawTexturePro(
 					_game_render_textures.game_play_downscaled[2].texture,
 					Raylib::Rectangle {
