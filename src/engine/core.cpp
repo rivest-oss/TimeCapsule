@@ -16,6 +16,7 @@
 ** "TimeCapsule". If not, see <https://www.gnu.org/licenses/>. 
 **/
 
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include "core.hpp"
@@ -48,7 +49,9 @@ namespace timecapsule {
 	Raylib::Shader shader_horizontal_gaussian_blur;
 	Raylib::Shader shader_vertical_gaussian_blur;
 	int shader_horizontal_gaussian_blur_loc_texture;
+	int shader_horizontal_gaussian_blur_loc_weight;
 	int shader_vertical_gaussian_blur_loc_texture;
+	int shader_vertical_gaussian_blur_loc_weight;
 
 	game_init_t game_init_f = nullptr;
 	game_update_t game_update_f = nullptr;
@@ -221,7 +224,9 @@ namespace timecapsule {
 		}
 
 		shader_horizontal_gaussian_blur_loc_texture = Raylib::GetShaderLocation(shader_horizontal_gaussian_blur, "sourceImage");
+		shader_horizontal_gaussian_blur_loc_weight = Raylib::GetShaderLocation(shader_horizontal_gaussian_blur, "weight");
 		shader_vertical_gaussian_blur_loc_texture = Raylib::GetShaderLocation(shader_horizontal_gaussian_blur, "sourceImage");
+		shader_vertical_gaussian_blur_loc_weight = Raylib::GetShaderLocation(shader_vertical_gaussian_blur, "weight");
 		
 		if(game_init() < 0) {
 			deinit();
@@ -279,8 +284,36 @@ namespace timecapsule {
 		deinit();
 		std::exit(0);
 	};
+
+	float gaussian_weights[9];
+	float gaussian_sigma = 2.f;
 	
 	void blur_game_scene_texture(void) {
+		{
+			if(engine_internals::is_key_down(Raylib::KEY_UP))
+				gaussian_sigma += get_unscaled_delta_time();
+			if(engine_internals::is_key_down(Raylib::KEY_DOWN))
+				gaussian_sigma -= get_unscaled_delta_time();
+
+			if(gaussian_sigma < 0.00000001f) gaussian_sigma = 0.00000001f;
+			if(gaussian_sigma > 2.5f) gaussian_sigma = 2.5f;
+
+			float s2 = gaussian_sigma * gaussian_sigma * 2.f;
+			float acc = 0.f;
+
+			for(int x = -4; x <= 4; x++) {
+				float w = exp(-((float)x * (float)x) / s2);
+				if(x >= 0) gaussian_weights[x] = w;
+				acc += w;
+			};
+
+			gaussian_weights[0] /= acc;
+			gaussian_weights[1] /= acc;
+			gaussian_weights[2] /= acc;
+			gaussian_weights[3] /= acc;
+			gaussian_weights[4] /= acc;
+		}
+
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[0]);
 			Raylib::DrawTexturePro(
 				_game_render_textures.game_play.texture,
@@ -323,12 +356,10 @@ namespace timecapsule {
 			);
 		Raylib::EndTextureMode();
 
-		const float gaussian_weights[] { 0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216 };
-
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[2]);
 			Raylib::BeginShaderMode(shader_horizontal_gaussian_blur);
 				Raylib::SetShaderValueTexture(shader_horizontal_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[1].texture);
-				Raylib::SetShaderValueV(shader_horizontal_gaussian_blur, Raylib::GetShaderLocation(shader_horizontal_gaussian_blur, "weight"), gaussian_weights, Raylib::SHADER_UNIFORM_FLOAT, 5);
+				Raylib::SetShaderValueV(shader_horizontal_gaussian_blur, shader_horizontal_gaussian_blur_loc_weight, gaussian_weights, Raylib::SHADER_UNIFORM_FLOAT, 5);
 				Raylib::DrawTexturePro(
 					_game_render_textures.game_play_downscaled[1].texture,
 					Raylib::Rectangle {
@@ -352,8 +383,8 @@ namespace timecapsule {
 
 		Raylib::BeginTextureMode(_game_render_textures.game_play_downscaled[1]);
 			Raylib::BeginShaderMode(shader_vertical_gaussian_blur);
-				Raylib::SetShaderValueTexture(shader_vertical_gaussian_blur, shader_horizontal_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[2].texture);
-				Raylib::SetShaderValueV(shader_vertical_gaussian_blur, Raylib::GetShaderLocation(shader_vertical_gaussian_blur, "weight"), gaussian_weights, Raylib::SHADER_UNIFORM_FLOAT, 5);
+				Raylib::SetShaderValueTexture(shader_vertical_gaussian_blur, shader_vertical_gaussian_blur_loc_texture, _game_render_textures.game_play_downscaled[2].texture);
+				Raylib::SetShaderValueV(shader_vertical_gaussian_blur, shader_horizontal_gaussian_blur_loc_weight, gaussian_weights, Raylib::SHADER_UNIFORM_FLOAT, 5);
 				Raylib::DrawTexturePro(
 					_game_render_textures.game_play_downscaled[2].texture,
 					Raylib::Rectangle {
